@@ -151,124 +151,131 @@ export default function Home() {
           )}
         </section>
 
-        {/* Extra sections */}
-        <section className="container pb-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* AI Section */}
-            <div className="relative rounded-xl overflow-hidden shadow-md group">
-              <img
-                src={IMAGES.aiSectionBg}
-                alt="AI"
-                className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+        {/* MER divider */}
+        <div className="py-12 text-center">
+          <p className="text-3xl tracking-widest text-muted-foreground/60 font-light" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            {t("MER", "MORE")}
+          </p>
+          <div className="mt-3 text-muted-foreground/40 text-2xl">↓</div>
+        </div>
+
+        {/* AI Section - full width band */}
+        <section className="relative overflow-hidden">
+          <img
+            src={IMAGES.aiSectionBg}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-900/70 to-slate-900/50" />
+          <div className="relative container py-16 md:py-20 text-center">
+            <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
+              {t("AI långt bortom Google", "AI far beyond Google")}
+            </h2>
+            <p className="text-slate-200 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+              {t(
+                "Som alzheimerdrabbad behöver jag modern teknik. Här presenterar jag AI och ger lite exempel på tillämpningar.",
+                "As someone affected by Alzheimer's, I need modern technology. Here I present AI and give some examples of applications."
+              )}
+            </p>
+            <a
+              href="https://aiundersajt-h4ruqvxt.manus.space/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-white/90 text-slate-800 rounded-full text-sm font-semibold hover:bg-white transition-colors shadow-lg"
+            >
+              {t("Utforska AI-världen", "Explore the AI world")}
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </section>
+
+        {/* Newsletter - full width band */}
+        <section className="bg-[#c05746] py-16 md:py-20">
+          <div className="container text-center">
+            <div className="flex justify-center mb-5">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                <Rss className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
+              {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
+            </h2>
+            <p className="text-white/80 text-lg max-w-xl mx-auto mb-8 leading-relaxed">
+              {t(
+                "Prenumerera för att få notiser när nya artiklar publiceras.",
+                "Subscribe to get notifications when new articles are published."
+              )}
+            </p>
+            <div className="flex gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder={t("Din email-adress", "Your email address")}
+                className="flex-1 px-5 py-3 rounded-full bg-white/90 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="text-2xl text-white mb-2">
-                  {t("AI långt bortom Google", "AI far beyond Google")}
-                </h3>
-                <p className="text-slate-200 text-sm mb-4 leading-relaxed">
-                  {t(
-                    "Som alzheimerdrabbad behöver jag modern teknik. Här presenterar jag AI och ger lite exempel på tillämpningar.",
-                    "As someone affected by Alzheimer's, I need modern technology. Here I present AI and give some examples of applications."
-                  )}
-                </p>
-                <a
-                  href="https://aiundersajt-h4ruqvxt.manus.space/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/90 text-slate-800 rounded-full text-sm font-semibold hover:bg-white transition-colors"
-                >
-                  {t("Utforska AI-världen", "Explore the AI world")}
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
+              <button className="px-7 py-3 bg-slate-900 text-white rounded-full text-sm font-semibold hover:bg-slate-800 transition-colors shadow-lg">
+                {t("Prenumerera", "Subscribe")}
+              </button>
             </div>
+          </div>
+        </section>
 
-            {/* Newsletter */}
-            <div className="bg-card rounded-xl p-6 shadow-sm border border-border/50 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#c05746]/10 flex items-center justify-center">
-                    <Rss className="w-5 h-5 text-[#c05746]" />
-                  </div>
-                  <h3 className="text-2xl text-foreground">
-                    {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
-                  </h3>
-                </div>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  {t(
-                    "Prenumerera för att få notiser när nya artiklar publiceras.",
-                    "Subscribe to get notifications when new articles are published."
-                  )}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder={t("Din email-adress", "Your email address")}
-                  className="flex-1 px-4 py-2.5 rounded-full bg-background border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
-                />
-                <button className="px-6 py-2.5 bg-[#c05746] text-white rounded-full text-sm font-semibold hover:bg-[#a84838] transition-colors shadow-md">
-                  {t("Prenumerera", "Subscribe")}
-                </button>
+        {/* Comments - full width band */}
+        <section className="bg-background py-16 md:py-20">
+          <div className="container text-center">
+            <div className="flex justify-center mb-5">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                <MessageCircle className="w-6 h-6 text-emerald-700" />
               </div>
             </div>
+            <h2 className="text-3xl md:text-4xl text-foreground mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
+              {t("Kommentarer och diskussion", "Comments and discussion")}
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8 leading-relaxed">
+              {t(
+                "Dela dina tankar, ställ frågor eller diskutera artiklar.",
+                "Share your thoughts, ask questions, or discuss articles."
+              )}
+            </p>
+            <a
+              href="https://jagochminalzheimer.manus.space/comments"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-700 text-white rounded-full text-sm font-semibold hover:bg-emerald-800 transition-colors shadow-lg"
+            >
+              {t("Gå till diskussionen", "Go to the discussion")}
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </section>
 
-            {/* Comments / Discussion */}
-            <div className="bg-card rounded-xl p-6 shadow-sm border border-border/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5 text-emerald-700" />
-                </div>
-                <h3 className="text-2xl text-foreground">
-                  {t("Kommentarer och diskussion", "Comments and discussion")}
-                </h3>
+        {/* Follow on X - full width band */}
+        <section className="bg-slate-900 py-16 md:py-20">
+          <div className="container text-center">
+            <div className="flex justify-center mb-5">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
               </div>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                {t(
-                  "Dela dina tankar, ställ frågor eller diskutera artiklar.",
-                  "Share your thoughts, ask questions, or discuss articles."
-                )}
-              </p>
-              <a
-                href="https://jagochminalzheimer.manus.space/comments"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[#c05746] font-semibold text-sm hover:underline"
-              >
-                {t("Gå till diskussionen", "Go to the discussion")}
-                <ExternalLink className="w-4 h-4" />
-              </a>
             </div>
-
-            {/* Follow on X */}
-            <div className="bg-card rounded-xl p-6 shadow-sm border border-border/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-slate-700" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl text-foreground">
-                  {t("Följ mig på X", "Follow me on X")}
-                </h3>
-              </div>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                {t(
-                  "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
-                  "I write about my new life with Alzheimer's on X (Twitter)."
-                )}
-              </p>
-              <a
-                href="https://x.com/stendellby"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[#c05746] font-semibold text-sm hover:underline"
-              >
-                {t("Ta mig till X", "Take me to X")}
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
+            <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
+              {t("Följ mig på X", "Follow me on X")}
+            </h2>
+            <p className="text-slate-300 text-lg max-w-xl mx-auto mb-8 leading-relaxed">
+              {t(
+                "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
+                "I write about my new life with Alzheimer's on X (Twitter)."
+              )}
+            </p>
+            <a
+              href="https://x.com/stendellby"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-white text-slate-900 rounded-full text-sm font-semibold hover:bg-slate-100 transition-colors shadow-lg"
+            >
+              {t("Ta mig till X", "Take me to X")}
+              <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
         </section>
 
