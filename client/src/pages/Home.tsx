@@ -1,17 +1,17 @@
 /**
  * Nordic Warmth Design: Home Page
- * - Warm watercolor hero background
- * - Editorial article listing
- * - Category filter pills
+ * - Fetches articles from database via tRPC
+ * - Editorial article listing with category filter, search, pagination
  * - AI section, newsletter, comments, X feed
  */
 import { useState, useMemo } from "react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
-import { articles, categories, categoriesEn, IMAGES } from "@/data/articles";
+import { categories, categoriesEn, IMAGES } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Search, ChevronLeft, ChevronRight, ExternalLink, MessageCircle, Rss } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { Search, ChevronLeft, ChevronRight, ExternalLink, MessageCircle, Rss, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 const ARTICLES_PER_PAGE = 4;
@@ -22,8 +22,15 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Fetch articles from database
+  const { data: dbArticles, isLoading } = trpc.articles.list.useQuery({
+    language,
+    published: true,
+  });
+
   const filteredArticles = useMemo(() => {
-    let filtered = articles.filter((a) => a.language === language);
+    if (!dbArticles) return [];
+    let filtered = [...dbArticles];
 
     if (activeCategory !== "Alla" && activeCategory !== "All") {
       filtered = filtered.filter((a) => a.category === activeCategory);
@@ -42,7 +49,7 @@ export default function Home() {
     return filtered.sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
-  }, [language, activeCategory, searchQuery]);
+  }, [dbArticles, activeCategory, searchQuery]);
 
   const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
   const paginatedArticles = filteredArticles.slice(
@@ -51,7 +58,6 @@ export default function Home() {
   );
 
   const displayCategories = language === "sv" ? categories : categoriesEn;
-  // Map English categories back to Swedish for filtering
   const categoryMap: Record<string, string> = {
     All: "Alla",
     Treatment: "Behandling",
@@ -112,9 +118,22 @@ export default function Home() {
 
           {/* Articles list */}
           <div className="space-y-5">
-            {paginatedArticles.length > 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+              </div>
+            ) : paginatedArticles.length > 0 ? (
               paginatedArticles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
+                <ArticleCard key={article.id} article={{
+                  id: article.id,
+                  title: article.title,
+                  excerpt: article.excerpt,
+                  content: article.content,
+                  category: article.category,
+                  language: article.language,
+                  imageUrl: article.imageUrl,
+                  publishedAt: new Date(article.publishedAt).toISOString(),
+                }} />
               ))
             ) : (
               <div className="text-center py-16 text-muted-foreground">

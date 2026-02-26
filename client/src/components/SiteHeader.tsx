@@ -3,14 +3,18 @@
  * - DM Serif Display for brand name
  * - Warm, calm color palette
  * - Profile photo with soft border
+ * - Admin button for admin users
  */
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { IMAGES } from "@/data/articles";
 import { Link } from "wouter";
-import { Mail } from "lucide-react";
+import { Mail, Settings } from "lucide-react";
 
 export default function SiteHeader() {
   const { language, setLanguage, t } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = isAuthenticated && user?.role === "admin";
 
   return (
     <header className="relative overflow-hidden">
@@ -71,28 +75,39 @@ export default function SiteHeader() {
             </div>
           </div>
 
-          {/* Language toggle */}
-          <div className="flex gap-2 self-start md:self-center">
-            <button
-              onClick={() => setLanguage("sv")}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                language === "sv"
-                  ? "bg-[#c05746] text-white shadow-md"
-                  : "bg-white/70 text-slate-600 hover:bg-white"
-              }`}
-            >
-              Svenska
-            </button>
-            <button
-              onClick={() => setLanguage("en")}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                language === "en"
-                  ? "bg-[#c05746] text-white shadow-md"
-                  : "bg-white/70 text-slate-600 hover:bg-white"
-              }`}
-            >
-              English
-            </button>
+          {/* Language toggle + Admin */}
+          <div className="flex flex-col items-end gap-3 self-start md:self-center">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLanguage("sv")}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  language === "sv"
+                    ? "bg-[#c05746] text-white shadow-md"
+                    : "bg-white/70 text-slate-600 hover:bg-white"
+                }`}
+              >
+                Svenska
+              </button>
+              <button
+                onClick={() => setLanguage("en")}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  language === "en"
+                    ? "bg-[#c05746] text-white shadow-md"
+                    : "bg-white/70 text-slate-600 hover:bg-white"
+                }`}
+              >
+                English
+              </button>
+            </div>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors shadow-md"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                Admin
+              </Link>
+            )}
           </div>
         </div>
       </div>

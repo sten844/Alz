@@ -1,16 +1,15 @@
 /**
  * Nordic Warmth Design: ArticlePage
+ * - Fetches article from database via tRPC
  * - Clean reading layout with max-width for readability
- * - DM Serif Display for headings
- * - Warm, comfortable reading experience
  */
 import { useParams, Link } from "wouter";
-import { useMemo } from "react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { articles, getArticleImage, categoryColors, getTranslationId } from "@/data/articles";
+import { getArticleImage, categoryColors } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft, Globe, Calendar } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { ArrowLeft, Calendar, Loader2 } from "lucide-react";
 
 function renderMarkdown(content: string): string {
   let html = content;
@@ -38,7 +37,7 @@ function renderMarkdown(content: string): string {
   // Emoji lines (like 👉)
   html = html.replace(/^(👉.+)$/gm, '<p class="text-lg leading-relaxed mb-4 bg-accent/50 p-4 rounded-lg border-l-4 border-[#c05746]/30">$1</p>');
 
-  // Paragraphs - wrap remaining lines
+  // Paragraphs
   const lines = html.split('\n');
   let result = '';
   let inList = false;
@@ -79,12 +78,25 @@ function renderMarkdown(content: string): string {
 
 export default function ArticlePage() {
   const params = useParams<{ id: string }>();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
+  const articleId = Number(params.id);
 
-  const article = useMemo(() => {
-    const id = Number(params.id);
-    return articles.find((a) => a.id === id);
-  }, [params.id]);
+  const { data: article, isLoading } = trpc.articles.getById.useQuery(
+    { id: articleId },
+    { enabled: !isNaN(articleId) }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <SiteHeader />
+        <main className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+        </main>
+        <SiteFooter />
+      </div>
+    );
+  }
 
   if (!article) {
     return (
@@ -101,8 +113,16 @@ export default function ArticlePage() {
     );
   }
 
-  const translationId = getTranslationId(article.id);
-  const imageUrl = getArticleImage(article);
+  const imageUrl = getArticleImage({
+    id: article.id,
+    title: article.title,
+    excerpt: article.excerpt,
+    content: article.content,
+    category: article.category,
+    language: article.language,
+    imageUrl: article.imageUrl,
+    publishedAt: new Date(article.publishedAt).toISOString(),
+  });
   const colorClass = categoryColors[article.category] || "bg-slate-100 text-slate-700";
   const date = new Date(article.publishedAt);
   const formattedDate = date.toLocaleDateString(
@@ -146,18 +166,6 @@ export default function ArticlePage() {
                 <Calendar className="w-3.5 h-3.5" />
                 {formattedDate}
               </span>
-              {translationId && (
-                <>
-                  <span className="text-border">|</span>
-                  <Link
-                    href={`/article/${translationId}`}
-                    className="inline-flex items-center gap-1 text-sm text-[#c05746] hover:underline font-medium"
-                  >
-                    <Globe className="w-3.5 h-3.5" />
-                    {article.language === "sv" ? "Read in English" : "Läs på svenska"}
-                  </Link>
-                </>
-              )}
             </div>
 
             {/* Article content */}
