@@ -32,6 +32,13 @@ const aiTools = [
     icon: Sparkles,
   },
   {
+    name: "Gemini",
+    descSv: "Googles AI-assistent",
+    descEn: "Google's AI assistant",
+    url: "https://gemini.google.com",
+    icon: Sparkles,
+  },
+  {
     name: "Google Lens",
     descSv: "Identifiera med kameran",
     descEn: "Identify with camera",
@@ -65,6 +72,12 @@ const swedishLinks = [
     descSv: "Internationell forskning och stöd (engelska)",
     descEn: "International research and support",
     url: "https://www.alz.org",
+  },
+  {
+    name: "Anthropic",
+    descSv: "Företaget bakom Claude AI",
+    descEn: "The company behind Claude AI",
+    url: "https://www.anthropic.com",
   },
 ];
 

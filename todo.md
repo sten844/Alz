@@ -20,3 +20,9 @@
 - [x] AI page: add useful Swedish and English AI example links
 - [x] Update navigation to include AI page link
 - [x] AI page: Add relevant link to each fact card (hjälpmedel, spektakulära, redan-använder)
+- [x] Home: Move sections closer to blue band, reduce height
+- [x] Home: Remove icons from section cards
+- [x] Home: Remove MER divider
+- [x] Home: Sections flow naturally without divider
+- [x] AI page: Add Anthropic (Claude) to tools
+- [x] AI page: Add Google Gemini to tools

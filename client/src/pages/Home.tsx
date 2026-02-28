@@ -11,7 +11,7 @@ import ArticleCard from "@/components/ArticleCard";
 import { categories, categoriesEn, IMAGES } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { Search, ChevronLeft, ChevronRight, ExternalLink, MessageCircle, Rss, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ExternalLink, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 const ARTICLES_PER_PAGE = 4;
@@ -177,14 +177,6 @@ export default function Home() {
           )}
         </section>
 
-        {/* MER divider */}
-        <div className="py-12 text-center">
-          <p className="text-3xl tracking-widest text-muted-foreground/60 font-light" style={{ fontFamily: "'DM Serif Display', serif" }}>
-            {t("MER", "MORE")}
-          </p>
-          <div className="mt-3 text-muted-foreground/40 text-2xl">↓</div>
-        </div>
-
         {/* AI Section - full width band */}
         <section className="relative overflow-hidden">
           <img
@@ -193,7 +185,7 @@ export default function Home() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-900/70 to-slate-900/50" />
-          <div className="relative container py-16 md:py-20 text-center">
+          <div className="relative container py-10 md:py-14 text-center">
             <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("AI långt bortom Google", "AI far beyond Google")}
             </h2>
@@ -214,13 +206,8 @@ export default function Home() {
         </section>
 
         {/* Newsletter - full width band */}
-        <section className="bg-[#c05746] py-16 md:py-20">
+        <section className="bg-[#c05746] py-10 md:py-14">
           <div className="container text-center">
-            <div className="flex justify-center mb-5">
-              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                <Rss className="w-6 h-6 text-white" />
-              </div>
-            </div>
             <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
             </h2>
@@ -244,13 +231,8 @@ export default function Home() {
         </section>
 
         {/* Comments - full width band */}
-        <section className="bg-background py-16 md:py-20">
+        <section className="bg-background py-10 md:py-14">
           <div className="container text-center">
-            <div className="flex justify-center mb-5">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-emerald-700" />
-              </div>
-            </div>
             <h2 className="text-3xl md:text-4xl text-foreground mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("Kommentarer och diskussion", "Comments and discussion")}
             </h2>
@@ -273,15 +255,8 @@ export default function Home() {
         </section>
 
         {/* Follow on X - full width band */}
-        <section className="bg-slate-900 py-16 md:py-20">
+        <section className="bg-slate-900 py-10 md:py-14">
           <div className="container text-center">
-            <div className="flex justify-center mb-5">
-              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </div>
-            </div>
             <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("Följ mig på X", "Follow me on X")}
             </h2>
