@@ -203,15 +203,13 @@ export default function Home() {
                 "As someone affected by Alzheimer's, I need modern technology. Here I present AI and give some examples of applications."
               )}
             </p>
-            <a
-              href="https://aiundersajt-h4ruqvxt.manus.space/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/ai"
               className="inline-flex items-center gap-2 px-8 py-3 bg-white/90 text-slate-800 rounded-full text-sm font-semibold hover:bg-white transition-colors shadow-lg"
             >
               {t("Utforska AI-världen", "Explore the AI world")}
               <ExternalLink className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
         </section>
 

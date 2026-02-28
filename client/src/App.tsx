@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import ArticlePage from "./pages/ArticlePage";
 import AboutPage from "./pages/AboutPage";
 import AdminPage from "./pages/AdminPage";
+import AIPage from "./pages/AIPage";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/article/:id" component={ArticlePage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/admin" component={AdminPage} />
+      <Route path="/ai" component={AIPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

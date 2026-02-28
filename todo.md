@@ -11,3 +11,11 @@
 - [x] Update Home and ArticlePage to fetch from database via tRPC
 - [x] Add Admin button to header for admin users
 - [x] Fix X/Twitter link - added embedded Twitter timeline widget
+- [x] AI subsite: Change grid from 3 to max 2 columns
+- [x] AI subsite: Shorten verbose texts
+- [x] AI subsite: Add useful Swedish and English AI example links
+- [x] Create /ai page integrated into main site
+- [x] AI page: max 2 columns grid layout
+- [x] AI page: shorten verbose texts
+- [x] AI page: add useful Swedish and English AI example links
+- [x] Update navigation to include AI page link
