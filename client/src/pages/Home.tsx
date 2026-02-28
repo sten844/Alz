@@ -4,7 +4,7 @@
  * - Editorial article listing with category filter, search, pagination
  * - AI section, newsletter, comments, X feed
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
@@ -17,6 +17,13 @@ import { Link } from "wouter";
 const ARTICLES_PER_PAGE = 4;
 
 export default function Home() {
+  // Reload Twitter widget when component mounts (SPA navigation)
+  useEffect(() => {
+    if ((window as any).twttr?.widgets) {
+      (window as any).twttr.widgets.load();
+    }
+  }, []);
+
   const { language, t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState("Alla");
   const [searchQuery, setSearchQuery] = useState("");
@@ -290,11 +297,24 @@ export default function Home() {
               href="https://x.com/stendellby"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-white text-slate-900 rounded-full text-sm font-semibold hover:bg-slate-100 transition-colors shadow-lg"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-white text-slate-900 rounded-full text-sm font-semibold hover:bg-slate-100 transition-colors shadow-lg mb-8"
             >
               {t("Ta mig till X", "Take me to X")}
               <ExternalLink className="w-4 h-4" />
             </a>
+
+            {/* Embedded Twitter Timeline */}
+            <div className="max-w-lg mx-auto rounded-xl overflow-hidden">
+              <a
+                className="twitter-timeline"
+                data-theme="dark"
+                data-height="500"
+                data-chrome="noheader nofooter noborders transparent"
+                href="https://twitter.com/stendellby?ref_src=twsrc%5Etfw"
+              >
+                Tweets by stendellby
+              </a>
+            </div>
           </div>
         </section>
 

@@ -10,3 +10,4 @@
 - [x] Push database schema
 - [x] Update Home and ArticlePage to fetch from database via tRPC
 - [x] Add Admin button to header for admin users
+- [x] Fix X/Twitter link - added embedded Twitter timeline widget
