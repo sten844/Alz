@@ -19,3 +19,4 @@
 - [x] AI page: shorten verbose texts
 - [x] AI page: add useful Swedish and English AI example links
 - [x] Update navigation to include AI page link
+- [x] AI page: Add relevant link to each fact card (hjälpmedel, spektakulära, redan-använder)

@@ -1,11 +1,12 @@
 /**
  * AI Page - Integrated from the AI subsite
  * Max 2 columns, shorter texts, useful links
+ * Each fact card has a relevant link
  */
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ExternalLink, Bell, Mic, Shield, MessageCircle, FileText, Brain, Camera, PenLine, ListChecks, Headphones, MapPin, Languages, Sun, ClipboardList, Glasses, Heart, Atom, Car, Cloud, Film, Palette, Music, Bot, Sparkles, Mail, Navigation, Lock, Keyboard } from "lucide-react";
+import { ExternalLink, Bell, Mic, Shield, MessageCircle, FileText, Brain, Camera, PenLine, ListChecks, Headphones, MapPin, Languages, Heart, Atom, Car, Cloud, Film, Palette, Music, Bot, Sparkles, Mail, Navigation, Lock, Keyboard } from "lucide-react";
 
 // AI tools with real links
 const aiTools = [
@@ -67,123 +68,194 @@ const swedishLinks = [
   },
 ];
 
-// Cognitive help cards - shortened texts
+// Cognitive help cards - each with a relevant link
 const cognitiveHelp = [
   {
     icon: Bell, titleSv: "Påminnelser", titleEn: "Reminders",
     descSv: "Siri eller Google Assistant påminner om mediciner och möten.",
     descEn: "Siri or Google Assistant reminds you about meds and appointments.",
+    url: "https://support.apple.com/sv-se/guide/iphone/iph5e81ca4c4/ios",
+    linkSv: "Siri-guide", linkEn: "Siri guide",
   },
   {
     icon: Mic, titleSv: "Röststyrning", titleEn: "Voice control",
     descSv: "Styr allt med rösten. Inga knappar behövs.",
     descEn: "Control everything by voice. No buttons needed.",
+    url: "https://assistant.google.com",
+    linkSv: "Google Assistant", linkEn: "Google Assistant",
   },
   {
     icon: Shield, titleSv: "Falldetektering", titleEn: "Fall detection",
     descSv: "Apple Watch larmar anhöriga automatiskt vid fall.",
     descEn: "Apple Watch alerts family automatically if you fall.",
+    url: "https://support.apple.com/sv-se/108896",
+    linkSv: "Apple Watch", linkEn: "Apple Watch",
   },
   {
     icon: MessageCircle, titleSv: "Sällskap", titleEn: "Companionship",
     descSv: "ChatGPT pratar med dig om vad som helst, dygnet runt.",
     descEn: "ChatGPT talks with you about anything, 24/7.",
+    url: "https://chat.openai.com",
+    linkSv: "Öppna ChatGPT", linkEn: "Open ChatGPT",
   },
   {
     icon: FileText, titleSv: "Förenkla texter", titleEn: "Simplify texts",
     descSv: "Klistra in ett läkarbrev – AI förklarar på enkel svenska.",
     descEn: "Paste a doctor's letter – AI explains in plain language.",
+    url: "https://claude.ai",
+    linkSv: "Prova Claude", linkEn: "Try Claude",
   },
   {
     icon: Brain, titleSv: "Hjärnträning", titleEn: "Brain training",
     descSv: "Appar som Duolingo anpassar svårigheten efter dig.",
     descEn: "Apps like Duolingo adapt difficulty to your level.",
+    url: "https://www.duolingo.com",
+    linkSv: "Duolingo", linkEn: "Duolingo",
   },
   {
     icon: Camera, titleSv: "Identifiera saker", titleEn: "Identify things",
     descSv: "Rikta kameran mot ett piller eller skylt – AI berättar vad det är.",
     descEn: "Point camera at a pill or sign – AI tells you what it is.",
+    url: "https://lens.google.com",
+    linkSv: "Google Lens", linkEn: "Google Lens",
   },
   {
     icon: PenLine, titleSv: "Skrivhjälp", titleEn: "Writing help",
     descSv: "Berätta vad du vill säga – AI skriver mejlet.",
     descEn: "Tell AI what you want to say – it writes the email.",
+    url: "https://chat.openai.com",
+    linkSv: "Prova ChatGPT", linkEn: "Try ChatGPT",
   },
   {
     icon: ListChecks, titleSv: "Planera dagen", titleEn: "Plan the day",
     descSv: "AI bryter ner uppgifter i små steg och gör att-göra-listor.",
     descEn: "AI breaks tasks into small steps and creates to-do lists.",
+    url: "https://www.todoist.com",
+    linkSv: "Todoist", linkEn: "Todoist",
   },
   {
     icon: Headphones, titleSv: "Lyssna istället", titleEn: "Listen instead",
     descSv: "AI läser upp texter med naturlig röst.",
     descEn: "AI reads texts aloud with a natural voice.",
+    url: "https://www.naturalreaders.com",
+    linkSv: "Natural Reader", linkEn: "Natural Reader",
   },
   {
     icon: MapPin, titleSv: "Hitta hem", titleEn: "Find home",
     descSv: "Fråga AI: 'Hur tar jag mig hem?' – röstinstruktioner steg för steg.",
     descEn: "Ask AI: 'How do I get home?' – voice directions step by step.",
+    url: "https://maps.google.com",
+    linkSv: "Google Maps", linkEn: "Google Maps",
   },
   {
     icon: Languages, titleSv: "Översätt & förklara", titleEn: "Translate & explain",
     descSv: "Svårt ord? Skriv, tala eller fotografera – AI förklarar.",
     descEn: "Difficult word? Type, speak or photograph – AI explains.",
+    url: "https://translate.google.com",
+    linkSv: "Google Translate", linkEn: "Google Translate",
   },
 ];
 
-// Spectacular AI achievements - shortened
+// Spectacular AI achievements - each with a relevant link
 const spectacular = [
   {
     icon: Heart, titleSv: "Hittar cancer i förväg", titleEn: "Detects cancer early",
     descSv: "Stanford-AI förutsäger lungcancer innan symtom uppstår.",
     descEn: "Stanford AI predicts lung cancer before symptoms appear.",
+    url: "https://med.stanford.edu/news/all-news/2023/08/ai-lung-cancer.html",
+    linkSv: "Stanford-studie", linkEn: "Stanford study",
   },
   {
     icon: Atom, titleSv: "Löste 50-årig gåta", titleEn: "Solved 50-year mystery",
     descSv: "AlphaFold kartlade 200 miljoner proteiner på ett år.",
     descEn: "AlphaFold mapped 200 million proteins in one year.",
+    url: "https://alphafold.ebi.ac.uk",
+    linkSv: "AlphaFold-databasen", linkEn: "AlphaFold database",
   },
   {
     icon: Car, titleSv: "Kör utan förare", titleEn: "Drives without driver",
     descSv: "Waymo kör 50 000 passagerare per vecka utan förare.",
     descEn: "Waymo drives 50,000 passengers per week without a driver.",
+    url: "https://waymo.com",
+    linkSv: "Waymo", linkEn: "Waymo",
   },
   {
     icon: Cloud, titleSv: "Förutsäger orkaner", titleEn: "Predicts hurricanes",
     descSv: "Googles GraphCast slår världens bästa vädersystem.",
     descEn: "Google's GraphCast beats the world's best weather systems.",
+    url: "https://deepmind.google/discover/blog/graphcast-ai-model-for-faster-and-more-accurate-global-weather-forecasting/",
+    linkSv: "GraphCast", linkEn: "GraphCast",
   },
   {
     icon: Film, titleSv: "Skapar film från text", titleEn: "Creates video from text",
     descSv: "OpenAIs Sora genererar filmklipp från en textbeskrivning.",
     descEn: "OpenAI's Sora generates video clips from text descriptions.",
+    url: "https://openai.com/sora",
+    linkSv: "Sora", linkEn: "Sora",
   },
   {
     icon: Palette, titleSv: "Vann konstpriset", titleEn: "Won art prize",
     descSv: "En AI-målning vann Colorado State Fair 2022.",
     descEn: "An AI painting won Colorado State Fair 2022.",
+    url: "https://www.midjourney.com",
+    linkSv: "Midjourney", linkEn: "Midjourney",
   },
   {
     icon: Music, titleSv: "Komponerar musik", titleEn: "Composes music",
     descSv: "Suno skapar kompletta låtar med sång på sekunder.",
     descEn: "Suno creates complete songs with vocals in seconds.",
+    url: "https://suno.com",
+    linkSv: "Prova Suno", linkEn: "Try Suno",
   },
   {
     icon: Bot, titleSv: "Robotar arbetar", titleEn: "Robots work",
     descSv: "Tesla Optimus arbetar i fabriker. Ameca har mänskliga ansiktsuttryck.",
     descEn: "Tesla Optimus works in factories. Ameca has human facial expressions.",
+    url: "https://www.engineeredarts.co.uk/robot/ameca/",
+    linkSv: "Se Ameca", linkEn: "See Ameca",
   },
 ];
 
-// AI you already use
+// AI you already use - each with a relevant link
 const alreadyUse = [
-  { icon: Sparkles, titleSv: "Streaming", titleEn: "Streaming", descSv: "Spotify väljer låtar baserat på ditt humör.", descEn: "Spotify picks songs based on your mood." },
-  { icon: Mail, titleSv: "E-post", titleEn: "Email", descSv: "AI sorterar spam och skriver halva mejlet.", descEn: "AI sorts spam and writes half your email." },
-  { icon: Navigation, titleSv: "Navigation", titleEn: "Navigation", descSv: "Google Maps förutsäger köer innan de uppstår.", descEn: "Google Maps predicts traffic before it happens." },
-  { icon: Lock, titleSv: "Bankskydd", titleEn: "Bank security", descSv: "AI stoppar kortbedrägerier på millisekunder.", descEn: "AI stops card fraud in milliseconds." },
-  { icon: Camera, titleSv: "Ansiktslås", titleEn: "Face unlock", descSv: "Känner igen dig i 3D – säkrare än lösenord.", descEn: "Recognizes you in 3D – safer than passwords." },
-  { icon: Keyboard, titleSv: "Tangentbordet", titleEn: "Keyboard", descSv: "Förutsäger nästa ord du skriver.", descEn: "Predicts the next word you type." },
+  { icon: Sparkles, titleSv: "Streaming", titleEn: "Streaming", descSv: "Spotify väljer låtar baserat på ditt humör.", descEn: "Spotify picks songs based on your mood.", url: "https://www.spotify.com", linkSv: "Spotify", linkEn: "Spotify" },
+  { icon: Mail, titleSv: "E-post", titleEn: "Email", descSv: "AI sorterar spam och skriver halva mejlet.", descEn: "AI sorts spam and writes half your email.", url: "https://mail.google.com", linkSv: "Gmail", linkEn: "Gmail" },
+  { icon: Navigation, titleSv: "Navigation", titleEn: "Navigation", descSv: "Google Maps förutsäger köer innan de uppstår.", descEn: "Google Maps predicts traffic before it happens.", url: "https://maps.google.com", linkSv: "Google Maps", linkEn: "Google Maps" },
+  { icon: Lock, titleSv: "Bankskydd", titleEn: "Bank security", descSv: "AI stoppar kortbedrägerier på millisekunder.", descEn: "AI stops card fraud in milliseconds.", url: "https://www.visa.se/om-visa/innovation/ai.html", linkSv: "Visa AI", linkEn: "Visa AI" },
+  { icon: Camera, titleSv: "Ansiktslås", titleEn: "Face unlock", descSv: "Känner igen dig i 3D – säkrare än lösenord.", descEn: "Recognizes you in 3D – safer than passwords.", url: "https://support.apple.com/sv-se/108411", linkSv: "Face ID", linkEn: "Face ID" },
+  { icon: Keyboard, titleSv: "Tangentbordet", titleEn: "Keyboard", descSv: "Förutsäger nästa ord du skriver.", descEn: "Predicts the next word you type.", url: "https://support.google.com/gboard", linkSv: "Gboard", linkEn: "Gboard" },
 ];
+
+// Reusable card component with link
+function FactCard({ icon: Icon, title, desc, url, linkText, variant = "light" }: {
+  icon: typeof Bell;
+  title: string;
+  desc: string;
+  url: string;
+  linkText: string;
+  variant?: "light" | "dark";
+}) {
+  const isDark = variant === "dark";
+  return (
+    <div className={`flex items-start gap-4 p-5 rounded-xl ${isDark ? "bg-white/5 border border-white/10" : "bg-card border border-border/50 hover:shadow-md"} transition-shadow`}>
+      <div className={`w-10 h-10 rounded-lg ${isDark ? "bg-[#c05746]/20" : "bg-accent"} flex items-center justify-center flex-shrink-0`}>
+        <Icon className="w-5 h-5 text-[#c05746]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className={`font-semibold ${isDark ? "text-white" : "text-foreground"}`}>{title}</h3>
+        <p className={`text-sm ${isDark ? "text-slate-400" : "text-muted-foreground"} mt-1`}>{desc}</p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-[#c05746] hover:underline mt-2"
+        >
+          {linkText} <ExternalLink className="w-3 h-3" />
+        </a>
+      </div>
+    </div>
+  );
+}
 
 export default function AIPage() {
   const { t } = useLanguage();
@@ -220,20 +292,16 @@ export default function AIPage() {
             {t("Tålmodigt. Aldrig dömande. Dygnet runt.", "Patient. Never judging. Around the clock.")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {cognitiveHelp.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div key={i} className="flex items-start gap-4 p-5 rounded-xl bg-card border border-border/50 hover:shadow-md transition-shadow">
-                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-[#c05746]" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">{t(item.titleSv, item.titleEn)}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{t(item.descSv, item.descEn)}</p>
-                  </div>
-                </div>
-              );
-            })}
+            {cognitiveHelp.map((item, i) => (
+              <FactCard
+                key={i}
+                icon={item.icon}
+                title={t(item.titleSv, item.titleEn)}
+                desc={t(item.descSv, item.descEn)}
+                url={item.url}
+                linkText={t(item.linkSv, item.linkEn)}
+              />
+            ))}
           </div>
         </section>
 
@@ -309,20 +377,17 @@ export default function AIPage() {
               {t("Värt att känna till.", "Worth knowing about.")}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {spectacular.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <div key={i} className="flex items-start gap-4 p-5 rounded-xl bg-white/5 border border-white/10">
-                    <div className="w-10 h-10 rounded-lg bg-[#c05746]/20 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-[#c05746]" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">{t(item.titleSv, item.titleEn)}</h3>
-                      <p className="text-sm text-slate-400 mt-1">{t(item.descSv, item.descEn)}</p>
-                    </div>
-                  </div>
-                );
-              })}
+              {spectacular.map((item, i) => (
+                <FactCard
+                  key={i}
+                  icon={item.icon}
+                  title={t(item.titleSv, item.titleEn)}
+                  desc={t(item.descSv, item.descEn)}
+                  url={item.url}
+                  linkText={t(item.linkSv, item.linkEn)}
+                  variant="dark"
+                />
+              ))}
             </div>
           </div>
         </section>
@@ -336,20 +401,16 @@ export default function AIPage() {
             {t("Inbyggt i appar du använder varje dag.", "Built into apps you use every day.")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {alreadyUse.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div key={i} className="flex items-start gap-4 p-5 rounded-xl bg-card border border-border/50">
-                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-[#c05746]" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">{t(item.titleSv, item.titleEn)}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{t(item.descSv, item.descEn)}</p>
-                  </div>
-                </div>
-              );
-            })}
+            {alreadyUse.map((item, i) => (
+              <FactCard
+                key={i}
+                icon={item.icon}
+                title={t(item.titleSv, item.titleEn)}
+                desc={t(item.descSv, item.descEn)}
+                url={item.url}
+                linkText={t(item.linkSv, item.linkEn)}
+              />
+            ))}
           </div>
         </section>
 
