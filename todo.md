@@ -35,3 +35,4 @@
 - [x] Write vitest tests for diary API
 - [x] Reduce spacing between diary entries and homepage sections
 - [x] Mobile: Photo and title on same row in header
+- [x] Mobile: Photo+title stacked (separate rows), iPad/desktop: same row

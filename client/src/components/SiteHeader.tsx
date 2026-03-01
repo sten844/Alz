@@ -3,7 +3,7 @@
  * - DM Serif Display for brand name
  * - Warm, calm color palette
  * - Profile photo with soft border
- * - Photo + title on same row on all screen sizes
+ * - Mobile: photo+title stacked, iPad/desktop: same row
  * - Admin button for admin users
  */
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -64,81 +64,51 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Photo + Title: always on same row */}
-        <div className="flex items-center gap-4 md:gap-6">
+        {/* Photo + Title: stacked on mobile, side-by-side on md+ */}
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
           <Link href="/" className="shrink-0">
             <img
               src={IMAGES.profile}
               alt="Sten Dellby"
-              className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full object-cover border-3 md:border-4 border-white/80 shadow-lg"
+              className="w-20 h-20 md:w-28 md:h-28 rounded-full object-cover border-3 md:border-4 border-white/80 shadow-lg"
             />
           </Link>
 
           <div className="flex-1 min-w-0">
             <Link href="/">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
                 <span className="block">Jag och min</span>
                 <span className="text-[#c05746]">Alzheimer</span>
               </h1>
             </Link>
 
-            <p className="hidden sm:block mt-2 md:mt-3 text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
+            <p className="mt-2 md:mt-3 text-sm md:text-xl text-slate-600 max-w-2xl leading-relaxed">
               {t(
                 "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
                 "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
               )}
             </p>
 
-            <div className="hidden sm:flex mt-3 md:mt-4 flex-wrap items-center gap-4">
+            <div className="mt-2 md:mt-4 flex flex-wrap items-center gap-3 md:gap-4">
               <a
                 href="https://x.com/stendellby"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
                 X (Twitter)
               </a>
               <a
                 href="mailto:sten@dellby.info"
-                className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
               >
-                <Mail className="w-4 h-4" />
+                <Mail className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 sten@dellby.info
               </a>
             </div>
-          </div>
-        </div>
-
-        {/* Mobile-only: description + links below the photo+title row */}
-        <div className="sm:hidden mt-3">
-          <p className="text-sm text-slate-600 leading-relaxed">
-            {t(
-              "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
-              "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
-            )}
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <a
-              href="https://x.com/stendellby"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-              X (Twitter)
-            </a>
-            <a
-              href="mailto:sten@dellby.info"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
-            >
-              <Mail className="w-3.5 h-3.5" />
-              sten@dellby.info
-            </a>
           </div>
         </div>
       </div>
