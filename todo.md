@@ -54,3 +54,5 @@
 - [x] PC: Move diary sidebar to left side
 - [x] Change "Min dagbok" heading font to Arial
 - [x] PC: Both column headings on same row - "Min dagbok" (bold Arial) left, "Försök till en kunskapsbank" (DM Serif) right
+- [x] Increase font sizes in admin panel for better readability
+- [x] Increase font sizes across the whole site (articles, diary, navigation, etc.)

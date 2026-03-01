@@ -87,6 +87,8 @@
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Source Sans 3', system-ui, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
