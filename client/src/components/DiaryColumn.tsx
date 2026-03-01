@@ -95,7 +95,7 @@ function DiaryEntry({
   );
 }
 
-export default function DiaryColumn({ compact = false, maxEntries }: { compact?: boolean; maxEntries?: number }) {
+export default function DiaryColumn({ compact = false, maxEntries, hideHeader = false }: { compact?: boolean; maxEntries?: number; hideHeader?: boolean }) {
   const { t } = useLanguage();
   const [page, setPage] = useState(0);
 
@@ -126,15 +126,17 @@ export default function DiaryColumn({ compact = false, maxEntries }: { compact?:
   return (
     <div className="diary-column">
       {/* Header */}
-      <div className={`flex items-center gap-2 ${compact ? "mb-2 pb-2" : "mb-4 pb-3"} border-b border-[#c05746]/20`}>
-        <BookOpen className={compact ? "w-4 h-4 text-[#c05746]" : "w-5 h-5 text-[#c05746]"} />
-        <h2
-          className={`${compact ? "text-base" : "text-xl"} text-foreground`}
-          style={{ fontFamily: "'DM Serif Display', serif" }}
-        >
-          {t("Min dagbok", "My diary")}
-        </h2>
-      </div>
+      {!hideHeader && (
+        <div className={`flex items-center gap-2 ${compact ? "mb-2 pb-2" : "mb-4 pb-3"} border-b border-[#c05746]/20`}>
+          <BookOpen className={compact ? "w-4 h-4 text-[#c05746]" : "w-5 h-5 text-[#c05746]"} />
+          <h2
+            className={`${compact ? "text-base" : "text-xl"} text-foreground`}
+            style={{ fontFamily: "'DM Serif Display', serif" }}
+          >
+            {t("Min dagbok", "My diary")}
+          </h2>
+        </div>
+      )}
 
       {/* Entries */}
       <div className={compact ? "space-y-1.5" : "space-y-3"}>

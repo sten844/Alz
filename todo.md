@@ -46,3 +46,4 @@
 - [x] Mobile: Move language buttons to same row as mail/Twitter links
 - [x] Mobile: Reduce more whitespace/padding throughout
 - [x] Mobile: Make site title larger
+- [x] Put "Försök till en kunskapsbank" and "Min dagbok" on same row, same size

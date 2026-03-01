@@ -90,18 +90,26 @@ export default function Home() {
         {/* Mobile diary section - visible only on smaller screens, ABOVE articles */}
         <section className="lg:hidden container pt-3 pb-0">
           <div className="bg-card/50 rounded-xl border border-border/30 p-3 shadow-sm">
-            <DiaryColumn compact maxEntries={2} />
+            <DiaryColumn compact maxEntries={2} hideHeader />
           </div>
         </section>
 
-        {/* Section heading: Kunskapsbank */}
+        {/* Section headings: Kunskapsbank + Min dagbok on same row (mobile), just Kunskapsbank on desktop */}
         <section className="container pt-4 sm:pt-6 pb-1 sm:pb-2">
-          <h2
-            className="text-2xl md:text-3xl text-foreground"
-            style={{ fontFamily: "'DM Serif Display', serif" }}
-          >
-            {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
-          </h2>
+          <div className="flex items-baseline justify-between lg:block">
+            <h2
+              className="text-lg sm:text-2xl md:text-3xl text-foreground"
+              style={{ fontFamily: "'DM Serif Display', serif" }}
+            >
+              {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
+            </h2>
+            <h2
+              className="lg:hidden text-lg sm:text-2xl text-foreground"
+              style={{ fontFamily: "'DM Serif Display', serif" }}
+            >
+              {t("Min dagbok", "My diary")}
+            </h2>
+          </div>
         </section>
 
         {/* Main content area: Articles + Diary sidebar */}
