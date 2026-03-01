@@ -39,3 +39,19 @@ export const articles = mysqlTable("articles", {
 
 export type Article = typeof articles.$inferSelect;
 export type InsertArticle = typeof articles.$inferInsert;
+
+/**
+ * Diary entries table for the daily column/kåseri.
+ * Short, casual daily entries displayed in a sidebar column.
+ */
+export const diaryEntries = mysqlTable("diary_entries", {
+  id: int("id").autoincrement().primaryKey(),
+  content: text("content").notNull(),
+  entryDate: timestamp("entryDate").defaultNow().notNull(),
+  published: boolean("published").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DiaryEntry = typeof diaryEntries.$inferSelect;
+export type InsertDiaryEntry = typeof diaryEntries.$inferInsert;

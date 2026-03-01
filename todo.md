@@ -26,3 +26,10 @@
 - [x] Home: Sections flow naturally without divider
 - [x] AI page: Add Anthropic (Claude) to tools
 - [x] AI page: Add Google Gemini to tools
+- [x] Add diary entries table to database schema
+- [x] Create diary API endpoints (list, create, update, delete)
+- [x] Build diary admin interface (create/edit/delete entries)
+- [x] Build diary column on homepage sidebar (desktop/iPad)
+- [x] Mobile-responsive diary layout
+- [x] Diary pagination (older entries)
+- [x] Write vitest tests for diary API

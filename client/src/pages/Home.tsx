@@ -2,12 +2,14 @@
  * Nordic Warmth Design: Home Page
  * - Fetches articles from database via tRPC
  * - Editorial article listing with category filter, search, pagination
+ * - Diary column sidebar (desktop/iPad) or section (mobile)
  * - AI section, newsletter, comments, X feed
  */
 import { useState, useMemo, useEffect } from "react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
+import DiaryColumn from "@/components/DiaryColumn";
 import { categories, categoriesEn, IMAGES } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
@@ -85,96 +87,114 @@ export default function Home() {
       <SiteHeader />
 
       <main className="flex-1">
-        {/* Category filters + Search */}
+        {/* Main content area: Articles + Diary sidebar */}
         <section className="container py-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-            <div className="flex flex-wrap gap-2">
-              {displayCategories.map((cat) => {
-                const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
-                const isActive = mappedCat === activeCategory;
-                return (
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left: Articles (main content) */}
+            <div className="flex-1 min-w-0">
+              {/* Category filters + Search */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="flex flex-wrap gap-2">
+                  {displayCategories.map((cat) => {
+                    const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
+                    const isActive = mappedCat === activeCategory;
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => handleCategoryClick(cat)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          isActive
+                            ? "bg-[#c05746] text-white shadow-md"
+                            : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="relative w-full sm:w-72">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder={t("Sök artiklar...", "Search articles...")}
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-full bg-card border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 focus:border-[#c05746]/50 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Articles list */}
+              <div className="space-y-5">
+                {isLoading ? (
+                  <div className="flex justify-center py-16">
+                    <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+                  </div>
+                ) : paginatedArticles.length > 0 ? (
+                  paginatedArticles.map((article) => (
+                    <ArticleCard key={article.id} article={{
+                      id: article.id,
+                      title: article.title,
+                      excerpt: article.excerpt,
+                      content: article.content,
+                      category: article.category,
+                      language: article.language,
+                      imageUrl: article.imageUrl,
+                      publishedAt: new Date(article.publishedAt).toISOString(),
+                    }} />
+                  ))
+                ) : (
+                  <div className="text-center py-16 text-muted-foreground">
+                    <p className="text-lg">
+                      {t("Inga artiklar hittades.", "No articles found.")}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-8">
                   <button
-                    key={cat}
-                    onClick={() => handleCategoryClick(cat)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      isActive
-                        ? "bg-[#c05746] text-white shadow-md"
-                        : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
-                    }`}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                   >
-                    {cat}
+                    <ChevronLeft className="w-4 h-4" />
+                    {t("Föregående", "Previous")}
                   </button>
-                );
-              })}
+                  <span className="text-sm text-muted-foreground">
+                    {t("Sida", "Page")} {currentPage} {t("av", "of")} {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    {t("Nästa", "Next")}
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder={t("Sök artiklar...", "Search articles...")}
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-10 pr-4 py-2.5 rounded-full bg-card border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 focus:border-[#c05746]/50 transition-all"
-              />
-            </div>
+            {/* Right: Diary sidebar - visible on lg+ screens */}
+            <aside className="hidden lg:block w-80 xl:w-96 shrink-0">
+              <div className="sticky top-8 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm backdrop-blur-sm">
+                <DiaryColumn />
+              </div>
+            </aside>
           </div>
 
-          {/* Articles list */}
-          <div className="space-y-5">
-            {isLoading ? (
-              <div className="flex justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
-              </div>
-            ) : paginatedArticles.length > 0 ? (
-              paginatedArticles.map((article) => (
-                <ArticleCard key={article.id} article={{
-                  id: article.id,
-                  title: article.title,
-                  excerpt: article.excerpt,
-                  content: article.content,
-                  category: article.category,
-                  language: article.language,
-                  imageUrl: article.imageUrl,
-                  publishedAt: new Date(article.publishedAt).toISOString(),
-                }} />
-              ))
-            ) : (
-              <div className="text-center py-16 text-muted-foreground">
-                <p className="text-lg">
-                  {t("Inga artiklar hittades.", "No articles found.")}
-                </p>
-              </div>
-            )}
+          {/* Mobile diary section - visible only on smaller screens */}
+          <div className="lg:hidden mt-10 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm">
+            <DiaryColumn />
           </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                {t("Föregående", "Previous")}
-              </button>
-              <span className="text-sm text-muted-foreground">
-                {t("Sida", "Page")} {currentPage} {t("av", "of")} {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              >
-                {t("Nästa", "Next")}
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
         </section>
 
         {/* AI Section - full width band */}

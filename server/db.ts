@@ -1,6 +1,6 @@
 import { eq, desc, and, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -127,4 +127,54 @@ export async function deleteArticle(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(articles).where(eq(articles.id, id));
+}
+
+// ---- Diary entry queries ----
+
+export async function listDiaryEntries(opts?: { published?: boolean; limit?: number; offset?: number }) {
+  const db = await getDb();
+  if (!db) return { entries: [], total: 0 };
+
+  const conditions = [];
+  if (opts?.published !== undefined) conditions.push(eq(diaryEntries.published, opts.published));
+
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+  // Get total count
+  const countResult = await db.select({ count: sql<number>`count(*)` }).from(diaryEntries).where(where);
+  const total = Number(countResult[0]?.count ?? 0);
+
+  // Get paginated entries
+  let query = db.select().from(diaryEntries).where(where).orderBy(desc(diaryEntries.entryDate));
+  if (opts?.limit) query = query.limit(opts.limit) as typeof query;
+  if (opts?.offset) query = query.offset(opts.offset) as typeof query;
+
+  const entries = await query;
+  return { entries, total };
+}
+
+export async function getDiaryEntryById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(diaryEntries).where(eq(diaryEntries.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createDiaryEntry(entry: InsertDiaryEntry) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(diaryEntries).values(entry);
+  return { id: result[0].insertId };
+}
+
+export async function updateDiaryEntry(id: number, data: Partial<InsertDiaryEntry>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(diaryEntries).set(data).where(eq(diaryEntries.id, id));
+}
+
+export async function deleteDiaryEntry(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(diaryEntries).where(eq(diaryEntries.id, id));
 }

@@ -15,6 +15,13 @@
       "when": 1772118701571,
       "tag": "0001_tired_devos",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1772374411744,
+      "tag": "0002_nifty_jigsaw",
+      "breakpoints": true
     }
   ]
 }

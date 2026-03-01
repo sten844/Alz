@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry } from "./db";
 import { z } from "zod";
 
 export const appRouter = router({
@@ -89,6 +89,74 @@ export const appRouter = router({
       }).optional())
       .query(async ({ input }) => {
         return listArticles({ language: input?.language });
+      }),
+  }),
+
+  diary: router({
+    list: publicProcedure
+      .input(z.object({
+        limit: z.number().min(1).max(50).default(10),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(async ({ input }) => {
+        return listDiaryEntries({
+          published: true,
+          limit: input?.limit ?? 10,
+          offset: input?.offset ?? 0,
+        });
+      }),
+
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return getDiaryEntryById(input.id);
+      }),
+
+    create: adminProcedure
+      .input(z.object({
+        content: z.string().min(1),
+        entryDate: z.date().optional(),
+        published: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        return createDiaryEntry({
+          content: input.content,
+          entryDate: input.entryDate ?? new Date(),
+          published: input.published,
+        });
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        content: z.string().min(1).optional(),
+        entryDate: z.date().optional(),
+        published: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateDiaryEntry(id, data);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteDiaryEntry(input.id);
+        return { success: true };
+      }),
+
+    // Admin: list all diary entries including unpublished
+    listAll: adminProcedure
+      .input(z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(async ({ input }) => {
+        return listDiaryEntries({
+          limit: input?.limit ?? 50,
+          offset: input?.offset ?? 0,
+        });
       }),
   }),
 });
