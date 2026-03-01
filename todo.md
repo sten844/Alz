@@ -56,3 +56,5 @@
 - [x] PC: Both column headings on same row - "Min dagbok" (bold Arial) left, "Försök till en kunskapsbank" (DM Serif) right
 - [x] Increase font sizes in admin panel for better readability
 - [x] Increase font sizes across the whole site (articles, diary, navigation, etc.)
+- [x] Fix 404 error on /maste route (not a real page, 404 is correct behavior)
+- [x] Significantly increase font sizes across entire site (mobile + desktop) for much better readability

@@ -5,6 +5,7 @@
  * - Profile photo with soft border
  * - Mobile: compact layout, language buttons with links row
  * - Admin button for admin users
+ * - Large font sizes for accessibility
  */
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -34,17 +35,17 @@ export default function SiteHeader() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLanguage("sv")}
-              className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full text-base font-semibold transition-all ${
                 language === "sv"
                   ? "bg-[#c05746] text-white shadow-md"
                   : "bg-white/70 text-slate-600 hover:bg-white"
               }`}
             >
-                   Svenska
+              Svenska
             </button>
             <button
               onClick={() => setLanguage("en")}
-              className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full text-base font-semibold transition-all ${
                 language === "en"
                   ? "bg-[#c05746] text-white shadow-md"
                   : "bg-white/70 text-slate-600 hover:bg-white"
@@ -55,9 +56,9 @@ export default function SiteHeader() {
             {isAdmin && (
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors shadow-md"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-base font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors shadow-md"
               >
-                <Settings className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                <Settings className="w-4 h-4" />
                 Admin
               </Link>
             )}
@@ -82,7 +83,7 @@ export default function SiteHeader() {
               </h1>
             </Link>
 
-            <p className="hidden sm:block mt-2 md:mt-3 text-sm md:text-xl text-slate-600 max-w-2xl leading-relaxed">
+            <p className="hidden sm:block mt-2 md:mt-3 text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
               {t(
                 "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
                 "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
@@ -94,55 +95,55 @@ export default function SiteHeader() {
                 href="https://x.com/stendellby"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 md:gap-2 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
               >
-                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
                 X (Twitter)
               </a>
               <a
                 href="mailto:sten@dellby.info"
-                className="inline-flex items-center gap-1.5 md:gap-2 text-xs md:text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 md:gap-2 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
               >
-                <Mail className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <Mail className="w-4 h-4 md:w-5 md:h-5" />
                 sten@dellby.info
               </a>
             </div>
           </div>
         </div>
 
-        {/* Mobile-only: description + links + language on one compact row */}
-        <div className="sm:hidden mt-1.5">
-          <p className="text-xs text-slate-600 leading-snug">
+        {/* Mobile-only: description + links + language */}
+        <div className="sm:hidden mt-2">
+          <p className="text-base text-slate-600 leading-snug">
             {t(
               "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
               "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
             )}
           </p>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <a
               href="https://x.com/stendellby"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+              className="inline-flex items-center gap-1.5 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
             >
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
               X
             </a>
             <a
               href="mailto:sten@dellby.info"
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+              className="inline-flex items-center gap-1.5 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
             >
-              <Mail className="w-3 h-3" />
+              <Mail className="w-4 h-4" />
               sten@dellby.info
             </a>
             <span className="text-slate-300">|</span>
             <button
               onClick={() => setLanguage("sv")}
-              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-full text-base font-semibold transition-all ${
                 language === "sv"
                   ? "bg-[#c05746] text-white"
                   : "bg-white/70 text-slate-500 hover:bg-white"
@@ -152,7 +153,7 @@ export default function SiteHeader() {
             </button>
             <button
               onClick={() => setLanguage("en")}
-              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-full text-base font-semibold transition-all ${
                 language === "en"
                   ? "bg-[#c05746] text-white"
                   : "bg-white/70 text-slate-500 hover:bg-white"
@@ -163,9 +164,9 @@ export default function SiteHeader() {
             {isAdmin && (
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors"
               >
-                <Settings className="w-2.5 h-2.5" />
+                <Settings className="w-3.5 h-3.5" />
                 Admin
               </Link>
             )}

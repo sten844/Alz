@@ -44,26 +44,26 @@ function DiaryEntry({
     return (
       <div className="diary-entry">
         {compact && !expanded ? (
-          <div className="line-clamp-3 text-base text-foreground/85 leading-snug">
-            <span className="font-semibold text-[#c05746] text-sm uppercase tracking-wide">
+          <div className="line-clamp-3 text-lg text-foreground/85 leading-relaxed">
+            <span className="font-bold text-[#c05746] text-base uppercase tracking-wide">
               {formatDate(entry.entryDate)}
             </span>
-            <span className="text-[#c05746] mx-1">·</span>
+            <span className="text-[#c05746] mx-1.5">·</span>
             <span className="whitespace-pre-wrap">{entry.content}</span>
           </div>
         ) : (
-          <div className="text-base text-foreground/85 leading-snug">
-            <span className="font-semibold text-[#c05746] text-sm uppercase tracking-wide">
+          <div className="text-lg text-foreground/85 leading-relaxed">
+            <span className="font-bold text-[#c05746] text-base uppercase tracking-wide">
               {formatDate(entry.entryDate)}
             </span>
-            <span className="text-[#c05746] mx-1">·</span>
+            <span className="text-[#c05746] mx-1.5">·</span>
             <span className="whitespace-pre-wrap">{entry.content}</span>
           </div>
         )}
         {!expanded && entry.content.length > 100 && (
           <button
             onClick={() => setExpanded(true)}
-            className="text-xs font-medium text-[#c05746] hover:text-[#a8483b] mt-0.5 transition-colors"
+            className="text-base font-medium text-[#c05746] hover:text-[#a8483b] mt-1 transition-colors"
           >
             {t("mer →", "more →")}
           </button>
@@ -71,7 +71,7 @@ function DiaryEntry({
         {expanded && (
           <button
             onClick={() => setExpanded(false)}
-            className="text-xs font-medium text-[#c05746] hover:text-[#a8483b] mt-0.5 transition-colors"
+            className="text-base font-medium text-[#c05746] hover:text-[#a8483b] mt-1 transition-colors"
           >
             {t("← mindre", "← less")}
           </button>
@@ -84,10 +84,10 @@ function DiaryEntry({
   // Full mode (desktop sidebar)
   return (
     <div className="diary-entry">
-      <div className="text-xs font-semibold text-[#c05746] uppercase tracking-wide mb-1.5">
+      <div className="text-base font-bold text-[#c05746] uppercase tracking-wide mb-2">
         {formatDateLong(entry.entryDate)}
       </div>
-      <p className="text-base text-foreground/85 leading-relaxed whitespace-pre-wrap">
+      <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap">
         {entry.content}
       </p>
       <div className="mt-3 border-b border-border/30" />
@@ -114,7 +114,7 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
   if (isLoading) {
     return (
       <div className="flex justify-center py-4">
-        <Loader2 className="w-5 h-5 animate-spin text-[#c05746]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#c05746]" />
       </div>
     );
   }
@@ -128,9 +128,9 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
       {/* Header */}
       {!hideHeader && (
         <div className={`flex items-center gap-2 ${compact ? "mb-2 pb-2" : "mb-4 pb-3"} border-b border-[#c05746]/20`}>
-          <BookOpen className={compact ? "w-4 h-4 text-[#c05746]" : "w-5 h-5 text-[#c05746]"} />
+          <BookOpen className={compact ? "w-5 h-5 text-[#c05746]" : "w-6 h-6 text-[#c05746]"} />
           <h2
-            className={`${compact ? "text-base" : "text-xl"} text-foreground`}
+            className={`${compact ? "text-xl" : "text-2xl"} text-foreground font-bold`}
             style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
           >
             {t("Min dagbok", "My diary")}
@@ -139,7 +139,7 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
       )}
 
       {/* Entries */}
-      <div className={compact ? "space-y-1.5" : "space-y-3"}>
+      <div className={compact ? "space-y-2" : "space-y-4"}>
         {entries.map((entry) => (
           <DiaryEntry key={entry.id} entry={entry} compact={compact} />
         ))}
@@ -151,7 +151,7 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
           {hasPrev ? (
             <button
               onClick={() => setPage((p) => p - 1)}
-              className="text-xs font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
+              className="text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
             >
               {t("← Nyare", "← Newer")}
             </button>
@@ -161,7 +161,7 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
           {hasMore && (
             <button
               onClick={() => setPage((p) => p + 1)}
-              className="text-xs font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
+              className="text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
             >
               {t("Äldre →", "Older →")}
             </button>

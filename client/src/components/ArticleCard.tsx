@@ -39,23 +39,23 @@ export default function ArticleCard({ article }: ArticleCardProps) {
           <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${colorClass}`}>
+                <span className={`px-3 py-1.5 rounded-full text-base font-semibold ${colorClass}`}>
                   {article.category}
                 </span>
-                <span className="text-sm text-muted-foreground">{formattedDate}</span>
+                <span className="text-base text-muted-foreground">{formattedDate}</span>
               </div>
 
-              <h3 className="text-xl md:text-2xl text-foreground leading-snug mb-2 group-hover:text-[#c05746] transition-colors">
+              <h3 className="text-2xl md:text-3xl text-foreground leading-snug mb-3 group-hover:text-[#c05746] transition-colors">
                 {article.title}
               </h3>
 
-              <p className="text-muted-foreground leading-relaxed line-clamp-2">
+              <p className="text-lg text-muted-foreground leading-relaxed line-clamp-2">
                 {article.excerpt}
               </p>
             </div>
 
             <div className="mt-4">
-              <span className="text-[#c05746] font-semibold text-sm group-hover:underline">
+              <span className="text-[#c05746] font-semibold text-lg group-hover:underline">
                 {article.language === "sv" ? "Läs artikel →" : "Read article →"}
               </span>
             </div>
