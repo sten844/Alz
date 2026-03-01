@@ -64,32 +64,32 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Photo + Title: stacked on mobile, side-by-side on md+ */}
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+        {/* Photo + Title: stacked on mobile (<640px), side-by-side on sm+ (iPad/desktop) */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
           <Link href="/" className="shrink-0">
             <img
               src={IMAGES.profile}
               alt="Sten Dellby"
-              className="w-20 h-20 md:w-28 md:h-28 rounded-full object-cover border-3 md:border-4 border-white/80 shadow-lg"
+              className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full object-cover border-3 md:border-4 border-white/80 shadow-lg"
             />
           </Link>
 
           <div className="flex-1 min-w-0">
             <Link href="/">
-              <h1 className="text-3xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
                 <span className="block">Jag och min</span>
                 <span className="text-[#c05746]">Alzheimer</span>
               </h1>
             </Link>
 
-            <p className="mt-2 md:mt-3 text-sm md:text-xl text-slate-600 max-w-2xl leading-relaxed">
+            <p className="mt-2 sm:mt-3 text-sm sm:text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
               {t(
                 "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
                 "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
               )}
             </p>
 
-            <div className="mt-2 md:mt-4 flex flex-wrap items-center gap-3 md:gap-4">
+            <div className="mt-2 sm:mt-3 md:mt-4 flex flex-wrap items-center gap-3 md:gap-4">
               <a
                 href="https://x.com/stendellby"
                 target="_blank"
