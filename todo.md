@@ -58,3 +58,6 @@
 - [x] Increase font sizes across the whole site (articles, diary, navigation, etc.)
 - [x] Fix 404 error on /maste route (not a real page, 404 is correct behavior)
 - [x] Significantly increase font sizes across entire site (mobile + desktop) for much better readability
+- [x] Fix: Diary not visible for non-admin visitors (was unpublished version, resolved by publishing)
+- [x] Fix: Non-admin visitors may see admin-like elements (was unpublished version, resolved by publishing)
+- [x] Fix: English language button on mobile doesn't look like a button

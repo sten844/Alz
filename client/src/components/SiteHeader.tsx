@@ -35,20 +35,20 @@ export default function SiteHeader() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLanguage("sv")}
-              className={`px-4 py-2 rounded-full text-base font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full text-base font-semibold transition-all border ${
                 language === "sv"
-                  ? "bg-[#c05746] text-white shadow-md"
-                  : "bg-white/70 text-slate-600 hover:bg-white"
+                  ? "bg-[#c05746] text-white border-[#c05746] shadow-md"
+                  : "bg-white/80 text-slate-600 border-slate-300 hover:bg-white hover:border-slate-400"
               }`}
             >
               Svenska
             </button>
             <button
               onClick={() => setLanguage("en")}
-              className={`px-4 py-2 rounded-full text-base font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full text-base font-semibold transition-all border ${
                 language === "en"
-                  ? "bg-[#c05746] text-white shadow-md"
-                  : "bg-white/70 text-slate-600 hover:bg-white"
+                  ? "bg-[#c05746] text-white border-[#c05746] shadow-md"
+                  : "bg-white/80 text-slate-600 border-slate-300 hover:bg-white hover:border-slate-400"
               }`}
             >
               English
@@ -143,20 +143,20 @@ export default function SiteHeader() {
             <span className="text-slate-300">|</span>
             <button
               onClick={() => setLanguage("sv")}
-              className={`px-3 py-1 rounded-full text-base font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-full text-base font-semibold transition-all border ${
                 language === "sv"
-                  ? "bg-[#c05746] text-white"
-                  : "bg-white/70 text-slate-500 hover:bg-white"
+                  ? "bg-[#c05746] text-white border-[#c05746] shadow-sm"
+                  : "bg-white/80 text-slate-600 border-slate-300 hover:bg-white hover:border-slate-400"
               }`}
             >
               Svenska
             </button>
             <button
               onClick={() => setLanguage("en")}
-              className={`px-3 py-1 rounded-full text-base font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-full text-base font-semibold transition-all border ${
                 language === "en"
-                  ? "bg-[#c05746] text-white"
-                  : "bg-white/70 text-slate-500 hover:bg-white"
+                  ? "bg-[#c05746] text-white border-[#c05746] shadow-sm"
+                  : "bg-white/80 text-slate-600 border-slate-300 hover:bg-white hover:border-slate-400"
               }`}
             >
               English
