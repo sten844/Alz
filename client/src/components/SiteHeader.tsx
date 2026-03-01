@@ -64,32 +64,32 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Photo + Title: stacked on mobile (<640px), side-by-side on sm+ (iPad/desktop) */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+        {/* Photo + Title: always on same row */}
+        <div className="flex flex-row items-center gap-3 sm:gap-5 md:gap-6">
           <Link href="/" className="shrink-0">
             <img
               src={IMAGES.profile}
               alt="Sten Dellby"
-              className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full object-cover border-3 md:border-4 border-white/80 shadow-lg"
+              className="w-14 h-14 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full object-cover border-2 sm:border-3 md:border-4 border-white/80 shadow-lg"
             />
           </Link>
 
           <div className="flex-1 min-w-0">
             <Link href="/">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
-                <span className="block">Jag och min</span>
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+                <span>Jag och min </span>
                 <span className="text-[#c05746]">Alzheimer</span>
               </h1>
             </Link>
 
-            <p className="mt-2 sm:mt-3 text-sm sm:text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
+            <p className="hidden sm:block mt-2 md:mt-3 text-sm md:text-xl text-slate-600 max-w-2xl leading-relaxed">
               {t(
                 "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
                 "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
               )}
             </p>
 
-            <div className="mt-2 sm:mt-3 md:mt-4 flex flex-wrap items-center gap-3 md:gap-4">
+            <div className="hidden sm:flex mt-2 md:mt-4 flex-wrap items-center gap-3 md:gap-4">
               <a
                 href="https://x.com/stendellby"
                 target="_blank"
@@ -109,6 +109,36 @@ export default function SiteHeader() {
                 sten@dellby.info
               </a>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile-only: description + links below */}
+        <div className="sm:hidden mt-2">
+          <p className="text-xs text-slate-600 leading-relaxed">
+            {t(
+              "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
+              "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
+            )}
+          </p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-3">
+            <a
+              href="https://x.com/stendellby"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+            >
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              X (Twitter)
+            </a>
+            <a
+              href="mailto:sten@dellby.info"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+            >
+              <Mail className="w-3 h-3" />
+              sten@dellby.info
+            </a>
           </div>
         </div>
       </div>

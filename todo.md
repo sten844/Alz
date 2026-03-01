@@ -36,3 +36,4 @@
 - [x] Reduce spacing between diary entries and homepage sections
 - [x] Mobile: Photo and title on same row in header
 - [x] Mobile: Photo+title stacked (separate rows), iPad/desktop: same row
+- [x] iPad: Photo+title on one row (always side-by-side except narrow mobile)
