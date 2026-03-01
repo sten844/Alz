@@ -131,7 +131,7 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
           <BookOpen className={compact ? "w-4 h-4 text-[#c05746]" : "w-5 h-5 text-[#c05746]"} />
           <h2
             className={`${compact ? "text-base" : "text-xl"} text-foreground`}
-            style={{ fontFamily: "'DM Serif Display', serif" }}
+            style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
           >
             {t("Min dagbok", "My diary")}
           </h2>

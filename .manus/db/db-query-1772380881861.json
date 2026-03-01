@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM diary_entries WHERE content LIKE '%vitest%' OR content = 'Updated content';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute DELETE FROM diary_entries WHERE content LIKE '%vitest%' OR content = 'Updated content';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 61
+}

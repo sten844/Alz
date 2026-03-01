@@ -51,3 +51,5 @@
 - [x] Fix mobile: "Min dagbok" heading must be directly above diary texts
 - [x] Mobile: Language buttons show "Svenska"/"English" instead of "SV"/"EN"
 - [x] Mobile: Bigger font size for diary entry text on homepage
+- [x] PC: Move diary sidebar to left side
+- [x] Change "Min dagbok" heading font to Arial

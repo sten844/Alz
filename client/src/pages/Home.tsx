@@ -92,7 +92,7 @@ export default function Home() {
           <div className="bg-card/50 rounded-xl border border-border/30 p-3 shadow-sm">
             <h2
               className="text-lg text-foreground mb-2 pb-2 border-b border-[#c05746]/20 flex items-center gap-2"
-              style={{ fontFamily: "'DM Serif Display', serif" }}
+              style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
             >
               <span>{t("Min dagbok", "My diary")}</span>
             </h2>
@@ -113,7 +113,14 @@ export default function Home() {
         {/* Main content area: Articles + Diary sidebar */}
         <section className="container py-2 sm:py-4">
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left: Articles (main content) */}
+            {/* Left: Diary sidebar - visible on lg+ screens */}
+            <aside className="hidden lg:block w-80 xl:w-96 shrink-0">
+              <div className="sticky top-8 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm backdrop-blur-sm">
+                <DiaryColumn />
+              </div>
+            </aside>
+
+            {/* Right: Articles (main content) */}
             <div className="flex-1 min-w-0">
               {/* Category filters + Search */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -206,12 +213,7 @@ export default function Home() {
               )}
             </div>
 
-            {/* Right: Diary sidebar - visible on lg+ screens */}
-            <aside className="hidden lg:block w-80 xl:w-96 shrink-0">
-              <div className="sticky top-8 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm backdrop-blur-sm">
-                <DiaryColumn />
-              </div>
-            </aside>
+
           </div>
 
 
