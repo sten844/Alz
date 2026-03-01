@@ -63,3 +63,4 @@
 - [x] Fix: English language button on mobile doesn't look like a button
 - [x] Remove language switcher from admin page (PC and mobile)
 - [x] Fix English button on mobile homepage to look more like a button, minimal space
+- [x] Remove Admin button from homepage header on PC (access via /admin URL instead)

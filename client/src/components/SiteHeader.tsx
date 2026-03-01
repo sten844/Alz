@@ -8,15 +8,13 @@
  * - Large font sizes for accessibility
  */
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/_core/hooks/useAuth";
 import { IMAGES } from "@/data/articles";
 import { Link } from "wouter";
-import { Mail, Settings } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export default function SiteHeader({ showLanguage = true }: { showLanguage?: boolean }) {
   const { language, setLanguage, t } = useLanguage();
-  const { user, isAuthenticated } = useAuth();
-  const isAdmin = isAuthenticated && user?.role === "admin";
+
 
   return (
     <header className="relative overflow-hidden">
@@ -54,15 +52,6 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
             >
               English
             </button>
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-base font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors shadow-md"
-              >
-                <Settings className="w-4 h-4" />
-                Admin
-              </Link>
-            )}
           </div>
         </div>
         )}
@@ -167,15 +156,7 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
                 </button>
               </>
             )}
-            {isAdmin && showLanguage && (
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors"
-              >
-                <Settings className="w-3.5 h-3.5" />
-                Admin
-              </Link>
-            )}
+
           </div>
         </div>
       </div>
