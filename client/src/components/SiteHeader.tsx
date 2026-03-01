@@ -13,7 +13,7 @@ import { IMAGES } from "@/data/articles";
 import { Link } from "wouter";
 import { Mail, Settings } from "lucide-react";
 
-export default function SiteHeader() {
+export default function SiteHeader({ showLanguage = true }: { showLanguage?: boolean }) {
   const { language, setLanguage, t } = useLanguage();
   const { user, isAuthenticated } = useAuth();
   const isAdmin = isAuthenticated && user?.role === "admin";
@@ -31,6 +31,7 @@ export default function SiteHeader() {
 
       <div className="relative container py-5 sm:py-8 md:py-12">
         {/* Desktop: Language toggle + Admin (top right) */}
+        {showLanguage && (
         <div className="hidden sm:flex justify-end mb-0 md:absolute md:top-8 md:right-8 lg:right-12 z-10">
           <div className="flex items-center gap-2">
             <button
@@ -64,6 +65,7 @@ export default function SiteHeader() {
             )}
           </div>
         </div>
+        )}
 
         {/* Photo + Title: always on same row */}
         <div className="flex flex-row items-center gap-3 sm:gap-5 md:gap-6">
@@ -140,28 +142,32 @@ export default function SiteHeader() {
               <Mail className="w-4 h-4" />
               sten@dellby.info
             </a>
-            <span className="text-slate-300">|</span>
-            <button
-              onClick={() => setLanguage("sv")}
-              className={`px-3 py-1.5 rounded-full text-base font-semibold transition-all border ${
-                language === "sv"
-                  ? "bg-[#c05746] text-white border-[#c05746] shadow-sm"
-                  : "bg-white/80 text-slate-600 border-slate-300 hover:bg-white hover:border-slate-400"
-              }`}
-            >
-              Svenska
-            </button>
-            <button
-              onClick={() => setLanguage("en")}
-              className={`px-3 py-1.5 rounded-full text-base font-semibold transition-all border ${
-                language === "en"
-                  ? "bg-[#c05746] text-white border-[#c05746] shadow-sm"
-                  : "bg-white/80 text-slate-600 border-slate-300 hover:bg-white hover:border-slate-400"
-              }`}
-            >
-              English
-            </button>
-            {isAdmin && (
+            {showLanguage && (
+              <>
+                <span className="text-slate-300">|</span>
+                <button
+                  onClick={() => setLanguage("sv")}
+                  className={`px-2.5 py-1 rounded-full text-sm font-semibold transition-all border ${
+                    language === "sv"
+                      ? "bg-[#c05746] text-white border-[#c05746] shadow-sm"
+                      : "bg-white text-slate-600 border-slate-400 hover:bg-white hover:border-slate-500 shadow-sm"
+                  }`}
+                >
+                  Sv
+                </button>
+                <button
+                  onClick={() => setLanguage("en")}
+                  className={`px-2.5 py-1 rounded-full text-sm font-semibold transition-all border ${
+                    language === "en"
+                      ? "bg-[#c05746] text-white border-[#c05746] shadow-sm"
+                      : "bg-white text-slate-600 border-slate-400 hover:bg-white hover:border-slate-500 shadow-sm"
+                  }`}
+                >
+                  En
+                </button>
+              </>
+            )}
+            {isAdmin && showLanguage && (
               <Link
                 href="/admin"
                 className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors"

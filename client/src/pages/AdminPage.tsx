@@ -152,7 +152,7 @@ export default function AdminPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <SiteHeader />
+        <SiteHeader showLanguage={false} />
         <main className="flex-1 flex items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-[#c05746]" />
         </main>
@@ -165,7 +165,7 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <SiteHeader />
+        <SiteHeader showLanguage={false} />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto px-4">
             <LogIn className="w-20 h-20 mx-auto mb-6 text-muted-foreground/50" />
@@ -193,7 +193,7 @@ export default function AdminPage() {
   if (user?.role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <SiteHeader />
+        <SiteHeader showLanguage={false} />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto px-4">
             <ShieldAlert className="w-20 h-20 mx-auto mb-6 text-red-400" />
@@ -300,7 +300,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <SiteHeader />
+      <SiteHeader showLanguage={false} />
 
       <main className="flex-1">
         <div className="container py-8 max-w-5xl mx-auto">

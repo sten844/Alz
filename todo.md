@@ -61,3 +61,5 @@
 - [x] Fix: Diary not visible for non-admin visitors (was unpublished version, resolved by publishing)
 - [x] Fix: Non-admin visitors may see admin-like elements (was unpublished version, resolved by publishing)
 - [x] Fix: English language button on mobile doesn't look like a button
+- [x] Remove language switcher from admin page (PC and mobile)
+- [x] Fix English button on mobile homepage to look more like a button, minimal space
