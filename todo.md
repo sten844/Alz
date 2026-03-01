@@ -37,3 +37,5 @@
 - [x] Mobile: Photo and title on same row in header
 - [x] Mobile: Photo+title stacked (separate rows), iPad/desktop: same row
 - [x] iPad: Photo+title on one row (always side-by-side except narrow mobile)
+- [x] Mobile: Move diary section above articles
+- [x] Mobile: Max 3 lines per diary entry, then click to expand/read more

@@ -87,6 +87,13 @@ export default function Home() {
       <SiteHeader />
 
       <main className="flex-1">
+        {/* Mobile diary section - visible only on smaller screens, ABOVE articles */}
+        <section className="lg:hidden container pt-6 pb-2">
+          <div className="bg-card/50 rounded-2xl border border-border/30 p-4 shadow-sm">
+            <DiaryColumn compact />
+          </div>
+        </section>
+
         {/* Main content area: Articles + Diary sidebar */}
         <section className="container py-6">
           <div className="flex flex-col lg:flex-row gap-8">
@@ -191,10 +198,7 @@ export default function Home() {
             </aside>
           </div>
 
-          {/* Mobile diary section - visible only on smaller screens */}
-          <div className="lg:hidden mt-6 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm">
-            <DiaryColumn />
-          </div>
+
         </section>
 
         {/* AI Section - full width band */}
