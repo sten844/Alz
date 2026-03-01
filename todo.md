@@ -33,3 +33,5 @@
 - [x] Mobile-responsive diary layout
 - [x] Diary pagination (older entries)
 - [x] Write vitest tests for diary API
+- [x] Reduce spacing between diary entries and homepage sections
+- [x] Mobile: Photo and title on same row in header

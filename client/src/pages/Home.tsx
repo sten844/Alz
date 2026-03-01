@@ -88,13 +88,13 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Main content area: Articles + Diary sidebar */}
-        <section className="container py-8">
+        <section className="container py-6">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left: Articles (main content) */}
             <div className="flex-1 min-w-0">
               {/* Category filters + Search */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {displayCategories.map((cat) => {
                     const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
                     const isActive = mappedCat === activeCategory;
@@ -130,7 +130,7 @@ export default function Home() {
               </div>
 
               {/* Articles list */}
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {isLoading ? (
                   <div className="flex justify-center py-16">
                     <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
@@ -192,7 +192,7 @@ export default function Home() {
           </div>
 
           {/* Mobile diary section - visible only on smaller screens */}
-          <div className="lg:hidden mt-10 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm">
+          <div className="lg:hidden mt-6 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm">
             <DiaryColumn />
           </div>
         </section>
@@ -205,7 +205,7 @@ export default function Home() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-900/70 to-slate-900/50" />
-          <div className="relative container py-10 md:py-14 text-center">
+          <div className="relative container py-8 md:py-10 text-center">
             <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("AI långt bortom Google", "AI far beyond Google")}
             </h2>
@@ -226,7 +226,7 @@ export default function Home() {
         </section>
 
         {/* Newsletter - full width band */}
-        <section className="bg-[#c05746] py-10 md:py-14">
+        <section className="bg-[#c05746] py-8 md:py-10">
           <div className="container text-center">
             <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
@@ -251,7 +251,7 @@ export default function Home() {
         </section>
 
         {/* Comments - full width band */}
-        <section className="bg-background py-10 md:py-14">
+        <section className="bg-background py-8 md:py-10">
           <div className="container text-center">
             <h2 className="text-3xl md:text-4xl text-foreground mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("Kommentarer och diskussion", "Comments and discussion")}
@@ -275,7 +275,7 @@ export default function Home() {
         </section>
 
         {/* Follow on X - full width band */}
-        <section className="bg-slate-900 py-10 md:py-14">
+        <section className="bg-slate-900 py-8 md:py-10">
           <div className="container text-center">
             <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
               {t("Följ mig på X", "Follow me on X")}
@@ -312,7 +312,7 @@ export default function Home() {
         </section>
 
         {/* About link */}
-        <section className="bg-accent/50 py-10">
+        <section className="bg-accent/50 py-6">
           <div className="container text-center">
             <Link
               href="/about"

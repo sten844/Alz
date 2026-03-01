@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO diary_entries (content, entryDate, published) VALUES \n('Första dagen med den nya dagboken. Solen skiner och kaffet smakar bra. Ibland räcker det.', '2026-03-01 09:00:00', true),\n('Promenerade längs ån idag. Änderna är tillbaka — de verkar inte ha glömt vägen hit. Det har inte jag heller. Ännu.', '2026-02-28 10:30:00', true),\n('Min fru påminde mig om att jag redan ätit frukost. Jag sa att det var så gott att jag ville äta igen. Hon skrattade. Det är det bästa ljudet jag vet.', '2026-02-27 08:15:00', true);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute INSERT INTO diary_entries (content, entryDate, published) VALUES \n('Första dagen med den nya dagboken. Solen skiner och kaffet smakar bra. Ibland räcker det.', '2026-03-01 09:00:00', true),\n('Promenerade längs ån idag. Änderna är tillbaka — de verkar inte ha glömt vägen hit. Det har inte jag heller. Ännu.', '2026-02-28 10:30:00', true),\n('Min fru påminde mig om att jag redan ätit frukost. Jag sa att det var så gott att jag ville äta igen. Hon skrattade. Det är det bästa ljudet jag vet.', '2026-02-27 08:15:00', true);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 58
+}

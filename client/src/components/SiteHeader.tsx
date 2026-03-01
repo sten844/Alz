@@ -3,6 +3,7 @@
  * - DM Serif Display for brand name
  * - Warm, calm color palette
  * - Profile photo with soft border
+ * - Photo + title on same row on all screen sizes
  * - Admin button for admin users
  */
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -27,33 +28,68 @@ export default function SiteHeader() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-white/60" />
 
-      <div className="relative container py-12 md:py-16">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-          {/* Profile photo */}
-          <Link href="/">
+      <div className="relative container py-8 md:py-12">
+        {/* Top row: Language toggle + Admin (mobile: above, desktop: right) */}
+        <div className="flex justify-end mb-4 md:mb-0 md:absolute md:top-8 md:right-8 lg:right-12 z-10">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLanguage("sv")}
+              className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-all ${
+                language === "sv"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-white/70 text-slate-600 hover:bg-white"
+              }`}
+            >
+              Svenska
+            </button>
+            <button
+              onClick={() => setLanguage("en")}
+              className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-all ${
+                language === "en"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-white/70 text-slate-600 hover:bg-white"
+              }`}
+            >
+              English
+            </button>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors shadow-md"
+              >
+                <Settings className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                Admin
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Photo + Title: always on same row */}
+        <div className="flex items-center gap-4 md:gap-6">
+          <Link href="/" className="shrink-0">
             <img
               src={IMAGES.profile}
               alt="Sten Dellby"
-              className="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-4 border-white/80 shadow-lg"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full object-cover border-3 md:border-4 border-white/80 shadow-lg"
             />
           </Link>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <Link href="/">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
                 <span className="block">Jag och min</span>
                 <span className="text-[#c05746]">Alzheimer</span>
               </h1>
             </Link>
 
-            <p className="mt-3 text-lg md:text-xl text-slate-600 max-w-2xl leading-relaxed">
+            <p className="hidden sm:block mt-2 md:mt-3 text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
               {t(
                 "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
                 "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
               )}
             </p>
 
-            <div className="mt-4 flex flex-wrap items-center gap-4">
+            <div className="hidden sm:flex mt-3 md:mt-4 flex-wrap items-center gap-4">
               <a
                 href="https://x.com/stendellby"
                 target="_blank"
@@ -74,40 +110,35 @@ export default function SiteHeader() {
               </a>
             </div>
           </div>
+        </div>
 
-          {/* Language toggle + Admin */}
-          <div className="flex flex-col items-end gap-3 self-start md:self-center">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setLanguage("sv")}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                  language === "sv"
-                    ? "bg-[#c05746] text-white shadow-md"
-                    : "bg-white/70 text-slate-600 hover:bg-white"
-                }`}
-              >
-                Svenska
-              </button>
-              <button
-                onClick={() => setLanguage("en")}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                  language === "en"
-                    ? "bg-[#c05746] text-white shadow-md"
-                    : "bg-white/70 text-slate-600 hover:bg-white"
-                }`}
-              >
-                English
-              </button>
-            </div>
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors shadow-md"
-              >
-                <Settings className="w-3.5 h-3.5" />
-                Admin
-              </Link>
+        {/* Mobile-only: description + links below the photo+title row */}
+        <div className="sm:hidden mt-3">
+          <p className="text-sm text-slate-600 leading-relaxed">
+            {t(
+              "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
+              "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
             )}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <a
+              href="https://x.com/stendellby"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              X (Twitter)
+            </a>
+            <a
+              href="mailto:sten@dellby.info"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              sten@dellby.info
+            </a>
           </div>
         </div>
       </div>

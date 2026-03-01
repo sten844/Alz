@@ -60,7 +60,7 @@ export default function DiaryColumn() {
       </div>
 
       {/* Entries */}
-      <div className="space-y-5">
+      <div className="space-y-3">
         {entries.map((entry) => (
           <div key={entry.id} className="diary-entry">
             {/* Date stamp */}
@@ -72,7 +72,7 @@ export default function DiaryColumn() {
               {entry.content}
             </p>
             {/* Subtle separator */}
-            <div className="mt-4 border-b border-border/30" />
+            <div className="mt-3 border-b border-border/30" />
           </div>
         ))}
       </div>
