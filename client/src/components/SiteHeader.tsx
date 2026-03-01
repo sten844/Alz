@@ -3,7 +3,7 @@
  * - DM Serif Display for brand name
  * - Warm, calm color palette
  * - Profile photo with soft border
- * - Mobile: photo+title stacked, iPad/desktop: same row
+ * - Mobile: compact layout, language buttons with links row
  * - Admin button for admin users
  */
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -28,9 +28,9 @@ export default function SiteHeader() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-white/60" />
 
-      <div className="relative container py-8 md:py-12">
-        {/* Top row: Language toggle + Admin (mobile: above, desktop: right) */}
-        <div className="flex justify-end mb-4 md:mb-0 md:absolute md:top-8 md:right-8 lg:right-12 z-10">
+      <div className="relative container py-5 sm:py-8 md:py-12">
+        {/* Desktop: Language toggle + Admin (top right) */}
+        <div className="hidden sm:flex justify-end mb-0 md:absolute md:top-8 md:right-8 lg:right-12 z-10">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLanguage("sv")}
@@ -76,7 +76,7 @@ export default function SiteHeader() {
 
           <div className="flex-1 min-w-0">
             <Link href="/">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-slate-800 leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-slate-800 leading-none tracking-tight">
                 <span>Jag och min </span>
                 <span className="text-[#c05746]">Alzheimer</span>
               </h1>
@@ -112,15 +112,15 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Mobile-only: description + links below */}
-        <div className="sm:hidden mt-2">
-          <p className="text-xs text-slate-600 leading-relaxed">
+        {/* Mobile-only: description + links + language on one compact row */}
+        <div className="sm:hidden mt-1.5">
+          <p className="text-xs text-slate-600 leading-snug">
             {t(
               "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
               "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
             )}
           </p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-3">
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
             <a
               href="https://x.com/stendellby"
               target="_blank"
@@ -130,7 +130,7 @@ export default function SiteHeader() {
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
-              X (Twitter)
+              X
             </a>
             <a
               href="mailto:sten@dellby.info"
@@ -139,6 +139,36 @@ export default function SiteHeader() {
               <Mail className="w-3 h-3" />
               sten@dellby.info
             </a>
+            <span className="text-slate-300">|</span>
+            <button
+              onClick={() => setLanguage("sv")}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
+                language === "sv"
+                  ? "bg-[#c05746] text-white"
+                  : "bg-white/70 text-slate-500 hover:bg-white"
+              }`}
+            >
+              SV
+            </button>
+            <button
+              onClick={() => setLanguage("en")}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
+                language === "en"
+                  ? "bg-[#c05746] text-white"
+                  : "bg-white/70 text-slate-500 hover:bg-white"
+              }`}
+            >
+              EN
+            </button>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+              >
+                <Settings className="w-2.5 h-2.5" />
+                Admin
+              </Link>
+            )}
           </div>
         </div>
       </div>

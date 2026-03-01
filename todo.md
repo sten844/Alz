@@ -43,3 +43,6 @@
 - [x] Mobile diary: date + first line on same row, compact layout
 - [x] Mobile: Show max 2 diary entries
 - [x] Add heading "Försök till en kunskapsbank" between diary and articles
+- [x] Mobile: Move language buttons to same row as mail/Twitter links
+- [x] Mobile: Reduce more whitespace/padding throughout
+- [x] Mobile: Make site title larger
