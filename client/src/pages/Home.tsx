@@ -89,13 +89,13 @@ export default function Home() {
       <main className="flex-1">
         {/* Mobile diary section - visible only on smaller screens, ABOVE articles */}
         <section className="lg:hidden container pt-3 pb-0">
-          <h2
-            className="text-lg sm:text-2xl text-foreground mb-2"
-            style={{ fontFamily: "'DM Serif Display', serif" }}
-          >
-            {t("Min dagbok", "My diary")}
-          </h2>
           <div className="bg-card/50 rounded-xl border border-border/30 p-3 shadow-sm">
+            <h2
+              className="text-lg text-foreground mb-2 pb-2 border-b border-[#c05746]/20 flex items-center gap-2"
+              style={{ fontFamily: "'DM Serif Display', serif" }}
+            >
+              <span>{t("Min dagbok", "My diary")}</span>
+            </h2>
             <DiaryColumn compact maxEntries={2} hideHeader />
           </div>
         </section>

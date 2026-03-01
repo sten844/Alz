@@ -44,16 +44,16 @@ function DiaryEntry({
     return (
       <div className="diary-entry">
         {compact && !expanded ? (
-          <div className="line-clamp-3 text-sm text-foreground/85 leading-snug">
-            <span className="font-semibold text-[#c05746] text-xs uppercase tracking-wide">
+          <div className="line-clamp-3 text-base text-foreground/85 leading-snug">
+            <span className="font-semibold text-[#c05746] text-sm uppercase tracking-wide">
               {formatDate(entry.entryDate)}
             </span>
             <span className="text-[#c05746] mx-1">·</span>
             <span className="whitespace-pre-wrap">{entry.content}</span>
           </div>
         ) : (
-          <div className="text-sm text-foreground/85 leading-snug">
-            <span className="font-semibold text-[#c05746] text-xs uppercase tracking-wide">
+          <div className="text-base text-foreground/85 leading-snug">
+            <span className="font-semibold text-[#c05746] text-sm uppercase tracking-wide">
               {formatDate(entry.entryDate)}
             </span>
             <span className="text-[#c05746] mx-1">·</span>
@@ -87,7 +87,7 @@ function DiaryEntry({
       <div className="text-xs font-semibold text-[#c05746] uppercase tracking-wide mb-1.5">
         {formatDateLong(entry.entryDate)}
       </div>
-      <p className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">
+      <p className="text-base text-foreground/85 leading-relaxed whitespace-pre-wrap">
         {entry.content}
       </p>
       <div className="mt-3 border-b border-border/30" />

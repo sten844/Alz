@@ -40,7 +40,7 @@ export default function SiteHeader() {
                   : "bg-white/70 text-slate-600 hover:bg-white"
               }`}
             >
-              Svenska
+                   Svenska
             </button>
             <button
               onClick={() => setLanguage("en")}
@@ -142,23 +142,23 @@ export default function SiteHeader() {
             <span className="text-slate-300">|</span>
             <button
               onClick={() => setLanguage("sv")}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
                 language === "sv"
                   ? "bg-[#c05746] text-white"
                   : "bg-white/70 text-slate-500 hover:bg-white"
               }`}
             >
-              SV
+              Svenska
             </button>
             <button
               onClick={() => setLanguage("en")}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
                 language === "en"
                   ? "bg-[#c05746] text-white"
                   : "bg-white/70 text-slate-500 hover:bg-white"
               }`}
             >
-              EN
+              English
             </button>
             {isAdmin && (
               <Link

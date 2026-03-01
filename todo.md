@@ -48,3 +48,6 @@
 - [x] Mobile: Make site title larger
 - [x] Put "Försök till en kunskapsbank" and "Min dagbok" on same row, same size
 - [x] Fix mobile: Move "Min dagbok" heading above diary entries, not beside "Försök till..."
+- [x] Fix mobile: "Min dagbok" heading must be directly above diary texts
+- [x] Mobile: Language buttons show "Svenska"/"English" instead of "SV"/"EN"
+- [x] Mobile: Bigger font size for diary entry text on homepage
