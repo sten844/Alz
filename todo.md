@@ -47,3 +47,4 @@
 - [x] Mobile: Reduce more whitespace/padding throughout
 - [x] Mobile: Make site title larger
 - [x] Put "Försök till en kunskapsbank" and "Min dagbok" on same row, same size
+- [x] Fix mobile: Move "Min dagbok" heading above diary entries, not beside "Försök till..."
