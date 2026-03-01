@@ -88,8 +88,8 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Mobile diary section - visible only on smaller screens, ABOVE articles */}
-        <section className="lg:hidden container pt-6 pb-2">
-          <div className="bg-card/50 rounded-2xl border border-border/30 p-4 shadow-sm">
+        <section className="lg:hidden container pt-4 pb-1">
+          <div className="bg-card/50 rounded-xl border border-border/30 p-3 shadow-sm">
             <DiaryColumn compact />
           </div>
         </section>

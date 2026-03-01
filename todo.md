@@ -39,3 +39,5 @@
 - [x] iPad: Photo+title on one row (always side-by-side except narrow mobile)
 - [x] Mobile: Move diary section above articles
 - [x] Mobile: Max 3 lines per diary entry, then click to expand/read more
+- [x] Fix: Ensure mobile diary is truly above articles
+- [x] Mobile diary: date + first line on same row, compact layout
