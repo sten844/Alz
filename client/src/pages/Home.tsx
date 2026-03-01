@@ -90,12 +90,22 @@ export default function Home() {
         {/* Mobile diary section - visible only on smaller screens, ABOVE articles */}
         <section className="lg:hidden container pt-4 pb-1">
           <div className="bg-card/50 rounded-xl border border-border/30 p-3 shadow-sm">
-            <DiaryColumn compact />
+            <DiaryColumn compact maxEntries={2} />
           </div>
         </section>
 
+        {/* Section heading: Kunskapsbank */}
+        <section className="container pt-6 pb-2">
+          <h2
+            className="text-2xl md:text-3xl text-foreground"
+            style={{ fontFamily: "'DM Serif Display', serif" }}
+          >
+            {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
+          </h2>
+        </section>
+
         {/* Main content area: Articles + Diary sidebar */}
-        <section className="container py-6">
+        <section className="container py-4">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left: Articles (main content) */}
             <div className="flex-1 min-w-0">

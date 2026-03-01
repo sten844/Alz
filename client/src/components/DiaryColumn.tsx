@@ -95,18 +95,20 @@ function DiaryEntry({
   );
 }
 
-export default function DiaryColumn({ compact = false }: { compact?: boolean }) {
+export default function DiaryColumn({ compact = false, maxEntries }: { compact?: boolean; maxEntries?: number }) {
   const { t } = useLanguage();
   const [page, setPage] = useState(0);
 
+  const limit = maxEntries ?? ENTRIES_PER_PAGE;
+
   const { data, isLoading } = trpc.diary.list.useQuery({
-    limit: ENTRIES_PER_PAGE,
-    offset: page * ENTRIES_PER_PAGE,
+    limit,
+    offset: page * limit,
   });
 
   const entries = data?.entries ?? [];
   const total = data?.total ?? 0;
-  const hasMore = (page + 1) * ENTRIES_PER_PAGE < total;
+  const hasMore = (page + 1) * limit < total;
   const hasPrev = page > 0;
 
   if (isLoading) {
