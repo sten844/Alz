@@ -53,3 +53,4 @@
 - [x] Mobile: Bigger font size for diary entry text on homepage
 - [x] PC: Move diary sidebar to left side
 - [x] Change "Min dagbok" heading font to Arial
+- [x] PC: Both column headings on same row - "Min dagbok" (bold Arial) left, "Försök till en kunskapsbank" (DM Serif) right

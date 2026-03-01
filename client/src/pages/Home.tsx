@@ -100,23 +100,43 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section heading: Kunskapsbank */}
-        <section className="container pt-4 sm:pt-6 pb-1 sm:pb-2">
+        {/* Section heading: Kunskapsbank (mobile only, since desktop has it in the row) */}
+        <section className="lg:hidden container pt-4 sm:pt-6 pb-1 sm:pb-2">
           <h2
-            className="text-lg sm:text-2xl md:text-3xl text-foreground"
+            className="text-lg sm:text-2xl text-foreground"
             style={{ fontFamily: "'DM Serif Display', serif" }}
           >
             {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
           </h2>
         </section>
 
-        {/* Main content area: Articles + Diary sidebar */}
+        {/* Main content area: Headings row + Diary sidebar + Articles */}
         <section className="container py-2 sm:py-4">
+          {/* Desktop: Both headings on same row */}
+          <div className="hidden lg:flex gap-8 mb-4">
+            <div className="w-80 xl:w-96 shrink-0">
+              <h2
+                className="text-2xl text-foreground font-bold"
+                style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+              >
+                {t("Min dagbok", "My diary")}
+              </h2>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2
+                className="text-2xl md:text-3xl text-foreground"
+                style={{ fontFamily: "'DM Serif Display', serif" }}
+              >
+                {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
+              </h2>
+            </div>
+          </div>
+
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left: Diary sidebar - visible on lg+ screens */}
             <aside className="hidden lg:block w-80 xl:w-96 shrink-0">
               <div className="sticky top-8 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm backdrop-blur-sm">
-                <DiaryColumn />
+                <DiaryColumn hideHeader />
               </div>
             </aside>
 
