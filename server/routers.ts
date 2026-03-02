@@ -3,7 +3,31 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
 import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry } from "./db";
+import { invokeLLM } from "./_core/llm";
 import { z } from "zod";
+
+async function translateToEnglish(swedishText: string): Promise<string> {
+  try {
+    const result = await invokeLLM({
+      messages: [
+        {
+          role: "system",
+          content: "You are a translator. Translate the following Swedish text to English. Keep the same tone and style — it's a casual, personal diary entry. Return ONLY the translated text, nothing else.",
+        },
+        {
+          role: "user",
+          content: swedishText,
+        },
+      ],
+    });
+    const content = result.choices?.[0]?.message?.content;
+    if (typeof content === "string") return content.trim();
+    return "";
+  } catch (error) {
+    console.error("[Translation] Failed to translate diary entry:", error);
+    return "";
+  }
+}
 
 export const appRouter = router({
   system: systemRouter,
@@ -119,8 +143,11 @@ export const appRouter = router({
         published: z.boolean().default(true),
       }))
       .mutation(async ({ input }) => {
+        // Auto-translate to English
+        const contentEn = await translateToEnglish(input.content);
         return createDiaryEntry({
           content: input.content,
+          contentEn: contentEn || null,
           entryDate: input.entryDate ?? new Date(),
           published: input.published,
         });
@@ -135,6 +162,11 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
+        // Re-translate if content changed
+        if (data.content) {
+          const contentEn = await translateToEnglish(data.content);
+          (data as any).contentEn = contentEn || null;
+        }
         await updateDiaryEntry(id, data);
         return { success: true };
       }),

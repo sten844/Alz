@@ -47,6 +47,7 @@ export type InsertArticle = typeof articles.$inferInsert;
 export const diaryEntries = mysqlTable("diary_entries", {
   id: int("id").autoincrement().primaryKey(),
   content: text("content").notNull(),
+  contentEn: text("content_en"),
   entryDate: timestamp("entryDate").defaultNow().notNull(),
   published: boolean("published").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

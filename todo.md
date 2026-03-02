@@ -64,3 +64,6 @@
 - [x] Remove language switcher from admin page (PC and mobile)
 - [x] Fix English button on mobile homepage to look more like a button, minimal space
 - [x] Remove Admin button from homepage header on PC (access via /admin URL instead)
+- [x] Add English translation field to diary entries database schema
+- [x] Add LLM-based auto-translation when creating/updating diary entries
+- [x] Show translated diary content when site is in English mode

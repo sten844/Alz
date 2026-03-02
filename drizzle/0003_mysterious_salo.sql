@@ -1,0 +1,1 @@
+ALTER TABLE `diary_entries` ADD `content_en` text;

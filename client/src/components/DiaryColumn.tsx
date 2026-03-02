@@ -3,6 +3,7 @@
  * On desktop/iPad: sticky sidebar column alongside articles.
  * On mobile (compact mode): date + first line inline, 3-line truncation, very space-efficient.
  * Each entry shows the date and content, with pagination for older entries.
+ * Shows English translation when site is in English mode.
  */
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
@@ -15,15 +16,19 @@ function DiaryEntry({
   entry,
   compact,
 }: {
-  entry: { id: number; content: string; entryDate: Date | string };
+  entry: { id: number; content: string; contentEn?: string | null; entryDate: Date | string };
   compact?: boolean;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [expanded, setExpanded] = useState(false);
+
+  // Show English translation if available and language is English
+  const displayContent = language === "en" && entry.contentEn ? entry.contentEn : entry.content;
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
-    return d.toLocaleDateString("sv-SE", {
+    const locale = language === "en" ? "en-US" : "sv-SE";
+    return d.toLocaleDateString(locale, {
       weekday: "short",
       day: "numeric",
       month: "short",
@@ -32,7 +37,8 @@ function DiaryEntry({
 
   const formatDateLong = (date: Date | string) => {
     const d = new Date(date);
-    return d.toLocaleDateString("sv-SE", {
+    const locale = language === "en" ? "en-US" : "sv-SE";
+    return d.toLocaleDateString(locale, {
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -49,7 +55,7 @@ function DiaryEntry({
               {formatDate(entry.entryDate)}
             </span>
             <span className="text-[#c05746] mx-1.5">·</span>
-            <span className="whitespace-pre-wrap">{entry.content}</span>
+            <span className="whitespace-pre-wrap">{displayContent}</span>
           </div>
         ) : (
           <div className="text-lg text-foreground/85 leading-relaxed">
@@ -57,10 +63,10 @@ function DiaryEntry({
               {formatDate(entry.entryDate)}
             </span>
             <span className="text-[#c05746] mx-1.5">·</span>
-            <span className="whitespace-pre-wrap">{entry.content}</span>
+            <span className="whitespace-pre-wrap">{displayContent}</span>
           </div>
         )}
-        {!expanded && entry.content.length > 100 && (
+        {!expanded && displayContent.length > 100 && (
           <button
             onClick={() => setExpanded(true)}
             className="text-base font-medium text-[#c05746] hover:text-[#a8483b] mt-1 transition-colors"
@@ -88,7 +94,7 @@ function DiaryEntry({
         {formatDateLong(entry.entryDate)}
       </div>
       <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap">
-        {entry.content}
+        {displayContent}
       </p>
       <div className="mt-3 border-b border-border/30" />
     </div>
