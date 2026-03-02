@@ -129,6 +129,15 @@ export async function deleteArticle(id: number) {
   await db.delete(articles).where(eq(articles.id, id));
 }
 
+export async function getArticleByPairIdAndLanguage(pairId: number, language: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(articles)
+    .where(and(eq(articles.pairId, pairId), eq(articles.language, language)))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 // ---- Diary entry queries ----
 
 export async function listDiaryEntries(opts?: { published?: boolean; limit?: number; offset?: number }) {

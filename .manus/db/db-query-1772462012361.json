@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, SUBSTRING(content, 1, 50) as preview FROM diary_entries WHERE content LIKE '%Updated content%' OR content LIKE '%Test dagboksinlägg%' OR content LIKE '%vitest%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, SUBSTRING(content, 1, 50) as preview FROM diary_entries WHERE content LIKE '%Updated content%' OR content LIKE '%Test dagboksinlägg%' OR content LIKE '%vitest%';",
+  "rows": [
+    {
+      "id": "90001",
+      "preview": "Test dagboksinlägg - vitest"
+    },
+    {
+      "id": "90002",
+      "preview": "Updated content"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tpreview\n90001\tTest dagboksinlägg - vitest\n90002\tUpdated content\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

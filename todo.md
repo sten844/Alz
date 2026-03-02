@@ -76,3 +76,9 @@
 - [x] Add draft recovery UI (restore unsaved draft on page load)
 - [x] Add visual auto-save indicator (e.g. "Utkast sparat" with timestamp)
 - [x] Write vitest tests for draft API
+- [x] Remove test diary entries created by vitest from the database
+- [x] Fix: Published article not appearing on homepage (was a draft, not yet saved as article)
+- [x] Auto-translate articles: create English version when saving a Swedish article
+- [x] Auto-translate articles: update English version when updating a Swedish article
+- [x] Translate the newly published article "Drivet gör sjukdomen mindren" to English
+- [x] Write vitest tests for article auto-translation

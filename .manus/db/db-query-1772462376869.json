@@ -1,0 +1,12 @@
+{
+  "query": "SELECT id, articleId, title, excerpt, SUBSTRING(content, 1, 200) as content_preview, category, language, published, publishedAt, savedAt FROM article_drafts;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, articleId, title, excerpt, SUBSTRING(content, 1, 200) as content_preview, category, language, published, publishedAt, savedAt FROM article_drafts;",
+  "rows": [],
+  "messages": [
+    "2\tNULL\tDrivet gör sjukdomen mindren\tSedan jag fick min Alzheimerdiagnos har jag valt en väg som inte alla förstår. Jag ägnar mycket av min vakna tid åt att läsa, skriva, kommunicera och inte minst bygga en webbaserad kunskapsbank om sjukdomen.\tJag söker efter molekylära mekanismer, följer forskningen och diskuterar intensivt.",
+    "Det är lätt att tro jag lägger för mycket energi på detta. Att mitt intensiva fokus kan vara skadligt. Att jag bord\tVardagsliv\tsv\t1\t2026-03-02T14:16\t2026-03-02 14:35:54"
+  ],
+  "stdout": "id\tarticleId\ttitle\texcerpt\tcontent_preview\tcategory\tlanguage\tpublished\tpublishedAt\tsavedAt\n2\tNULL\tDrivet gör sjukdomen mindren\tSedan jag fick min Alzheimerdiagnos har jag valt en väg som inte alla förstår. Jag ägnar mycket av min vakna tid åt att läsa, skriva, kommunicera och inte minst bygga en webbaserad kunskapsbank om sjukdomen.\tJag söker efter molekylära mekanismer, följer forskningen och diskuterar intensivt.\n\nDet är lätt att tro jag lägger för mycket energi på detta. Att mitt intensiva fokus kan vara skadligt. Att jag bord\tVardagsliv\tsv\t1\t2026-03-02T14:16\t2026-03-02 14:35:54\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

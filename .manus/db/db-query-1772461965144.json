@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, LEFT(content, 80) as content_preview, published, entryDate FROM diary_entries ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, LEFT(content, 80) as content_preview, published, entryDate FROM diary_entries ORDER BY id;",
+  "rows": [
+    {
+      "id": "4",
+      "content_preview": "Alzheimer gör inte ont. Allt känns som normalt. Ända tills man märker hur minnet",
+      "published": "1",
+      "entryDate": "2026-03-01 06:00:00"
+    },
+    {
+      "id": "30001",
+      "content_preview": "Skall senare i månaden på läkarbesök på medicinklink om min alzheimer . Jag disk",
+      "published": "1",
+      "entryDate": "2026-03-02 07:10:00"
+    },
+    {
+      "id": "60001",
+      "content_preview": "Idag skrev jag en artikel (se spalten här bredvid) om varför mitt engagemang i A",
+      "published": "1",
+      "entryDate": "2026-03-02 12:31:00"
+    },
+    {
+      "id": "90001",
+      "content_preview": "Test dagboksinlägg - vitest",
+      "published": "1",
+      "entryDate": "2026-03-02 14:08:08"
+    },
+    {
+      "id": "90002",
+      "content_preview": "Updated content",
+      "published": "1",
+      "entryDate": "2026-03-02 14:08:10"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcontent_preview\tpublished\tentryDate\n4\tAlzheimer gör inte ont. Allt känns som normalt. Ända tills man märker hur minnet\t1\t2026-03-01 06:00:00\n30001\tSkall senare i månaden på läkarbesök på medicinklink om min alzheimer . Jag disk\t1\t2026-03-02 07:10:00\n60001\tIdag skrev jag en artikel (se spalten här bredvid) om varför mitt engagemang i A\t1\t2026-03-02 12:31:00\n90001\tTest dagboksinlägg - vitest\t1\t2026-03-02 14:08:08\n90002\tUpdated content\t1\t2026-03-02 14:08:10\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

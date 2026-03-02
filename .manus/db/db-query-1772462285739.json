@@ -1,0 +1,100 @@
+{
+  "query": "SELECT id, title, language, category, published, publishedAt, createdAt FROM articles ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, language, category, published, publishedAt, createdAt FROM articles ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "2",
+      "title": "AI och alzheimer",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "published": "1",
+      "publishedAt": "2026-01-15 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "3",
+      "title": "Självtestning: Kan jag lita på mig själv?",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "published": "1",
+      "publishedAt": "2025-12-20 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "4",
+      "title": "Min behandlingsplan: Vetenskaplig bakgrund",
+      "language": "sv",
+      "category": "Forskning",
+      "published": "1",
+      "publishedAt": "2026-02-04 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "5",
+      "title": "Lecanemab – det första bromsmedicinet",
+      "language": "sv",
+      "category": "Läkemedel",
+      "published": "1",
+      "publishedAt": "2025-11-10 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "6",
+      "title": "Vad händer i hjärnan?",
+      "language": "sv",
+      "category": "Forskning",
+      "published": "1",
+      "publishedAt": "2025-10-05 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "7",
+      "title": "Att leva med diagnosen",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "published": "1",
+      "publishedAt": "2025-09-15 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "8",
+      "title": "My Treatment Plan",
+      "language": "en",
+      "category": "Behandling",
+      "published": "1",
+      "publishedAt": "2026-02-15 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "9",
+      "title": "AI and Alzheimer's",
+      "language": "en",
+      "category": "Vardagsliv",
+      "published": "1",
+      "publishedAt": "2026-01-15 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "10",
+      "title": "Self-Testing: Can I Trust Myself?",
+      "language": "en",
+      "category": "Vardagsliv",
+      "published": "1",
+      "publishedAt": "2025-12-20 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    },
+    {
+      "id": "1",
+      "title": "Min behandlingsplan",
+      "language": "sv",
+      "category": "Behandling",
+      "published": "1",
+      "publishedAt": "2026-02-15 00:00:00",
+      "createdAt": "2026-02-26 15:16:05"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tcategory\tpublished\tpublishedAt\tcreatedAt\n2\tAI och alzheimer\tsv\tVardagsliv\t1\t2026-01-15 00:00:00\t2026-02-26 15:16:05\n3\tSjälvtestning: Kan jag lita på mig själv?\tsv\tVardagsliv\t1\t2025-12-20 00:00:00\t2026-02-26 15:16:05\n4\tMin behandlingsplan: Vetenskaplig bakgrund\tsv\tForskning\t1\t2026-02-04 00:00:00\t2026-02-26 15:16:05\n5\tLecanemab – det första bromsmedicinet\tsv\tLäkemedel\t1\t2025-11-10 00:00:00\t2026-02-26 15:16:05\n6\tVad händer i hjärnan?\tsv\tForskning\t1\t2025-10-05 00:00:00\t2026-02-26 15:16:05\n7\tAtt leva med diagnosen\tsv\tVardagsliv\t1\t2025-09-15 00:00:00\t2026-02-26 15:16:05\n8\tMy Treatment Plan\ten\tBehandling\t1\t2026-02-15 00:00:00\t2026-02-26 15:16:05\n9\tAI and Alzheimer's\ten\tVardagsliv\t1\t2026-01-15 00:00:00\t2026-02-26 15:16:05\n10\tSelf-Testing: Can I Trust Myself?\ten\tVardagsliv\t1\t2025-12-20 00:00:00\t2026-02-26 15:16:05\n1\tMin behandlingsplan\tsv\tBehandling\t1\t2026-02-15 00:00:00\t2026-02-26 15:16:05\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

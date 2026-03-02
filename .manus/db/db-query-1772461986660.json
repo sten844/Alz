@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, SUBSTRING(content, 1, 60) as preview, published, entryDate, createdAt FROM diary_entries ORDER BY createdAt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, SUBSTRING(content, 1, 60) as preview, published, entryDate, createdAt FROM diary_entries ORDER BY createdAt DESC;",
+  "rows": [
+    {
+      "id": "90002",
+      "preview": "Updated content",
+      "published": "1",
+      "entryDate": "2026-03-02 14:08:10",
+      "createdAt": "2026-03-02 14:08:10"
+    },
+    {
+      "id": "90001",
+      "preview": "Test dagboksinlägg - vitest",
+      "published": "1",
+      "entryDate": "2026-03-02 14:08:08",
+      "createdAt": "2026-03-02 14:08:08"
+    },
+    {
+      "id": "60001",
+      "preview": "Idag skrev jag en artikel (se spalten här bredvid) om varför",
+      "published": "1",
+      "entryDate": "2026-03-02 12:31:00",
+      "createdAt": "2026-03-02 13:34:03"
+    },
+    {
+      "id": "30001",
+      "preview": "Skall senare i månaden på läkarbesök på medicinklink om min ",
+      "published": "1",
+      "entryDate": "2026-03-02 07:10:00",
+      "createdAt": "2026-03-02 08:33:22"
+    },
+    {
+      "id": "4",
+      "preview": "Alzheimer gör inte ont. Allt känns som normalt. Ända tills m",
+      "published": "1",
+      "entryDate": "2026-03-01 06:00:00",
+      "createdAt": "2026-03-01 14:31:50"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tpreview\tpublished\tentryDate\tcreatedAt\n90002\tUpdated content\t1\t2026-03-02 14:08:10\t2026-03-02 14:08:10\n90001\tTest dagboksinlägg - vitest\t1\t2026-03-02 14:08:08\t2026-03-02 14:08:08\n60001\tIdag skrev jag en artikel (se spalten här bredvid) om varför\t1\t2026-03-02 12:31:00\t2026-03-02 13:34:03\n30001\tSkall senare i månaden på läkarbesök på medicinklink om min \t1\t2026-03-02 07:10:00\t2026-03-02 08:33:22\n4\tAlzheimer gör inte ont. Allt känns som normalt. Ända tills m\t1\t2026-03-01 06:00:00\t2026-03-01 14:31:50\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

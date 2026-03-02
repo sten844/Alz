@@ -1,0 +1,21 @@
+{
+  "query": "SELECT id, title, excerpt, content, category, imageUrl, publishedAt, published FROM articles WHERE id = 30001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, excerpt, content, category, imageUrl, publishedAt, published FROM articles WHERE id = 30001;",
+  "rows": [],
+  "messages": [
+    "30001\tDrivet gör sjukdomen mindren\tSedan jag fick min Alzheimerdiagnos har jag valt en väg som inte alla förstår. Jag ägnar mycket av min vakna tid åt att läsa, skriva, kommunicera och inte minst bygga en webbaserad kunskapsbank om sjukdomen.\tJag söker efter molekylära mekanismer, följer forskningen och diskuterar intensivt.",
+    "Det är lätt att tro jag lägger för mycket energi på detta. Att mitt intensiva fokus kan vara skadligt. Att jag borde tänka på annat.",
+    "Men för mig fungerar det nog tvärtom.",
+    "Om jag hade låtsats som ingenting, om jag försökt leva “som vanligt” och skjuta undan tankarna, då hade sanningen ändå funnits där. Gnagt i bakgrunden. Krävt energi för att hållas borta. Undvikande är inte neutralt – det kostar.",
+    "När jag istället gör Alzheimer till mitt stora intresse händer något märkligt: det slutar kännas personligt hotfullt. Sjukdomen blir ett studieobjekt. Ett forskningsfält. Ett problem att analysera. Jag går från att vara passiv bärare av en dödlig diagnos till att vara aktiv utforskare.",
+    "Det skapar driv.",
+    "Och driv är något annat än oro. Det är riktad energi. Handling istället för hjälplöshet. När jag arbetar med kunskap och struktur går jag från existentiell osäkerhet till konkret aktivitet. Jag upplever inte panik – jag upplever fokus.",
+    "Å",
+    "Jag vet att balansen är viktig. Jag är mer än min dödliga diagnos. Jag är övertygad om att engagemanget ett uttryck för ägarskap.",
+    "Detta är min verklighet. Jag väljer att förstå den. Och i det finns en oväntad frihet.",
+    "\tVardagsliv\tNULL\t2026-03-02 13:16:00\t1"
+  ],
+  "stdout": "id\ttitle\texcerpt\tcontent\tcategory\timageUrl\tpublishedAt\tpublished\n30001\tDrivet gör sjukdomen mindren\tSedan jag fick min Alzheimerdiagnos har jag valt en väg som inte alla förstår. Jag ägnar mycket av min vakna tid åt att läsa, skriva, kommunicera och inte minst bygga en webbaserad kunskapsbank om sjukdomen.\tJag söker efter molekylära mekanismer, följer forskningen och diskuterar intensivt.\n\nDet är lätt att tro jag lägger för mycket energi på detta. Att mitt intensiva fokus kan vara skadligt. Att jag borde tänka på annat.\n\nMen för mig fungerar det nog tvärtom.\n\nOm jag hade låtsats som ingenting, om jag försökt leva “som vanligt” och skjuta undan tankarna, då hade sanningen ändå funnits där. Gnagt i bakgrunden. Krävt energi för att hållas borta. Undvikande är inte neutralt – det kostar.\n\nNär jag istället gör Alzheimer till mitt stora intresse händer något märkligt: det slutar kännas personligt hotfullt. Sjukdomen blir ett studieobjekt. Ett forskningsfält. Ett problem att analysera. Jag går från att vara passiv bärare av en dödlig diagnos till att vara aktiv utforskare.\nDet skapar driv.\n\nOch driv är något annat än oro. Det är riktad energi. Handling istället för hjälplöshet. När jag arbetar med kunskap och struktur går jag från existentiell osäkerhet till konkret aktivitet. Jag upplever inte panik – jag upplever fokus.\nÅ\nJag vet att balansen är viktig. Jag är mer än min dödliga diagnos. Jag är övertygad om att engagemanget ett uttryck för ägarskap.\n\nDetta är min verklighet. Jag väljer att förstå den. Och i det finns en oväntad frihet.\n\tVardagsliv\tNULL\t2026-03-02 13:16:00\t1\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

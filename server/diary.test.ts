@@ -1,8 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, afterAll } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
+import { deleteDiaryEntry } from "./db";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
+
+// Track created entries for cleanup
+const createdEntryIds: number[] = [];
+
+afterAll(async () => {
+  for (const id of createdEntryIds) {
+    try {
+      await deleteDiaryEntry(id);
+    } catch {
+      // ignore cleanup errors
+    }
+  }
+});
 
 function createAdminContext(): TrpcContext {
   const user: AuthenticatedUser = {
@@ -97,6 +111,8 @@ describe("diary", () => {
 
       expect(result).toHaveProperty("id");
       expect(typeof result.id).toBe("number");
+      // Track for cleanup
+      createdEntryIds.push(result.id);
     });
 
     it("rejects non-admin users from creating entries", async () => {
@@ -131,15 +147,16 @@ describe("diary", () => {
         content: "Original content",
         published: true,
       });
+      createdEntryIds.push(created.id);
 
-      // Then update it
+      // Then update it (translation runs in background, may take time)
       const result = await adminCaller.diary.update({
         id: created.id,
         content: "Updated content",
       });
 
       expect(result).toEqual({ success: true });
-    });
+    }, 15000);
 
     it("rejects non-admin users from updating entries", async () => {
       const caller = appRouter.createCaller(createRegularUserContext());
@@ -163,7 +180,7 @@ describe("diary", () => {
         published: true,
       });
 
-      // Then delete it
+      // Then delete it (no need to track since we're deleting it)
       const result = await adminCaller.diary.delete({ id: created.id });
       expect(result).toEqual({ success: true });
     });

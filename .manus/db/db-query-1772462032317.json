@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, SUBSTRING(content, 1, 80) as preview, published FROM diary_entries ORDER BY entryDate DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, SUBSTRING(content, 1, 80) as preview, published FROM diary_entries ORDER BY entryDate DESC;",
+  "rows": [
+    {
+      "id": "60001",
+      "preview": "Idag skrev jag en artikel (se spalten här bredvid) om varför mitt engagemang i A",
+      "published": "1"
+    },
+    {
+      "id": "30001",
+      "preview": "Skall senare i månaden på läkarbesök på medicinklink om min alzheimer . Jag disk",
+      "published": "1"
+    },
+    {
+      "id": "4",
+      "preview": "Alzheimer gör inte ont. Allt känns som normalt. Ända tills man märker hur minnet",
+      "published": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tpreview\tpublished\n60001\tIdag skrev jag en artikel (se spalten här bredvid) om varför mitt engagemang i A\t1\n30001\tSkall senare i månaden på läkarbesök på medicinklink om min alzheimer . Jag disk\t1\n4\tAlzheimer gör inte ont. Allt känns som normalt. Ända tills man märker hur minnet\t1\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
