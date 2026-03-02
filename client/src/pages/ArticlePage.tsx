@@ -168,6 +168,21 @@ export default function ArticlePage() {
               </span>
             </div>
 
+            {/* Article title */}
+            <h1
+              className="text-3xl md:text-4xl font-bold text-foreground mb-4"
+              style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
+            >
+              {article.title}
+            </h1>
+
+            {/* Ingress / excerpt */}
+            {article.excerpt && (
+              <p className="text-lg md:text-xl leading-relaxed text-muted-foreground mb-8 border-l-4 border-[#c05746]/40 pl-4 italic">
+                {article.excerpt}
+              </p>
+            )}
+
             {/* Article content */}
             <div
               className="prose-custom"
