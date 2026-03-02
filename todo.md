@@ -68,3 +68,5 @@
 - [x] Add LLM-based auto-translation when creating/updating diary entries
 - [x] Show translated diary content when site is in English mode
 - [x] English heading: "Försök till en kunskapsbank" → "Notes towards a knowledge base"
+- [x] Add Markdown rendering support for article content (subheadings, bold, etc.)
+- [x] Add formatting help/toolbar in admin article editor

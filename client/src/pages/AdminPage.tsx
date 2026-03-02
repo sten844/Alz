@@ -394,6 +394,19 @@ export default function AdminPage() {
                       <textarea value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
                         rows={12} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 font-mono resize-y"
                         placeholder={t("Skriv artikelns innehåll i Markdown...", "Write article content in Markdown...")} />
+                      <div className="mt-3 p-4 bg-accent/50 rounded-lg border border-border/30">
+                        <p className="text-lg font-semibold text-foreground mb-3">{t("Formateringsguide:", "Formatting guide:")}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-base text-muted-foreground">
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">## Rubrik</span> → <span className="font-semibold">{t("Stor mellanrubrik", "Large subheading")}</span></div>
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">### Rubrik</span> → <span className="font-semibold">{t("Liten mellanrubrik", "Small subheading")}</span></div>
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">**fet text**</span> → <strong>{t("Fet text", "Bold text")}</strong></div>
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">*kursiv text*</span> → <em>{t("Kursiv text", "Italic text")}</em></div>
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">- Punkt</span> → {t("Punktlista", "Bullet list")}</div>
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">1. Punkt</span> → {t("Numrerad lista", "Numbered list")}</div>
+                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">---</span> → {t("Horisontell linje", "Horizontal line")}</div>
+                          <div className="text-base">{t("Tom rad = nytt stycke", "Empty line = new paragraph")}</div>
+                        </div>
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
