@@ -67,3 +67,4 @@
 - [x] Add English translation field to diary entries database schema
 - [x] Add LLM-based auto-translation when creating/updating diary entries
 - [x] Show translated diary content when site is in English mode
+- [x] English heading: "Försök till en kunskapsbank" → "Notes towards a knowledge base"

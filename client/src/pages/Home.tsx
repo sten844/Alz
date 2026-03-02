@@ -106,7 +106,7 @@ export default function Home() {
             className="text-xl sm:text-2xl text-foreground"
             style={{ fontFamily: "'DM Serif Display', serif" }}
           >
-            {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
+            {t("Försök till en kunskapsbank", "Notes towards a knowledge base")}
           </h2>
         </section>
 
@@ -127,7 +127,7 @@ export default function Home() {
                 className="text-3xl md:text-4xl text-foreground"
                 style={{ fontFamily: "'DM Serif Display', serif" }}
               >
-                {t("Försök till en kunskapsbank", "An attempt at a knowledge base")}
+                {t("Försök till en kunskapsbank", "Notes towards a knowledge base")}
               </h2>
             </div>
           </div>
