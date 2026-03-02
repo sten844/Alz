@@ -70,3 +70,9 @@
 - [x] English heading: "Försök till en kunskapsbank" → "Notes towards a knowledge base"
 - [x] Add Markdown rendering support for article content (subheadings, bold, etc.)
 - [x] Add formatting help/toolbar in admin article editor
+- [x] Add article_drafts table to database schema
+- [x] Create auto-save draft API endpoints (save, load, delete)
+- [x] Implement auto-save in admin article editor (save every 30s while typing)
+- [x] Add draft recovery UI (restore unsaved draft on page load)
+- [x] Add visual auto-save indicator (e.g. "Utkast sparat" with timestamp)
+- [x] Write vitest tests for draft API

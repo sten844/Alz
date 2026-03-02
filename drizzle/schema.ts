@@ -56,3 +56,26 @@ export const diaryEntries = mysqlTable("diary_entries", {
 
 export type DiaryEntry = typeof diaryEntries.$inferSelect;
 export type InsertDiaryEntry = typeof diaryEntries.$inferInsert;
+
+/**
+ * Article drafts table for auto-saving work in progress.
+ * Stores the latest auto-saved state of an article being edited.
+ */
+export const articleDrafts = mysqlTable("article_drafts", {
+  id: int("id").autoincrement().primaryKey(),
+  articleId: int("articleId"),  // null for new articles, set for editing existing ones
+  userId: int("userId").notNull(),
+  title: varchar("title", { length: 500 }).default("").notNull(),
+  excerpt: varchar("excerpt", { length: 1000 }).default("").notNull(),
+  content: text("content"),
+  category: varchar("category", { length: 100 }).default("Behandling").notNull(),
+  language: varchar("language", { length: 5 }).default("sv").notNull(),
+  imageUrl: varchar("imageUrl", { length: 2000 }),
+  publishedAt: varchar("publishedAt", { length: 30 }),
+  published: boolean("published").default(true).notNull(),
+  savedAt: timestamp("savedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ArticleDraft = typeof articleDrafts.$inferSelect;
+export type InsertArticleDraft = typeof articleDrafts.$inferInsert;

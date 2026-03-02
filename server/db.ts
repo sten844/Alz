@@ -1,6 +1,6 @@
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -177,4 +177,76 @@ export async function deleteDiaryEntry(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(diaryEntries).where(eq(diaryEntries.id, id));
+}
+
+// ---- Article draft queries ----
+
+export async function saveDraft(draft: InsertArticleDraft) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Check if a draft already exists for this user + articleId combo
+  const conditions = [eq(articleDrafts.userId, draft.userId)];
+  if (draft.articleId) {
+    conditions.push(eq(articleDrafts.articleId, draft.articleId));
+  } else {
+    conditions.push(isNull(articleDrafts.articleId));
+  }
+
+  const existing = await db.select().from(articleDrafts).where(and(...conditions)).limit(1);
+
+  if (existing.length > 0) {
+    // Update existing draft
+    await db.update(articleDrafts).set({
+      title: draft.title,
+      excerpt: draft.excerpt,
+      content: draft.content,
+      category: draft.category,
+      language: draft.language,
+      imageUrl: draft.imageUrl,
+      publishedAt: draft.publishedAt,
+      published: draft.published,
+      savedAt: new Date(),
+    }).where(eq(articleDrafts.id, existing[0].id));
+    return { id: existing[0].id };
+  } else {
+    // Create new draft
+    const result = await db.insert(articleDrafts).values(draft);
+    return { id: result[0].insertId };
+  }
+}
+
+export async function getDraft(userId: number, articleId?: number | null) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const conditions = [eq(articleDrafts.userId, userId)];
+  if (articleId) {
+    conditions.push(eq(articleDrafts.articleId, articleId));
+  } else {
+    conditions.push(isNull(articleDrafts.articleId));
+  }
+
+  const result = await db.select().from(articleDrafts).where(and(...conditions)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function deleteDraft(userId: number, articleId?: number | null) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const conditions = [eq(articleDrafts.userId, userId)];
+  if (articleId) {
+    conditions.push(eq(articleDrafts.articleId, articleId));
+  } else {
+    conditions.push(isNull(articleDrafts.articleId));
+  }
+
+  await db.delete(articleDrafts).where(and(...conditions));
+}
+
+export async function listDrafts(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(articleDrafts).where(eq(articleDrafts.userId, userId)).orderBy(desc(articleDrafts.savedAt));
 }

@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { z } from "zod";
 
@@ -113,6 +113,57 @@ export const appRouter = router({
       }).optional())
       .query(async ({ input }) => {
         return listArticles({ language: input?.language });
+      }),
+  }),
+
+  drafts: router({
+    save: adminProcedure
+      .input(z.object({
+        articleId: z.number().nullable().optional(),
+        title: z.string().default(""),
+        excerpt: z.string().default(""),
+        content: z.string().nullable().optional(),
+        category: z.string().default("Behandling"),
+        language: z.string().default("sv"),
+        imageUrl: z.string().nullable().optional(),
+        publishedAt: z.string().nullable().optional(),
+        published: z.boolean().default(true),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        return saveDraft({
+          articleId: input.articleId ?? null,
+          userId: ctx.user.id,
+          title: input.title,
+          excerpt: input.excerpt,
+          content: input.content ?? null,
+          category: input.category,
+          language: input.language,
+          imageUrl: input.imageUrl ?? null,
+          publishedAt: input.publishedAt ?? null,
+          published: input.published,
+        });
+      }),
+
+    get: adminProcedure
+      .input(z.object({
+        articleId: z.number().nullable().optional(),
+      }))
+      .query(async ({ input, ctx }) => {
+        return getDraft(ctx.user.id, input.articleId);
+      }),
+
+    delete: adminProcedure
+      .input(z.object({
+        articleId: z.number().nullable().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await deleteDraft(ctx.user.id, input.articleId);
+        return { success: true };
+      }),
+
+    list: adminProcedure
+      .query(async ({ ctx }) => {
+        return listDrafts(ctx.user.id);
       }),
   }),
 
