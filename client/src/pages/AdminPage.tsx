@@ -20,6 +20,8 @@ import {
   FileText,
   Clock,
   Check,
+  Upload,
+  ImageIcon,
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -83,6 +85,11 @@ export default function AdminPage() {
   const [recoveredArticleId, setRecoveredArticleId] = useState<number | null>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastSavedFormRef = useRef<string>("");
+
+  // ---- Image upload state ----
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ---- Diary state ----
   const [editingDiaryId, setEditingDiaryId] = useState<number | null>(null);
@@ -248,6 +255,62 @@ export default function AdminPage() {
       clearInterval(autoSaveTimerRef.current);
       autoSaveTimerRef.current = null;
     }
+  };
+
+  // ---- Image upload mutation ----
+  const uploadImageMutation = trpc.upload.image.useMutation({
+    onSuccess: (data) => {
+      setArticleForm((prev) => ({ ...prev, imageUrl: data.url }));
+      setIsUploading(false);
+      toast.success(t("Bild uppladdad!", "Image uploaded!"));
+    },
+    onError: (err) => {
+      setIsUploading(false);
+      toast.error(t("Kunde inte ladda upp bild: ", "Failed to upload image: ") + err.message);
+    },
+  });
+
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error(t("Välj en bildfil (JPG, PNG, etc.)", "Please select an image file (JPG, PNG, etc.)"));
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(t("Bilden är för stor (max 10 MB)", "Image is too large (max 10 MB)"));
+      return;
+    }
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadImageMutation.mutate({
+        fileName: file.name,
+        fileData: base64,
+        contentType: file.type,
+      });
+    };
+    reader.onerror = () => {
+      setIsUploading(false);
+      toast.error(t("Kunde inte läsa filen", "Could not read file"));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleImageFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
   };
 
   // ---- Diary queries/mutations ----
@@ -694,10 +757,70 @@ export default function AdminPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-lg font-medium text-foreground mb-2">{t("Bild-URL (valfritt)", "Image URL (optional)")}</label>
-                      <input type="text" value={articleForm.imageUrl} onChange={(e) => setArticleForm({ ...articleForm, imageUrl: e.target.value })}
-                        className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
-                        placeholder="https://..." />
+                      <label className="block text-lg font-medium text-foreground mb-2">{t("Artikelbild (valfritt)", "Article image (optional)")}</label>
+                      {articleForm.imageUrl ? (
+                        <div className="relative rounded-lg overflow-hidden border border-border/50 bg-background">
+                          <img src={articleForm.imageUrl} alt="" className="w-full max-h-64 object-cover" />
+                          <div className="absolute top-3 right-3 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="p-2 bg-white/90 rounded-full shadow hover:bg-white transition-colors"
+                              title={t("Byt bild", "Change image")}
+                            >
+                              <Upload className="w-5 h-5 text-gray-700" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setArticleForm({ ...articleForm, imageUrl: "" })}
+                              className="p-2 bg-white/90 rounded-full shadow hover:bg-white transition-colors"
+                              title={t("Ta bort bild", "Remove image")}
+                            >
+                              <X className="w-5 h-5 text-red-500" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          onDrop={handleDrop}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onClick={() => !isUploading && fileInputRef.current?.click()}
+                          className={`w-full p-8 rounded-lg border-2 border-dashed transition-all cursor-pointer flex flex-col items-center gap-3 ${
+                            dragOver
+                              ? "border-[#c05746] bg-[#c05746]/5"
+                              : "border-border/50 bg-background hover:border-[#c05746]/50 hover:bg-accent/30"
+                          }`}
+                        >
+                          {isUploading ? (
+                            <>
+                              <Loader2 className="w-10 h-10 animate-spin text-[#c05746]" />
+                              <span className="text-lg text-muted-foreground">{t("Laddar upp...", "Uploading...")}</span>
+                            </>
+                          ) : (
+                            <>
+                              <ImageIcon className="w-10 h-10 text-muted-foreground" />
+                              <span className="text-lg text-muted-foreground text-center">
+                                {t("Klicka h\u00e4r eller dra en bild hit", "Click here or drag an image here")}
+                              </span>
+                              <span className="text-base text-muted-foreground/70">
+                                {t("JPG, PNG, WebP (max 10 MB)", "JPG, PNG, WebP (max 10 MB)")}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageFile(file);
+                          e.target.value = "";
+                        }}
+                      />
                     </div>
                     <div className="flex items-center justify-between pt-3">
                       <label className="flex items-center gap-3 cursor-pointer">

@@ -86,3 +86,6 @@
 - [x] Fix: Markdown headings (##) not rendering correctly in articles
 - [x] Fix: Article subheadings not appearing bold/prominent (switched to Source Sans 3 with font-bold)
 - [x] Generate a content-relevant image for the "Alzheimer: Vad vet vi om orsakerna?" article
+- [x] Add image upload endpoint (server-side, upload to S3)
+- [x] Add image upload UI in admin article editor (drag-drop or file picker)
+- [x] Show image preview in the editor after upload

@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
 import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts } from "./db";
 import { invokeLLM } from "./_core/llm";
+import { storagePut } from "./storage";
 import { z } from "zod";
 
 // Swedish → English category mapping
@@ -307,6 +308,23 @@ export const appRouter = router({
     list: adminProcedure
       .query(async ({ ctx }) => {
         return listDrafts(ctx.user.id);
+      }),
+  }),
+
+  upload: router({
+    image: adminProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(), // base64 encoded
+        contentType: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileData, "base64");
+        const randomSuffix = Math.random().toString(36).substring(2, 10);
+        const sanitizedName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const fileKey = `article-images/${randomSuffix}-${sanitizedName}`;
+        const { url } = await storagePut(fileKey, buffer, input.contentType);
+        return { url };
       }),
   }),
 
