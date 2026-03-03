@@ -89,3 +89,5 @@
 - [x] Add image upload endpoint (server-side, upload to S3)
 - [x] Add image upload UI in admin article editor (drag-drop or file picker)
 - [x] Show image preview in the editor after upload
+- [x] Fix: Auto-translation does not copy imageUrl to the English article version (was already correct in code, issue was old articles)
+- [x] Fix old article pairs: link with pairId and copy images between SV/EN versions
