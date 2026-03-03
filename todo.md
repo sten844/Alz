@@ -84,3 +84,4 @@
 - [x] Write vitest tests for article auto-translation
 - [x] Fix: Article excerpt/ingress not displayed on the published article page
 - [x] Fix: Markdown headings (##) not rendering correctly in articles
+- [x] Fix: Article subheadings not appearing bold/prominent (switched to Source Sans 3 with font-bold)

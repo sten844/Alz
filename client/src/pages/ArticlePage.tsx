@@ -16,9 +16,9 @@ function renderMarkdown(content: string): string {
 
   // Headers — support both standard markdown (## text) and ##text## format
   html = html.replace(/^###(.+?)###\s*$/gm, '<h3 class="text-xl font-semibold mt-6 mb-3" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h3>');
-  html = html.replace(/^##(.+?)##\s*$/gm, '<h2 class="text-2xl mt-8 mb-4" style="font-family: \'DM Serif Display\', Georgia, serif">$1</h2>');
+  html = html.replace(/^##(.+?)##\s*$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-foreground" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h2>');
   html = html.replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold mt-6 mb-3" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2 class="text-2xl mt-8 mb-4" style="font-family: \'DM Serif Display\', Georgia, serif">$1</h2>');
+  html = html.replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-foreground" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h2>');
   html = html.replace(/^# (.+)$/gm, '<h1 class="text-3xl md:text-4xl mt-4 mb-6" style="font-family: \'DM Serif Display\', Georgia, serif">$1</h1>');
 
   // Bold
