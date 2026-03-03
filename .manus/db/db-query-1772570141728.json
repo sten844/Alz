@@ -1,0 +1,136 @@
+{
+  "query": "SELECT id, title, language, category, pairId FROM articles WHERE pairId IS NOT NULL ORDER BY pairId, language",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, language, category, pairId FROM articles WHERE pairId IS NOT NULL ORDER BY pairId, language",
+  "rows": [
+    {
+      "id": "8",
+      "title": "My Treatment Plan",
+      "language": "en",
+      "category": "Behandling",
+      "pairId": "1"
+    },
+    {
+      "id": "1",
+      "title": "Min behandlingsplan",
+      "language": "sv",
+      "category": "Behandling",
+      "pairId": "1"
+    },
+    {
+      "id": "9",
+      "title": "AI and My Alzheimer's",
+      "language": "en",
+      "category": "Daily Life",
+      "pairId": "2"
+    },
+    {
+      "id": "2",
+      "title": "AI och min alzheimer",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "pairId": "2"
+    },
+    {
+      "id": "10",
+      "title": "Self-Testing: Can I Trust Myself?",
+      "language": "en",
+      "category": "Vardagsliv",
+      "pairId": "3"
+    },
+    {
+      "id": "3",
+      "title": "Självtestning: Kan jag lita på mig själv?",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "pairId": "3"
+    },
+    {
+      "id": "11",
+      "title": "AI for those of us with Alzheimer's",
+      "language": "en",
+      "category": "Research",
+      "pairId": "4"
+    },
+    {
+      "id": "4",
+      "title": "Ai för oss med Alzheimer",
+      "language": "sv",
+      "category": "Forskning",
+      "pairId": "4"
+    },
+    {
+      "id": "12",
+      "title": "Lecanemab – The First Disease-Modifying Drug",
+      "language": "en",
+      "category": "Läkemedel",
+      "pairId": "5"
+    },
+    {
+      "id": "5",
+      "title": "Lecanemab – det första bromsmedicinet",
+      "language": "sv",
+      "category": "Läkemedel",
+      "pairId": "5"
+    },
+    {
+      "id": "13",
+      "title": "What Happens in the Brain?",
+      "language": "en",
+      "category": "Forskning",
+      "pairId": "6"
+    },
+    {
+      "id": "6",
+      "title": "Vad händer i hjärnan?",
+      "language": "sv",
+      "category": "Forskning",
+      "pairId": "6"
+    },
+    {
+      "id": "14",
+      "title": "Medications Intended for Other Diagnoses - and Which May Potentially Affect Alzheimer's",
+      "language": "en",
+      "category": "Medication",
+      "pairId": "7"
+    },
+    {
+      "id": "7",
+      "title": "Läkemedel avsedda för andra diagnoser - och som ev kan påverka Alzheimers",
+      "language": "sv",
+      "category": "Läkemedel",
+      "pairId": "7"
+    },
+    {
+      "id": "30002",
+      "title": "The Drive Makes the Disease Smaller",
+      "language": "en",
+      "category": "Daily Life",
+      "pairId": "30001"
+    },
+    {
+      "id": "30001",
+      "title": "Drivet gör sjukdomen mindre",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "pairId": "30001"
+    },
+    {
+      "id": "60002",
+      "title": "Alzheimer's: What do we know about the causes?",
+      "language": "en",
+      "category": "Daily Life",
+      "pairId": "60001"
+    },
+    {
+      "id": "60001",
+      "title": "Alzheimer: Vad vet  vi om orsakerna?",
+      "language": "sv",
+      "category": "Vardagsliv",
+      "pairId": "60001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tcategory\tpairId\n8\tMy Treatment Plan\ten\tBehandling\t1\n1\tMin behandlingsplan\tsv\tBehandling\t1\n9\tAI and My Alzheimer's\ten\tDaily Life\t2\n2\tAI och min alzheimer\tsv\tVardagsliv\t2\n10\tSelf-Testing: Can I Trust Myself?\ten\tVardagsliv\t3\n3\tSjälvtestning: Kan jag lita på mig själv?\tsv\tVardagsliv\t3\n11\tAI for those of us with Alzheimer's\ten\tResearch\t4\n4\tAi för oss med Alzheimer\tsv\tForskning\t4\n12\tLecanemab – The First Disease-Modifying Drug\ten\tLäkemedel\t5\n5\tLecanemab – det första bromsmedicinet\tsv\tLäkemedel\t5\n13\tWhat Happens in the Brain?\ten\tForskning\t6\n6\tVad händer i hjärnan?\tsv\tForskning\t6\n14\tMedications Intended for Other Diagnoses - and Which May Potentially Affect Alzheimer's\ten\tMedication\t7\n7\tLäkemedel avsedda för andra diagnoser - och som ev kan påverka Alzheimers\tsv\tLäkemedel\t7\n30002\tThe Drive Makes the Disease Smaller\ten\tDaily Life\t30001\n30001\tDrivet gör sjukdomen mindre\tsv\tVardagsliv\t30001\n60002\tAlzheimer's: What do we know about the causes?\ten\tDaily Life\t60001\n60001\tAlzheimer: Vad vet  vi om orsakerna?\tsv\tVardagsliv\t60001\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

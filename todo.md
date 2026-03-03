@@ -92,3 +92,4 @@
 - [x] Fix: Auto-translation does not copy imageUrl to the English article version (was already correct in code, issue was old articles)
 - [x] Fix old article pairs: link with pairId and copy images between SV/EN versions
 - [x] Auto-translate article categories when creating/updating language pairs (SV↔EN, bidirectional)
+- [x] Fix: Category change on Swedish article should auto-update English paired article's category (immediate sync + fixed existing mismatches)

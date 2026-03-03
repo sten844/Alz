@@ -206,8 +206,30 @@ export const appRouter = router({
         if (article && article.pairId) {
           const targetLang = article.language === "sv" ? "en" : "sv";
           const pairedArticle = await getArticleByPairIdAndLanguage(article.pairId, targetLang);
-          if (pairedArticle && (data.title || data.content || data.excerpt || data.category)) {
-            // Re-translate in background
+
+          // Immediately sync category and image (no LLM needed)
+          if (pairedArticle) {
+            const immediateUpdates: Record<string, any> = {};
+            if (data.category) {
+              const targetCategory = article.language === "sv"
+                ? (categoryToEnglish[data.category] || data.category)
+                : (categoryToSwedish[data.category] || data.category);
+              immediateUpdates.category = targetCategory;
+            }
+            if (data.imageUrl !== undefined) {
+              immediateUpdates.imageUrl = data.imageUrl;
+            }
+            if (data.published !== undefined) {
+              immediateUpdates.published = data.published;
+            }
+            if (Object.keys(immediateUpdates).length > 0) {
+              await updateArticle(pairedArticle.id, immediateUpdates);
+              console.log(`[Translation] Immediately synced category/image/published to ${targetLang.toUpperCase()} pair (id: ${pairedArticle.id})`);
+            }
+          }
+
+          if (pairedArticle && (data.title || data.content || data.excerpt)) {
+            // Re-translate text fields in background (takes time due to LLM)
             (async () => {
               try {
                 const currentArticle = await getArticleById(id);
