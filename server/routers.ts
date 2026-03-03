@@ -47,13 +47,15 @@ async function translateToEnglish(swedishText: string): Promise<string> {
   }
 }
 
-async function translateArticleFields(title: string, excerpt: string, content: string): Promise<{ title: string; excerpt: string; content: string }> {
+async function translateArticleFields(title: string, excerpt: string, content: string, direction: "sv-en" | "en-sv" = "sv-en"): Promise<{ title: string; excerpt: string; content: string }> {
+  const fromLang = direction === "sv-en" ? "Swedish" : "English";
+  const toLang = direction === "sv-en" ? "English" : "Swedish";
   try {
     const result = await invokeLLM({
       messages: [
         {
           role: "system",
-          content: `You are a translator. Translate the following Swedish article to English. Keep the same tone, style, and markdown formatting. The article is a personal blog post about living with Alzheimer's disease.
+          content: `You are a translator. Translate the following ${fromLang} article to ${toLang}. Keep the same tone, style, and markdown formatting. The article is a personal blog post about living with Alzheimer's disease.
 
 Return a JSON object with exactly three fields: "title", "excerpt", and "content". Return ONLY the JSON, nothing else.`,
         },
@@ -147,31 +149,34 @@ export const appRouter = router({
           pairId: input.pairId ?? null,
         });
 
-        // Auto-translate Swedish articles to English (in background)
-        if (input.language === "sv" && !input.pairId) {
-          // Fire and forget — don't block the response
+        // Auto-translate articles to the other language (in background)
+        if (!input.pairId) {
           (async () => {
             try {
-              const translated = await translateArticleFields(input.title, input.excerpt, input.content);
+              const direction = input.language === "sv" ? "sv-en" : "en-sv";
+              const targetLang = input.language === "sv" ? "en" : "sv";
+              const translated = await translateArticleFields(input.title, input.excerpt, input.content, direction);
               if (translated.title && translated.content) {
-                const enCategory = categoryToEnglish[input.category] || input.category;
-                const enResult = await createArticle({
+                const targetCategory = input.language === "sv"
+                  ? (categoryToEnglish[input.category] || input.category)
+                  : (categoryToSwedish[input.category] || input.category);
+                const pairResult = await createArticle({
                   title: translated.title,
                   excerpt: translated.excerpt,
                   content: translated.content,
-                  category: enCategory,
-                  language: "en",
+                  category: targetCategory,
+                  language: targetLang,
                   pairId: svResult.id,
                   imageUrl: input.imageUrl ?? null,
                   publishedAt,
                   published: input.published,
                 });
-                // Update the Swedish article to link back
+                // Update the original article to link back
                 await updateArticle(svResult.id, { pairId: svResult.id });
-                console.log(`[Translation] Created English translation (id: ${enResult.id}) for Swedish article (id: ${svResult.id})`);
+                console.log(`[Translation] Created ${targetLang.toUpperCase()} translation (id: ${pairResult.id}) for ${input.language.toUpperCase()} article (id: ${svResult.id})`);
               }
             } catch (error) {
-              console.error("[Translation] Failed to create English translation:", error);
+              console.error("[Translation] Failed to create translation:", error);
             }
           })();
         }
@@ -196,36 +201,40 @@ export const appRouter = router({
         const { id, ...data } = input;
         await updateArticle(id, data);
 
-        // Auto-update English translation if this is a Swedish article
+        // Auto-update the paired translation
         const article = await getArticleById(id);
-        if (article && article.language === "sv" && article.pairId) {
-          // Find the English pair
-          const enArticle = await getArticleByPairIdAndLanguage(article.pairId, "en");
-          if (enArticle && (data.title || data.content || data.excerpt || data.category)) {
+        if (article && article.pairId) {
+          const targetLang = article.language === "sv" ? "en" : "sv";
+          const pairedArticle = await getArticleByPairIdAndLanguage(article.pairId, targetLang);
+          if (pairedArticle && (data.title || data.content || data.excerpt || data.category)) {
             // Re-translate in background
             (async () => {
               try {
-                const currentSv = await getArticleById(id);
-                if (!currentSv) return;
+                const currentArticle = await getArticleById(id);
+                if (!currentArticle) return;
+                const direction = currentArticle.language === "sv" ? "sv-en" : "en-sv";
                 const translated = await translateArticleFields(
-                  currentSv.title,
-                  currentSv.excerpt,
-                  currentSv.content
+                  currentArticle.title,
+                  currentArticle.excerpt,
+                  currentArticle.content,
+                  direction
                 );
                 if (translated.title && translated.content) {
-                  const enCategory = categoryToEnglish[currentSv.category] || currentSv.category;
-                  await updateArticle(enArticle.id, {
+                  const targetCategory = currentArticle.language === "sv"
+                    ? (categoryToEnglish[currentArticle.category] || currentArticle.category)
+                    : (categoryToSwedish[currentArticle.category] || currentArticle.category);
+                  await updateArticle(pairedArticle.id, {
                     title: translated.title,
                     excerpt: translated.excerpt,
                     content: translated.content,
-                    category: enCategory,
+                    category: targetCategory,
                     imageUrl: data.imageUrl !== undefined ? data.imageUrl : undefined,
                     published: data.published !== undefined ? data.published : undefined,
                   });
-                  console.log(`[Translation] Updated English translation (id: ${enArticle.id}) for Swedish article (id: ${id})`);
+                  console.log(`[Translation] Updated ${targetLang.toUpperCase()} translation (id: ${pairedArticle.id}) for ${currentArticle.language.toUpperCase()} article (id: ${id})`);
                 }
               } catch (error) {
-                console.error("[Translation] Failed to update English translation:", error);
+                console.error("[Translation] Failed to update translation:", error);
               }
             })();
           }
