@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, title, language, pairId, imageUrl FROM articles WHERE id = 60001 OR pairId = (SELECT pairId FROM articles WHERE id = 60001);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, language, pairId, imageUrl FROM articles WHERE id = 60001 OR pairId = (SELECT pairId FROM articles WHERE id = 60001);",
+  "rows": [
+    {
+      "id": "60001",
+      "title": "Alzheimer: Vad vet  vi om orsakerna?",
+      "language": "sv",
+      "pairId": "60001",
+      "imageUrl": "NULL"
+    },
+    {
+      "id": "60002",
+      "title": "Alzheimer's: What do we know about the causes?",
+      "language": "en",
+      "pairId": "60001",
+      "imageUrl": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tpairId\timageUrl\n60001\tAlzheimer: Vad vet  vi om orsakerna?\tsv\t60001\tNULL\n60002\tAlzheimer's: What do we know about the causes?\ten\t60001\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 79
+}

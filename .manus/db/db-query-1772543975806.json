@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, title, language, imageUrl FROM articles WHERE id >= 60000;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, language, imageUrl FROM articles WHERE id >= 60000;",
+  "rows": [
+    {
+      "id": "60001",
+      "title": "Alzheimer: Vad vet  vi om orsakerna?",
+      "language": "sv",
+      "imageUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/alzheimer-causes-article-DoAX2UiEDwtdVAiysf49i8.webp"
+    },
+    {
+      "id": "60002",
+      "title": "Alzheimer's: What do we know about the causes?",
+      "language": "en",
+      "imageUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/alzheimer-causes-article-DoAX2UiEDwtdVAiysf49i8.webp"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\timageUrl\n60001\tAlzheimer: Vad vet  vi om orsakerna?\tsv\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/alzheimer-causes-article-DoAX2UiEDwtdVAiysf49i8.webp\n60002\tAlzheimer's: What do we know about the causes?\ten\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/alzheimer-causes-article-DoAX2UiEDwtdVAiysf49i8.webp\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
