@@ -93,3 +93,4 @@
 - [x] Fix old article pairs: link with pairId and copy images between SV/EN versions
 - [x] Auto-translate article categories when creating/updating language pairs (SV↔EN, bidirectional)
 - [x] Fix: Category change on Swedish article should auto-update English paired article's category (immediate sync + fixed existing mismatches)
+- [x] Move suggested links to the bottom of the AI sub-page

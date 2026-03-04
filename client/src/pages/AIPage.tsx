@@ -353,33 +353,6 @@ export default function AIPage() {
           </div>
         </section>
 
-        {/* Useful links - Swedish & English */}
-        <section className="container py-16">
-          <h2 className="text-3xl text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
-            {t("Användbara länkar", "Useful links")}
-          </h2>
-          <p className="text-muted-foreground mb-8">
-            {t("Svenska och internationella resurser.", "Swedish and international resources.")}
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {swedishLinks.map((link, i) => (
-              <a
-                key={i}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-5 rounded-xl bg-card border border-border/50 hover:shadow-lg hover:border-[#c05746]/30 transition-all group"
-              >
-                <div>
-                  <h3 className="font-semibold text-foreground group-hover:text-[#c05746] transition-colors">{link.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{t(link.descSv, link.descEn)}</p>
-                </div>
-                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-[#c05746] transition-colors flex-shrink-0 ml-4" />
-              </a>
-            ))}
-          </div>
-        </section>
-
         {/* Spectacular - 2 column grid */}
         <section className="bg-slate-900 py-16">
           <div className="container">
@@ -423,6 +396,33 @@ export default function AIPage() {
                 url={item.url}
                 linkText={t(item.linkSv, item.linkEn)}
               />
+            ))}
+          </div>
+        </section>
+
+        {/* Useful links - Swedish & English (moved to bottom) */}
+        <section className="container py-16">
+          <h2 className="text-3xl text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            {t("Användbara länkar", "Useful links")}
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            {t("Svenska och internationella resurser.", "Swedish and international resources.")}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {swedishLinks.map((link, i) => (
+              <a
+                key={i}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-5 rounded-xl bg-card border border-border/50 hover:shadow-lg hover:border-[#c05746]/30 transition-all group"
+              >
+                <div>
+                  <h3 className="font-semibold text-foreground group-hover:text-[#c05746] transition-colors">{link.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{t(link.descSv, link.descEn)}</p>
+                </div>
+                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-[#c05746] transition-colors flex-shrink-0 ml-4" />
+              </a>
             ))}
           </div>
         </section>
