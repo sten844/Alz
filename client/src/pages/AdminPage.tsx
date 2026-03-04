@@ -100,6 +100,14 @@ export default function AdminPage() {
   const [activeBold, setActiveBold] = useState<string | null>(null); // which formField has bold active
   const [activeItalic, setActiveItalic] = useState<string | null>(null); // which formField has italic active
 
+  // ---- Inline formatting input state (iPad-friendly: no text selection needed) ----
+  const [inlineFormatText, setInlineFormatText] = useState("");
+  const [inlineFormatType, setInlineFormatType] = useState<"bold" | "italic" | "heading" | null>(null);
+  const [inlineFormatField, setInlineFormatField] = useState<"articleContent" | "articleExcerpt" | "diaryContent" | null>(null);
+  const inlineInputRef = useRef<HTMLInputElement>(null);
+  // Track cursor position when user leaves the textarea
+  const cursorPositionRef = useRef<{ field: string; pos: number }>({ field: "", pos: 0 });
+
   // ---- Diary state ----
   const [editingDiaryId, setEditingDiaryId] = useState<number | null>(null);
   const [showDiaryForm, setShowDiaryForm] = useState(false);
@@ -342,117 +350,68 @@ export default function AdminPage() {
     });
   };
 
-  // ---- Toolbar button handler (works via ref for iPad/touch) ----
-  // Uses direct DOM value manipulation + native input event to keep iOS keyboard open
-  const applyFormatting = (
-    textareaRef: React.RefObject<HTMLTextAreaElement | null>,
-    formField: "articleContent" | "articleExcerpt" | "diaryContent",
-    type: "bold" | "italic" | "heading"
-  ) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  // ---- Insert formatted text at cursor position ----
+  const insertFormattedText = (word: string, type: "bold" | "italic" | "heading", formField: "articleContent" | "articleExcerpt" | "diaryContent") => {
+    if (!word.trim()) return;
 
-    // CRITICAL for iPad: focus synchronously within user gesture
-    textarea.focus();
+    let formatted = "";
+    if (type === "bold") formatted = `**${word.trim()}**`;
+    else if (type === "italic") formatted = `*${word.trim()}*`;
+    else if (type === "heading") formatted = `\n## ${word.trim()}\n`;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-    const selectedText = text.substring(start, end);
+    const pos = cursorPositionRef.current.field === formField ? cursorPositionRef.current.pos : -1;
 
-    let wrapper = "";
-    let prefix = "";
-    if (type === "bold") wrapper = "**";
-    else if (type === "italic") wrapper = "*";
-    else if (type === "heading") prefix = "## ";
-
-    let newText: string;
-    let newCursorStart: number;
-    let newCursorEnd: number;
-
-    if (prefix) {
-      const lineStart = text.lastIndexOf("\n", start - 1) + 1;
-      const lineText = text.substring(lineStart, end || start);
-      if (lineText.startsWith("## ")) {
-        newText = text.substring(0, lineStart) + lineText.substring(3) + text.substring(end || start);
-        newCursorStart = Math.max(lineStart, start - 3);
-        newCursorEnd = Math.max(lineStart, end - 3);
-      } else {
-        newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
-        newCursorStart = start + prefix.length;
-        newCursorEnd = end + prefix.length;
-      }
-    } else if (selectedText) {
-      const beforeWrapper = text.substring(start - wrapper.length, start);
-      const afterWrapper = text.substring(end, end + wrapper.length);
-      if (beforeWrapper === wrapper && afterWrapper === wrapper) {
-        newText = text.substring(0, start - wrapper.length) + selectedText + text.substring(end + wrapper.length);
-        newCursorStart = start - wrapper.length;
-        newCursorEnd = end - wrapper.length;
-      } else {
-        newText = text.substring(0, start) + wrapper + selectedText + wrapper + text.substring(end);
-        newCursorStart = start + wrapper.length;
-        newCursorEnd = end + wrapper.length;
-      }
-    } else {
-      // No selection: toggle mode
-      if (type === "bold") {
-        if (activeBold === formField) {
-          newText = text.substring(0, start) + "**" + text.substring(end);
-          newCursorStart = start + 2;
-          newCursorEnd = start + 2;
-          setActiveBold(null);
-        } else {
-          newText = text.substring(0, start) + "**" + text.substring(end);
-          newCursorStart = start + 2;
-          newCursorEnd = start + 2;
-          setActiveBold(formField);
-        }
-      } else if (type === "italic") {
-        if (activeItalic === formField) {
-          newText = text.substring(0, start) + "*" + text.substring(end);
-          newCursorStart = start + 1;
-          newCursorEnd = start + 1;
-          setActiveItalic(null);
-        } else {
-          newText = text.substring(0, start) + "*" + text.substring(end);
-          newCursorStart = start + 1;
-          newCursorEnd = start + 1;
-          setActiveItalic(formField);
-        }
-      } else {
-        newText = text;
-        newCursorStart = start;
-        newCursorEnd = end;
-      }
+    if (formField === "articleContent") {
+      setArticleForm((prev) => {
+        const text = prev.content;
+        const insertAt = pos >= 0 && pos <= text.length ? pos : text.length;
+        // Add a space before if not at start and previous char isn't whitespace
+        const spaceBefore = insertAt > 0 && text[insertAt - 1] !== " " && text[insertAt - 1] !== "\n" ? " " : "";
+        const spaceAfter = insertAt < text.length && text[insertAt] !== " " && text[insertAt] !== "\n" ? " " : "";
+        const newText = text.substring(0, insertAt) + spaceBefore + formatted + spaceAfter + text.substring(insertAt);
+        // Update cursor position for next insert
+        cursorPositionRef.current = { field: formField, pos: insertAt + spaceBefore.length + formatted.length + spaceAfter.length };
+        return { ...prev, content: newText };
+      });
+    } else if (formField === "articleExcerpt") {
+      setArticleForm((prev) => {
+        const text = prev.excerpt;
+        const insertAt = pos >= 0 && pos <= text.length ? pos : text.length;
+        const spaceBefore = insertAt > 0 && text[insertAt - 1] !== " " && text[insertAt - 1] !== "\n" ? " " : "";
+        const spaceAfter = insertAt < text.length && text[insertAt] !== " " && text[insertAt] !== "\n" ? " " : "";
+        const newText = text.substring(0, insertAt) + spaceBefore + formatted + spaceAfter + text.substring(insertAt);
+        cursorPositionRef.current = { field: formField, pos: insertAt + spaceBefore.length + formatted.length + spaceAfter.length };
+        return { ...prev, excerpt: newText };
+      });
+    } else if (formField === "diaryContent") {
+      setDiaryForm((prev) => {
+        const text = prev.content;
+        const insertAt = pos >= 0 && pos <= text.length ? pos : text.length;
+        const spaceBefore = insertAt > 0 && text[insertAt - 1] !== " " && text[insertAt - 1] !== "\n" ? " " : "";
+        const spaceAfter = insertAt < text.length && text[insertAt] !== " " && text[insertAt] !== "\n" ? " " : "";
+        const newText = text.substring(0, insertAt) + spaceBefore + formatted + spaceAfter + text.substring(insertAt);
+        cursorPositionRef.current = { field: formField, pos: insertAt + spaceBefore.length + formatted.length + spaceAfter.length };
+        return { ...prev, content: newText };
+      });
     }
 
-    // CRITICAL for iPad: Set value directly on DOM element FIRST, then dispatch
-    // native input event so React picks up the change. This avoids the
-    // React re-render cycle that causes iOS to dismiss the keyboard.
-    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-      window.HTMLTextAreaElement.prototype, 'value'
-    )?.set;
-    if (nativeInputValueSetter) {
-      nativeInputValueSetter.call(textarea, newText);
-      textarea.dispatchEvent(new Event('input', { bubbles: true }));
-    } else {
-      // Fallback: use React state update
-      if (formField === "articleContent") {
-        setArticleForm((prev) => ({ ...prev, content: newText }));
-      } else if (formField === "articleExcerpt") {
-        setArticleForm((prev) => ({ ...prev, excerpt: newText }));
-      } else if (formField === "diaryContent") {
-        setDiaryForm((prev) => ({ ...prev, content: newText }));
-      }
-    }
-
-    // Set cursor position synchronously (keyboard stays open because focus never left)
-    textarea.selectionStart = newCursorStart;
-    textarea.selectionEnd = newCursorEnd;
+    // Clear the inline input and close
+    setInlineFormatText("");
+    setInlineFormatType(null);
+    setInlineFormatField(null);
+    toast.success(t(
+      type === "bold" ? `"${word.trim()}" infogat som fet text` : type === "italic" ? `"${word.trim()}" infogat som kursiv text` : `"${word.trim()}" infogat som rubrik`,
+      type === "bold" ? `"${word.trim()}" inserted as bold` : type === "italic" ? `"${word.trim()}" inserted as italic` : `"${word.trim()}" inserted as heading`
+    ));
   };
 
-  // Reusable formatting toolbar component with toggle state indicators
+  // ---- Track cursor position when user interacts with textarea ----
+  const handleTextareaSelect = (formField: "articleContent" | "articleExcerpt" | "diaryContent") => (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    cursorPositionRef.current = { field: formField, pos: textarea.selectionStart };
+  };
+
+  // Reusable formatting toolbar component — iPad-friendly with inline input
   const FormattingToolbar = ({
     textareaRef,
     formField,
@@ -460,95 +419,110 @@ export default function AdminPage() {
     textareaRef: React.RefObject<HTMLTextAreaElement | null>;
     formField: "articleContent" | "articleExcerpt" | "diaryContent";
   }) => {
-    const isBoldActive = activeBold === formField;
-    const isItalicActive = activeItalic === formField;
+    const isActiveForThisField = inlineFormatField === formField;
 
-    // onTouchStart handler: focus textarea immediately on touch to keep iOS keyboard open
-    const handleTouchStart = (e: React.TouchEvent, action: () => void) => {
-      e.preventDefault(); // prevent default touch behavior
-      const textarea = textareaRef.current;
-      if (textarea) textarea.focus(); // focus SYNCHRONOUSLY in touch handler
-      action();
+    const openInlineInput = (type: "bold" | "italic" | "heading") => {
+      setInlineFormatType(type);
+      setInlineFormatField(formField);
+      setInlineFormatText("");
+      // Focus the inline input after render
+      setTimeout(() => inlineInputRef.current?.focus(), 50);
     };
 
+    const typeLabel = inlineFormatType === "bold" ? t("fet", "bold") : inlineFormatType === "italic" ? t("kursiv", "italic") : t("rubrik", "heading");
+
     return (
-      <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <button
-          type="button"
-          onTouchStart={(e) => handleTouchStart(e, () => {
-            const textarea = textareaRef.current;
-            if (textarea) {
-              textarea.focus();
-              const len = textarea.value.length;
-              textarea.selectionStart = len;
-              textarea.selectionEnd = len;
-            }
-          })}
-          onClick={() => {
-            const textarea = textareaRef.current;
-            if (textarea) {
-              textarea.focus();
-              const len = textarea.value.length;
-              textarea.selectionStart = len;
-              textarea.selectionEnd = len;
-            }
-          }}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-blue-50 border-2 border-blue-300 text-blue-700 text-lg font-semibold hover:bg-blue-100 active:bg-blue-200 transition-all touch-manipulation"
-          title={t("Visa tangentbord", "Show keyboard")}
-        >
-          <span className="text-xl">⌨️</span>
-          <span className="text-base">{t("Skriv", "Type")}</span>
-        </button>
-        <button
-          type="button"
-          onTouchStart={(e) => handleTouchStart(e, () => applyFormatting(textareaRef, formField, "bold"))}
-          onClick={() => applyFormatting(textareaRef, formField, "bold")}
-          className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-lg font-bold transition-all touch-manipulation ${
-            isBoldActive
-              ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
-              : "bg-card border border-border/50 text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10"
-          }`}
-          title={t("Fet text", "Bold")}
-        >
-          <span className="text-xl font-bold">B</span>
-          <span className="text-base font-normal">{isBoldActive ? t("P\u00c5", "ON") : t("Fet", "Bold")}</span>
-        </button>
-        <button
-          type="button"
-          onTouchStart={(e) => handleTouchStart(e, () => applyFormatting(textareaRef, formField, "italic"))}
-          onClick={() => applyFormatting(textareaRef, formField, "italic")}
-          className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-lg transition-all touch-manipulation ${
-            isItalicActive
-              ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
-              : "bg-card border border-border/50 text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10"
-          }`}
-          title={t("Kursiv text", "Italic")}
-        >
-          <span className="text-xl italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
-          <span className="text-base font-normal">{isItalicActive ? t("P\u00c5", "ON") : t("Kursiv", "Italic")}</span>
-        </button>
-        <button
-          type="button"
-          onTouchStart={(e) => handleTouchStart(e, () => applyFormatting(textareaRef, formField, "heading"))}
-          onClick={() => applyFormatting(textareaRef, formField, "heading")}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-card border border-border/50 text-lg font-semibold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
-          title={t("Rubrik", "Heading")}
-        >
-          <span className="text-xl font-bold">H</span>
-          <span className="text-base font-normal">{t("Rubrik", "Heading")}</span>
-        </button>
-        {(isBoldActive || isItalicActive) && (
-          <span className="text-base text-[#c05746] font-semibold ml-2 animate-pulse">
-            {t(
-              `Skriv din text, tryck sedan ${isBoldActive ? "B" : ""}${isBoldActive && isItalicActive ? " och " : ""}${isItalicActive ? "I" : ""} igen f\u00f6r att avsluta`,
-              `Type your text, then press ${isBoldActive ? "B" : ""}${isBoldActive && isItalicActive ? " and " : ""}${isItalicActive ? "I" : ""} again to finish`
-            )}
-          </span>
-        )}
-        {!isBoldActive && !isItalicActive && (
-          <span className="text-sm text-muted-foreground/60 ml-2">
-            {t("Tryck knapp \u2192 skriv \u2192 tryck igen", "Press button \u2192 type \u2192 press again")}
-          </span>
+      <div className="mb-2 space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm text-muted-foreground mr-1">{t("Infoga:", "Insert:")} </span>
+          <button
+            type="button"
+            onClick={() => openInlineInput("bold")}
+            className={`inline-flex items-center gap-1.5 px-5 py-3 rounded-lg text-lg font-bold transition-all touch-manipulation ${
+              isActiveForThisField && inlineFormatType === "bold"
+                ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
+                : "bg-card border border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10"
+            }`}
+          >
+            <span className="text-xl font-bold">B</span>
+            <span className="text-base font-normal">{t("Fet", "Bold")}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => openInlineInput("italic")}
+            className={`inline-flex items-center gap-1.5 px-5 py-3 rounded-lg text-lg transition-all touch-manipulation ${
+              isActiveForThisField && inlineFormatType === "italic"
+                ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
+                : "bg-card border border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10"
+            }`}
+          >
+            <span className="text-xl italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
+            <span className="text-base font-normal">{t("Kursiv", "Italic")}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => openInlineInput("heading")}
+            className={`inline-flex items-center gap-1.5 px-5 py-3 rounded-lg text-lg transition-all touch-manipulation ${
+              isActiveForThisField && inlineFormatType === "heading"
+                ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
+                : "bg-card border border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10"
+            }`}
+          >
+            <span className="text-xl font-bold">H</span>
+            <span className="text-base font-normal">{t("Rubrik", "Heading")}</span>
+          </button>
+        </div>
+        {isActiveForThisField && inlineFormatType && (
+          <div className="flex items-center gap-2 p-3 bg-[#c05746]/5 rounded-lg border-2 border-[#c05746]/40 animate-in fade-in">
+            <span className="text-base font-semibold text-[#c05746] shrink-0">
+              {t(`Skriv ${typeLabel} text:`, `Type ${typeLabel} text:`)}
+            </span>
+            <input
+              ref={inlineInputRef}
+              type="text"
+              value={inlineFormatText}
+              onChange={(e) => setInlineFormatText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && inlineFormatText.trim()) {
+                  e.preventDefault();
+                  insertFormattedText(inlineFormatText, inlineFormatType, formField);
+                } else if (e.key === "Escape") {
+                  setInlineFormatType(null);
+                  setInlineFormatField(null);
+                  setInlineFormatText("");
+                }
+              }}
+              className="flex-1 px-4 py-2.5 rounded-lg bg-background border-2 border-[#c05746]/30 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/40 min-w-0"
+              placeholder={t(
+                inlineFormatType === "heading" ? "Skriv rubriktext..." : "Skriv ord eller mening...",
+                inlineFormatType === "heading" ? "Type heading text..." : "Type word or phrase..."
+              )}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (inlineFormatText.trim()) {
+                  insertFormattedText(inlineFormatText, inlineFormatType, formField);
+                }
+              }}
+              disabled={!inlineFormatText.trim()}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#c05746] text-white text-lg font-semibold hover:bg-[#a84836] active:bg-[#8f3d2e] disabled:opacity-40 disabled:cursor-not-allowed transition-all touch-manipulation shrink-0"
+            >
+              {t("Infoga", "Insert")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setInlineFormatType(null);
+                setInlineFormatField(null);
+                setInlineFormatText("");
+              }}
+              className="p-2.5 rounded-lg hover:bg-accent transition-colors touch-manipulation shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         )}
       </div>
     );
@@ -1028,6 +1002,9 @@ export default function AdminPage() {
                       <FormattingToolbar textareaRef={articleContentRef} formField="articleContent" />
                       <textarea ref={articleContentRef} value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
                         onKeyDown={(e) => handleTextareaKeyDown(e, "articleContent")}
+                        onSelect={handleTextareaSelect("articleContent")}
+                        onClick={handleTextareaSelect("articleContent")}
+                        onBlur={handleTextareaSelect("articleContent")}
                         rows={12} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 font-mono resize-y"
                         placeholder={t("Skriv artikelns innehåll i Markdown...", "Write article content in Markdown...")} />
                       <div className="mt-3 p-4 bg-accent/50 rounded-lg border border-border/30">
@@ -1038,22 +1015,22 @@ export default function AdminPage() {
                           <div className="space-y-2 text-base text-foreground">
                             <div className="flex items-start gap-2">
                               <span className="font-bold text-[#c05746] shrink-0">1.</span>
-                              <span>{t("Tryck i textfältet för att börja skriva", "Tap the text field to start writing")}</span>
+                              <span>{t("Skriv din vanliga text i det stora textfältet", "Write your normal text in the large text field")}</span>
                             </div>
                             <div className="flex items-start gap-2">
                               <span className="font-bold text-[#c05746] shrink-0">2.</span>
-                              <span>{t('Tryck på B-knappen → den blir röd och visar "PÅ"', 'Press the B button → it turns red and shows "ON"')}</span>
+                              <span>{t("Tryck på B (Fet), I (Kursiv) eller H (Rubrik) ovanför", "Press B (Bold), I (Italic) or H (Heading) above")}</span>
                             </div>
                             <div className="flex items-start gap-2">
                               <span className="font-bold text-[#c05746] shrink-0">3.</span>
-                              <span>{t("Skriv ditt feta ord", "Type your bold word")}</span>
+                              <span>{t("Ett litet textfält öppnas — skriv ditt ord eller mening där", "A small text field opens — type your word or phrase there")}</span>
                             </div>
                             <div className="flex items-start gap-2">
                               <span className="font-bold text-[#c05746] shrink-0">4.</span>
-                              <span>{t("Tryck på B igen → formateringen stängs", "Press B again → formatting closes")}</span>
+                              <span>{t('Tryck "Infoga" — texten läggs in formaterad i din artikel', 'Press "Insert" — the text is added formatted into your article')}</span>
                             </div>
                           </div>
-                          <p className="text-sm text-muted-foreground mt-2">{t("Samma sak för I (kursiv). H lägger till en rubrik.", "Same for I (italic). H adds a heading.")}</p>
+                          <p className="text-sm text-muted-foreground mt-2">{t("Ingen markering behövs! Texten infogas där markören senast stod.", "No selection needed! Text is inserted where the cursor was last placed.")}</p>
                         </div>
                         {/* Keyboard shortcuts for physical keyboard */}
                         <div className="mb-4 p-3 bg-background rounded-lg border border-border/30">
@@ -1286,6 +1263,9 @@ export default function AdminPage() {
                         value={diaryForm.content}
                         onChange={(e) => setDiaryForm({ ...diaryForm, content: e.target.value })}
                         onKeyDown={(e) => handleTextareaKeyDown(e, "diaryContent")}
+                        onSelect={handleTextareaSelect("diaryContent")}
+                        onClick={handleTextareaSelect("diaryContent")}
+                        onBlur={handleTextareaSelect("diaryContent")}
                         rows={8}
                         className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-y leading-relaxed"
                         placeholder={t("Skriv ditt dagboksinlägg...", "Write your diary entry...")}

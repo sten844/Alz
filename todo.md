@@ -108,3 +108,4 @@
 - [x] Update formatting guide to describe toggle mode (press B → type → press B again)
 - [x] Add keyboard trigger button for iPad (focuses textarea to force keyboard open)
 - [x] Fix iPad formatting: B/I buttons lose focus, keyboard disappears, text not getting bold when editing articles
+- [x] Replace selection-based formatting with inline input fields (type word → press insert → formatted text injected at cursor)
