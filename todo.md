@@ -117,3 +117,6 @@
 - [x] Make rich text editor toolbar sticky (follows scroll in long texts)
 - [x] Add "Infoga fet/kursiv" popup button for iPad users who can't easily select text
 - [x] Make toolbar buttons bigger and easier to tap on iPad
+- [x] Remove sticky toolbar (takes too much space on iPad)
+- [x] Make insert-text buttons the primary method, minimize standard toolbar
+- [x] Place insert buttons both above and below editor content

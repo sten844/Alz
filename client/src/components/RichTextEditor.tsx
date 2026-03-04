@@ -12,7 +12,7 @@ interface RichTextEditorProps {
 
 type InsertMode = null | "bold" | "italic" | "heading";
 
-function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
+function InsertBar({ editor, position }: { editor: ReturnType<typeof useEditor>; position: "top" | "bottom" }) {
   const [insertMode, setInsertMode] = useState<InsertMode>(null);
   const [insertText, setInsertText] = useState("");
   const insertInputRef = useRef<HTMLInputElement>(null);
@@ -21,8 +21,6 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
 
   const handleInsert = () => {
     if (!insertText.trim() || !insertMode) return;
-
-    editor.chain().focus();
 
     if (insertMode === "bold") {
       editor.chain().focus().insertContent(`<strong>${insertText}</strong> `).run();
@@ -58,140 +56,75 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
     }
   };
 
-  const btnBase = "rounded-lg text-xl font-semibold transition-all touch-manipulation select-none min-w-[48px] min-h-[48px] flex items-center justify-center";
+  const btnBase = "rounded-xl text-lg font-semibold transition-all touch-manipulation select-none py-3 px-5 flex items-center justify-center gap-1.5";
   const btnActive = "bg-[#c05746] text-white shadow-md";
-  const btnInactive = "bg-card border-2 border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10 active:scale-95";
-  const btnDisabled = "opacity-30 cursor-not-allowed";
+  const btnInactive = "bg-white border-2 border-[#c05746]/30 text-[#c05746] active:bg-[#c05746]/10 active:scale-95";
+
+  const borderClass = position === "top" ? "border-b-2 border-border/40 rounded-t-lg" : "border-t-2 border-border/40 rounded-b-lg";
 
   return (
-    <div className="sticky top-0 z-10 bg-accent/95 backdrop-blur-sm border-b-2 border-border/50 rounded-t-lg">
-      {/* Main formatting buttons */}
-      <div className="flex items-center gap-2 p-3 flex-wrap">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`${btnBase} px-5 py-3 ${editor.isActive("bold") ? btnActive : btnInactive}`}
-          title="Fet (Bold)"
-        >
-          B
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`${btnBase} px-5 py-3 ${editor.isActive("italic") ? btnActive : btnInactive}`}
-          title="Kursiv (Italic)"
-        >
-          <span className="italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
-        </button>
-
-        <div className="w-px h-10 bg-border/50 mx-1" />
-
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`${btnBase} px-4 py-3 ${editor.isActive("heading", { level: 2 }) ? btnActive : btnInactive}`}
-          title="Rubrik"
-        >
-          H2
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={`${btnBase} px-4 py-3 ${editor.isActive("heading", { level: 3 }) ? btnActive : btnInactive}`}
-          title="Underrubrik"
-        >
-          H3
-        </button>
-
-        <div className="w-px h-10 bg-border/50 mx-1" />
-
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`${btnBase} px-4 py-3 ${editor.isActive("bulletList") ? btnActive : btnInactive}`}
-          title="Punktlista"
-        >
-          •
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`${btnBase} px-4 py-3 ${editor.isActive("orderedList") ? btnActive : btnInactive}`}
-          title="Numrerad lista"
-        >
-          1.
-        </button>
-
-        <div className="w-px h-10 bg-border/50 mx-1" />
-
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          className={`${btnBase} px-4 py-3 ${btnInactive}`}
-          title="Horisontell linje"
-        >
-          ―
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          className={`${btnBase} px-4 py-3 ${btnInactive} ${!editor.can().undo() ? btnDisabled : ""}`}
-          title="Ångra"
-        >
-          ↩
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          className={`${btnBase} px-4 py-3 ${btnInactive} ${!editor.can().redo() ? btnDisabled : ""}`}
-          title="Gör om"
-        >
-          ↪
-        </button>
-      </div>
-
-      {/* Insert text buttons row - for iPad users who can't select text */}
-      <div className="flex items-center gap-2 px-3 pb-3 flex-wrap border-t border-border/30 pt-2">
-        <span className="text-sm text-muted-foreground mr-1">Infoga:</span>
+    <div className={`bg-accent/30 ${borderClass}`}>
+      {/* Insert buttons */}
+      <div className="flex items-center gap-3 p-3 flex-wrap">
         <button
           type="button"
           onClick={() => openInsertMode("bold")}
-          className={`${btnBase} px-4 py-2 text-base ${insertMode === "bold" ? btnActive : btnInactive}`}
+          className={`${btnBase} ${insertMode === "bold" ? btnActive : btnInactive}`}
         >
-          + <strong>Fet</strong>
+          <span className="font-black">B</span> Fet
         </button>
         <button
           type="button"
           onClick={() => openInsertMode("italic")}
-          className={`${btnBase} px-4 py-2 text-base ${insertMode === "italic" ? btnActive : btnInactive}`}
+          className={`${btnBase} ${insertMode === "italic" ? btnActive : btnInactive}`}
         >
-          + <em>Kursiv</em>
+          <span className="italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span> Kursiv
         </button>
         <button
           type="button"
           onClick={() => openInsertMode("heading")}
-          className={`${btnBase} px-4 py-2 text-base ${insertMode === "heading" ? btnActive : btnInactive}`}
+          className={`${btnBase} ${insertMode === "heading" ? btnActive : btnInactive}`}
         >
-          + Rubrik
+          <span className="font-black">H</span> Rubrik
         </button>
+
+        {/* Undo/Redo - small buttons on the right */}
+        <div className="ml-auto flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+            className="rounded-lg p-2 text-lg touch-manipulation bg-white border border-border/40 text-muted-foreground disabled:opacity-20"
+            title="Ångra"
+          >
+            ↩
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+            className="rounded-lg p-2 text-lg touch-manipulation bg-white border border-border/40 text-muted-foreground disabled:opacity-20"
+            title="Gör om"
+          >
+            ↪
+          </button>
+        </div>
       </div>
 
-      {/* Insert text input popup */}
+      {/* Insert text input - expands when a mode is selected */}
       {insertMode && (
-        <div className="px-3 pb-3 bg-[#c05746]/5 border-t-2 border-[#c05746]/30">
-          <div className="flex items-center gap-2 pt-2">
-            <label className="text-base font-semibold text-[#c05746] whitespace-nowrap">
-              {insertMode === "bold" ? "Fet text:" : insertMode === "italic" ? "Kursiv text:" : "Rubriktext:"}
-            </label>
+        <div className="px-3 pb-3">
+          <div className="flex items-center gap-2 bg-white rounded-xl border-2 border-[#c05746]/30 p-1.5">
+            <span className="text-base font-bold text-[#c05746] pl-2 whitespace-nowrap">
+              {insertMode === "bold" ? "Fet:" : insertMode === "italic" ? "Kursiv:" : "Rubrik:"}
+            </span>
             <input
               ref={insertInputRef}
               type="text"
               value={insertText}
               onChange={(e) => setInsertText(e.target.value)}
               onKeyDown={handleInsertKeyDown}
-              className="flex-1 px-4 py-3 text-lg rounded-lg border-2 border-[#c05746]/30 bg-background focus:outline-none focus:ring-2 focus:ring-[#c05746]/50"
+              className="flex-1 px-3 py-2.5 text-lg bg-transparent focus:outline-none"
               placeholder="Skriv text här..."
               autoFocus
             />
@@ -199,14 +132,14 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
               type="button"
               onClick={handleInsert}
               disabled={!insertText.trim()}
-              className="px-5 py-3 text-lg font-semibold rounded-lg bg-[#c05746] text-white touch-manipulation active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-5 py-2.5 text-lg font-bold rounded-lg bg-[#c05746] text-white touch-manipulation active:scale-95 disabled:opacity-30 whitespace-nowrap"
             >
               Infoga
             </button>
             <button
               type="button"
               onClick={() => { setInsertMode(null); setInsertText(""); }}
-              className="px-4 py-3 text-lg rounded-lg bg-card border-2 border-border/50 text-foreground touch-manipulation active:scale-95"
+              className="px-3 py-2.5 text-lg rounded-lg text-muted-foreground touch-manipulation active:scale-95"
             >
               ✕
             </button>
@@ -263,14 +196,18 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
   if (!editor) return null;
 
   return (
-    <div className="border-2 border-border/50 rounded-lg overflow-hidden bg-background relative">
-      <MenuBar editor={editor} />
-      <div className="overflow-y-auto" style={{ maxHeight: "60vh" }}>
-        <EditorContent
-          editor={editor}
-          className="rich-text-editor"
-        />
-      </div>
+    <div className="border-2 border-border/50 rounded-lg overflow-hidden bg-background">
+      {/* Top insert bar */}
+      <InsertBar editor={editor} position="top" />
+      
+      {/* Editor content area */}
+      <EditorContent
+        editor={editor}
+        className="rich-text-editor"
+      />
+      
+      {/* Bottom insert bar - same buttons repeated for long texts */}
+      <InsertBar editor={editor} position="bottom" />
     </div>
   );
 }
