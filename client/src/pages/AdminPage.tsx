@@ -96,6 +96,10 @@ export default function AdminPage() {
   const articleExcerptRef = useRef<HTMLTextAreaElement>(null);
   const diaryContentRef = useRef<HTMLTextAreaElement>(null);
 
+  // ---- Toggle formatting state (for iPad touch mode) ----
+  const [activeBold, setActiveBold] = useState<string | null>(null); // which formField has bold active
+  const [activeItalic, setActiveItalic] = useState<string | null>(null); // which formField has italic active
+
   // ---- Diary state ----
   const [editingDiaryId, setEditingDiaryId] = useState<number | null>(null);
   const [showDiaryForm, setShowDiaryForm] = useState(false);
@@ -375,6 +379,7 @@ export default function AdminPage() {
         newCursorEnd = end + prefix.length;
       }
     } else if (selectedText) {
+      // Has selection: wrap/unwrap the selected text
       const beforeWrapper = text.substring(start - wrapper.length, start);
       const afterWrapper = text.substring(end, end + wrapper.length);
       if (beforeWrapper === wrapper && afterWrapper === wrapper) {
@@ -387,9 +392,40 @@ export default function AdminPage() {
         newCursorEnd = end + wrapper.length;
       }
     } else {
-      newText = text.substring(0, start) + wrapper + wrapper + text.substring(end);
-      newCursorStart = start + wrapper.length;
-      newCursorEnd = start + wrapper.length;
+      // No selection: toggle mode — insert opening or closing markers
+      if (type === "bold") {
+        if (activeBold === formField) {
+          // Close bold: insert closing **
+          newText = text.substring(0, start) + "**" + text.substring(end);
+          newCursorStart = start + 2;
+          newCursorEnd = start + 2;
+          setActiveBold(null);
+        } else {
+          // Open bold: insert opening **
+          newText = text.substring(0, start) + "**" + text.substring(end);
+          newCursorStart = start + 2;
+          newCursorEnd = start + 2;
+          setActiveBold(formField);
+        }
+      } else if (type === "italic") {
+        if (activeItalic === formField) {
+          // Close italic: insert closing *
+          newText = text.substring(0, start) + "*" + text.substring(end);
+          newCursorStart = start + 1;
+          newCursorEnd = start + 1;
+          setActiveItalic(null);
+        } else {
+          // Open italic: insert opening *
+          newText = text.substring(0, start) + "*" + text.substring(end);
+          newCursorStart = start + 1;
+          newCursorEnd = start + 1;
+          setActiveItalic(formField);
+        }
+      } else {
+        newText = text;
+        newCursorStart = start;
+        newCursorEnd = end;
+      }
     }
 
     if (formField === "articleContent") {
@@ -408,50 +444,73 @@ export default function AdminPage() {
     });
   };
 
-  // Reusable formatting toolbar component
+  // Reusable formatting toolbar component with toggle state indicators
   const FormattingToolbar = ({
     textareaRef,
     formField,
   }: {
     textareaRef: React.RefObject<HTMLTextAreaElement | null>;
     formField: "articleContent" | "articleExcerpt" | "diaryContent";
-  }) => (
-    <div className="flex items-center gap-2 mb-2">
-      <button
-        type="button"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => applyFormatting(textareaRef, formField, "bold")}
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border/50 text-base font-bold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
-        title={t("Fet text (Ctrl+B)", "Bold (Ctrl+B)")}
-      >
-        <span className="text-lg font-bold">B</span>
-        <span className="text-sm font-normal text-muted-foreground hidden sm:inline">{t("Fet", "Bold")}</span>
-      </button>
-      <button
-        type="button"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => applyFormatting(textareaRef, formField, "italic")}
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border/50 text-base text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
-        title={t("Kursiv text (Ctrl+I)", "Italic (Ctrl+I)")}
-      >
-        <span className="text-lg italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
-        <span className="text-sm font-normal text-muted-foreground hidden sm:inline">{t("Kursiv", "Italic")}</span>
-      </button>
-      <button
-        type="button"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => applyFormatting(textareaRef, formField, "heading")}
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border/50 text-base font-semibold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
-        title={t("Rubrik (Ctrl+H)", "Heading (Ctrl+H)")}
-      >
-        <span className="text-lg font-bold">H</span>
-        <span className="text-sm font-normal text-muted-foreground hidden sm:inline">{t("Rubrik", "Heading")}</span>
-      </button>
-      <span className="text-sm text-muted-foreground/60 ml-2 hidden md:inline">
-        {t("Markera text, tryck knapp", "Select text, press button")}
-      </span>
-    </div>
-  );
+  }) => {
+    const isBoldActive = activeBold === formField;
+    const isItalicActive = activeItalic === formField;
+
+    return (
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => applyFormatting(textareaRef, formField, "bold")}
+          className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-lg font-bold transition-all touch-manipulation ${
+            isBoldActive
+              ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
+              : "bg-card border border-border/50 text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10"
+          }`}
+          title={t("Fet text", "Bold")}
+        >
+          <span className="text-xl font-bold">B</span>
+          <span className="text-base font-normal">{isBoldActive ? t("P\u00c5", "ON") : t("Fet", "Bold")}</span>
+        </button>
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => applyFormatting(textareaRef, formField, "italic")}
+          className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-lg transition-all touch-manipulation ${
+            isItalicActive
+              ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
+              : "bg-card border border-border/50 text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10"
+          }`}
+          title={t("Kursiv text", "Italic")}
+        >
+          <span className="text-xl italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
+          <span className="text-base font-normal">{isItalicActive ? t("P\u00c5", "ON") : t("Kursiv", "Italic")}</span>
+        </button>
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => applyFormatting(textareaRef, formField, "heading")}
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-card border border-border/50 text-lg font-semibold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
+          title={t("Rubrik", "Heading")}
+        >
+          <span className="text-xl font-bold">H</span>
+          <span className="text-base font-normal">{t("Rubrik", "Heading")}</span>
+        </button>
+        {(isBoldActive || isItalicActive) && (
+          <span className="text-base text-[#c05746] font-semibold ml-2 animate-pulse">
+            {t(
+              `Skriv din text, tryck sedan ${isBoldActive ? "B" : ""}${isBoldActive && isItalicActive ? " och " : ""}${isItalicActive ? "I" : ""} igen f\u00f6r att avsluta`,
+              `Type your text, then press ${isBoldActive ? "B" : ""}${isBoldActive && isItalicActive ? " and " : ""}${isItalicActive ? "I" : ""} again to finish`
+            )}
+          </span>
+        )}
+        {!isBoldActive && !isItalicActive && (
+          <span className="text-sm text-muted-foreground/60 ml-2">
+            {t("Tryck knapp \u2192 skriv \u2192 tryck igen", "Press button \u2192 type \u2192 press again")}
+          </span>
+        )}
+      </div>
+    );
+  };
 
   const clearAutoSave = () => {
     setAutoSaveStatus("idle");

@@ -103,3 +103,5 @@
 - [x] Add touch-friendly formatting toolbar (Bold, Italic, Heading buttons) above article content textarea
 - [x] Add formatting toolbar above diary content textarea
 - [x] Ensure toolbar works on iPad (touch-based, no keyboard needed)
+- [x] Improve formatting toolbar: toggle mode (no text selection needed) for iPad usability
+- [x] Add visual indicator showing active formatting state (e.g. bold mode ON)
