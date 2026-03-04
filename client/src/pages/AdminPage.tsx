@@ -343,6 +343,7 @@ export default function AdminPage() {
   };
 
   // ---- Toolbar button handler (works via ref for iPad/touch) ----
+  // Uses direct DOM value manipulation + native input event to keep iOS keyboard open
   const applyFormatting = (
     textareaRef: React.RefObject<HTMLTextAreaElement | null>,
     formField: "articleContent" | "articleExcerpt" | "diaryContent",
@@ -350,6 +351,9 @@ export default function AdminPage() {
   ) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
+
+    // CRITICAL for iPad: focus synchronously within user gesture
+    textarea.focus();
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -379,7 +383,6 @@ export default function AdminPage() {
         newCursorEnd = end + prefix.length;
       }
     } else if (selectedText) {
-      // Has selection: wrap/unwrap the selected text
       const beforeWrapper = text.substring(start - wrapper.length, start);
       const afterWrapper = text.substring(end, end + wrapper.length);
       if (beforeWrapper === wrapper && afterWrapper === wrapper) {
@@ -392,16 +395,14 @@ export default function AdminPage() {
         newCursorEnd = end + wrapper.length;
       }
     } else {
-      // No selection: toggle mode — insert opening or closing markers
+      // No selection: toggle mode
       if (type === "bold") {
         if (activeBold === formField) {
-          // Close bold: insert closing **
           newText = text.substring(0, start) + "**" + text.substring(end);
           newCursorStart = start + 2;
           newCursorEnd = start + 2;
           setActiveBold(null);
         } else {
-          // Open bold: insert opening **
           newText = text.substring(0, start) + "**" + text.substring(end);
           newCursorStart = start + 2;
           newCursorEnd = start + 2;
@@ -409,13 +410,11 @@ export default function AdminPage() {
         }
       } else if (type === "italic") {
         if (activeItalic === formField) {
-          // Close italic: insert closing *
           newText = text.substring(0, start) + "*" + text.substring(end);
           newCursorStart = start + 1;
           newCursorEnd = start + 1;
           setActiveItalic(null);
         } else {
-          // Open italic: insert opening *
           newText = text.substring(0, start) + "*" + text.substring(end);
           newCursorStart = start + 1;
           newCursorEnd = start + 1;
@@ -428,34 +427,29 @@ export default function AdminPage() {
       }
     }
 
-    if (formField === "articleContent") {
-      setArticleForm((prev) => ({ ...prev, content: newText }));
-    } else if (formField === "articleExcerpt") {
-      setArticleForm((prev) => ({ ...prev, excerpt: newText }));
-    } else if (formField === "diaryContent") {
-      setDiaryForm((prev) => ({ ...prev, content: newText }));
+    // CRITICAL for iPad: Set value directly on DOM element FIRST, then dispatch
+    // native input event so React picks up the change. This avoids the
+    // React re-render cycle that causes iOS to dismiss the keyboard.
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLTextAreaElement.prototype, 'value'
+    )?.set;
+    if (nativeInputValueSetter) {
+      nativeInputValueSetter.call(textarea, newText);
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    } else {
+      // Fallback: use React state update
+      if (formField === "articleContent") {
+        setArticleForm((prev) => ({ ...prev, content: newText }));
+      } else if (formField === "articleExcerpt") {
+        setArticleForm((prev) => ({ ...prev, excerpt: newText }));
+      } else if (formField === "diaryContent") {
+        setDiaryForm((prev) => ({ ...prev, content: newText }));
+      }
     }
 
-    // Restore focus and cursor position
-    requestAnimationFrame(() => {
-      textarea.focus();
-      textarea.selectionStart = newCursorStart;
-      textarea.selectionEnd = newCursorEnd;
-    });
-  };
-
-  // Force keyboard open on iPad by focusing textarea
-  const forceKeyboardOpen = (textareaRef: React.RefObject<HTMLTextAreaElement | null>) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    // On iOS, focus() must happen in a user-gesture handler to trigger the keyboard
-    textarea.focus();
-    // Move cursor to end of content
-    const len = textarea.value.length;
-    textarea.selectionStart = len;
-    textarea.selectionEnd = len;
-    // Scroll textarea into view
-    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Set cursor position synchronously (keyboard stays open because focus never left)
+    textarea.selectionStart = newCursorStart;
+    textarea.selectionEnd = newCursorEnd;
   };
 
   // Reusable formatting toolbar component with toggle state indicators
@@ -469,11 +463,36 @@ export default function AdminPage() {
     const isBoldActive = activeBold === formField;
     const isItalicActive = activeItalic === formField;
 
+    // onTouchStart handler: focus textarea immediately on touch to keep iOS keyboard open
+    const handleTouchStart = (e: React.TouchEvent, action: () => void) => {
+      e.preventDefault(); // prevent default touch behavior
+      const textarea = textareaRef.current;
+      if (textarea) textarea.focus(); // focus SYNCHRONOUSLY in touch handler
+      action();
+    };
+
     return (
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <button
           type="button"
-          onClick={() => forceKeyboardOpen(textareaRef)}
+          onTouchStart={(e) => handleTouchStart(e, () => {
+            const textarea = textareaRef.current;
+            if (textarea) {
+              textarea.focus();
+              const len = textarea.value.length;
+              textarea.selectionStart = len;
+              textarea.selectionEnd = len;
+            }
+          })}
+          onClick={() => {
+            const textarea = textareaRef.current;
+            if (textarea) {
+              textarea.focus();
+              const len = textarea.value.length;
+              textarea.selectionStart = len;
+              textarea.selectionEnd = len;
+            }
+          }}
           className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-blue-50 border-2 border-blue-300 text-blue-700 text-lg font-semibold hover:bg-blue-100 active:bg-blue-200 transition-all touch-manipulation"
           title={t("Visa tangentbord", "Show keyboard")}
         >
@@ -482,7 +501,7 @@ export default function AdminPage() {
         </button>
         <button
           type="button"
-          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => handleTouchStart(e, () => applyFormatting(textareaRef, formField, "bold"))}
           onClick={() => applyFormatting(textareaRef, formField, "bold")}
           className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-lg font-bold transition-all touch-manipulation ${
             isBoldActive
@@ -496,7 +515,7 @@ export default function AdminPage() {
         </button>
         <button
           type="button"
-          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => handleTouchStart(e, () => applyFormatting(textareaRef, formField, "italic"))}
           onClick={() => applyFormatting(textareaRef, formField, "italic")}
           className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-lg transition-all touch-manipulation ${
             isItalicActive
@@ -510,7 +529,7 @@ export default function AdminPage() {
         </button>
         <button
           type="button"
-          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => handleTouchStart(e, () => applyFormatting(textareaRef, formField, "heading"))}
           onClick={() => applyFormatting(textareaRef, formField, "heading")}
           className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-card border border-border/50 text-lg font-semibold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
           title={t("Rubrik", "Heading")}
