@@ -100,3 +100,6 @@
 - [x] Add Ctrl+B keyboard shortcut for bold (**text**) in admin article editor
 - [x] Add Ctrl+I keyboard shortcut for italic (*text*) in admin article editor
 - [x] Ensure bold/italic markdown renders correctly in article pages (already supported in renderMarkdown)
+- [x] Add touch-friendly formatting toolbar (Bold, Italic, Heading buttons) above article content textarea
+- [x] Add formatting toolbar above diary content textarea
+- [x] Ensure toolbar works on iPad (touch-based, no keyboard needed)

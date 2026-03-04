@@ -338,6 +338,121 @@ export default function AdminPage() {
     });
   };
 
+  // ---- Toolbar button handler (works via ref for iPad/touch) ----
+  const applyFormatting = (
+    textareaRef: React.RefObject<HTMLTextAreaElement | null>,
+    formField: "articleContent" | "articleExcerpt" | "diaryContent",
+    type: "bold" | "italic" | "heading"
+  ) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+
+    let wrapper = "";
+    let prefix = "";
+    if (type === "bold") wrapper = "**";
+    else if (type === "italic") wrapper = "*";
+    else if (type === "heading") prefix = "## ";
+
+    let newText: string;
+    let newCursorStart: number;
+    let newCursorEnd: number;
+
+    if (prefix) {
+      const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+      const lineText = text.substring(lineStart, end || start);
+      if (lineText.startsWith("## ")) {
+        newText = text.substring(0, lineStart) + lineText.substring(3) + text.substring(end || start);
+        newCursorStart = Math.max(lineStart, start - 3);
+        newCursorEnd = Math.max(lineStart, end - 3);
+      } else {
+        newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+        newCursorStart = start + prefix.length;
+        newCursorEnd = end + prefix.length;
+      }
+    } else if (selectedText) {
+      const beforeWrapper = text.substring(start - wrapper.length, start);
+      const afterWrapper = text.substring(end, end + wrapper.length);
+      if (beforeWrapper === wrapper && afterWrapper === wrapper) {
+        newText = text.substring(0, start - wrapper.length) + selectedText + text.substring(end + wrapper.length);
+        newCursorStart = start - wrapper.length;
+        newCursorEnd = end - wrapper.length;
+      } else {
+        newText = text.substring(0, start) + wrapper + selectedText + wrapper + text.substring(end);
+        newCursorStart = start + wrapper.length;
+        newCursorEnd = end + wrapper.length;
+      }
+    } else {
+      newText = text.substring(0, start) + wrapper + wrapper + text.substring(end);
+      newCursorStart = start + wrapper.length;
+      newCursorEnd = start + wrapper.length;
+    }
+
+    if (formField === "articleContent") {
+      setArticleForm((prev) => ({ ...prev, content: newText }));
+    } else if (formField === "articleExcerpt") {
+      setArticleForm((prev) => ({ ...prev, excerpt: newText }));
+    } else if (formField === "diaryContent") {
+      setDiaryForm((prev) => ({ ...prev, content: newText }));
+    }
+
+    // Restore focus and cursor position
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.selectionStart = newCursorStart;
+      textarea.selectionEnd = newCursorEnd;
+    });
+  };
+
+  // Reusable formatting toolbar component
+  const FormattingToolbar = ({
+    textareaRef,
+    formField,
+  }: {
+    textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+    formField: "articleContent" | "articleExcerpt" | "diaryContent";
+  }) => (
+    <div className="flex items-center gap-2 mb-2">
+      <button
+        type="button"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => applyFormatting(textareaRef, formField, "bold")}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border/50 text-base font-bold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
+        title={t("Fet text (Ctrl+B)", "Bold (Ctrl+B)")}
+      >
+        <span className="text-lg font-bold">B</span>
+        <span className="text-sm font-normal text-muted-foreground hidden sm:inline">{t("Fet", "Bold")}</span>
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => applyFormatting(textareaRef, formField, "italic")}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border/50 text-base text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
+        title={t("Kursiv text (Ctrl+I)", "Italic (Ctrl+I)")}
+      >
+        <span className="text-lg italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
+        <span className="text-sm font-normal text-muted-foreground hidden sm:inline">{t("Kursiv", "Italic")}</span>
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => applyFormatting(textareaRef, formField, "heading")}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-card border border-border/50 text-base font-semibold text-foreground hover:bg-accent hover:border-[#c05746]/30 active:bg-[#c05746]/10 transition-all touch-manipulation"
+        title={t("Rubrik (Ctrl+H)", "Heading (Ctrl+H)")}
+      >
+        <span className="text-lg font-bold">H</span>
+        <span className="text-sm font-normal text-muted-foreground hidden sm:inline">{t("Rubrik", "Heading")}</span>
+      </button>
+      <span className="text-sm text-muted-foreground/60 ml-2 hidden md:inline">
+        {t("Markera text, tryck knapp", "Select text, press button")}
+      </span>
+    </div>
+  );
+
   const clearAutoSave = () => {
     setAutoSaveStatus("idle");
     setLastSavedAt(null);
@@ -809,6 +924,7 @@ export default function AdminPage() {
                     </div>
                     <div>
                       <label className="block text-lg font-medium text-foreground mb-2">{t("Innehåll (Markdown)", "Content (Markdown)")}</label>
+                      <FormattingToolbar textareaRef={articleContentRef} formField="articleContent" />
                       <textarea ref={articleContentRef} value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
                         onKeyDown={(e) => handleTextareaKeyDown(e, "articleContent")}
                         rows={12} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 font-mono resize-y"
@@ -1039,6 +1155,7 @@ export default function AdminPage() {
                       <label className="block text-lg font-medium text-foreground mb-2">
                         {t("Innehåll", "Content")}
                       </label>
+                      <FormattingToolbar textareaRef={diaryContentRef} formField="diaryContent" />
                       <textarea
                         ref={diaryContentRef}
                         value={diaryForm.content}
