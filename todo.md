@@ -114,3 +114,6 @@
 - [x] Add toolbar with bold, italic, heading buttons that work on iPad touch
 - [x] Convert between rich text (HTML) and markdown for storage
 - [x] Ensure existing markdown articles render correctly in the editor
+- [x] Make rich text editor toolbar sticky (follows scroll in long texts)
+- [x] Add "Infoga fet/kursiv" popup button for iPad users who can't easily select text
+- [x] Make toolbar buttons bigger and easier to tap on iPad
