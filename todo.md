@@ -120,3 +120,5 @@
 - [x] Remove sticky toolbar (takes too much space on iPad)
 - [x] Make insert-text buttons the primary method, minimize standard toolbar
 - [x] Place insert buttons both above and below editor content
+- [x] Add "Sök och feta" feature: type a word/phrase from the text and it gets bolded automatically (no selection needed)
+- [x] Add similar "Sök och kursivera" feature for italic
