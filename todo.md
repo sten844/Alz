@@ -94,3 +94,6 @@
 - [x] Auto-translate article categories when creating/updating language pairs (SV↔EN, bidirectional)
 - [x] Fix: Category change on Swedish article should auto-update English paired article's category (immediate sync + fixed existing mismatches)
 - [x] Move suggested links to the bottom of the AI sub-page
+- [x] Replace old "Min behandlingsplan" article content with new text
+- [x] Auto-translate the updated article to English
+- [x] Improve graphical presentation of structured medical articles (decorative dividers, bold h2 headings with border)

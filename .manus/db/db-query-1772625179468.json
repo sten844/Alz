@@ -1,0 +1,13 @@
+{
+  "query": "SELECT SUBSTRING(content, 1, 500) FROM articles WHERE id = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT SUBSTRING(content, 1, 500) FROM articles WHERE id = 1;",
+  "rows": [
+    {
+      "SUBSTRING(content, 1, 500)": "Efter min diagnos har jag utvecklat en behandlingsplan baserad på femfingermodellen, men med mitt eget fokus på hur medicin, kost och livsstil fungerar tillsammans som ett system. Planen kombinerar etablerad behandling med mer experimentella strategier. För vissa delar finns god klinisk evidens från studier på patienter, medan andra bygger på observationsstudier eller preklinisk forskning (studier i celler eller djur). Planen ska därför ses som en personlig och fortlöpande utvecklad strategi, in"
+    }
+  ],
+  "messages": [],
+  "stdout": "SUBSTRING(content, 1, 500)\nEfter min diagnos har jag utvecklat en behandlingsplan baserad på femfingermodellen, men med mitt eget fokus på hur medicin, kost och livsstil fungerar tillsammans som ett system. Planen kombinerar etablerad behandling med mer experimentella strategier. För vissa delar finns god klinisk evidens från studier på patienter, medan andra bygger på observationsstudier eller preklinisk forskning (studier i celler eller djur). Planen ska därför ses som en personlig och fortlöpande utvecklad strategi, in\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

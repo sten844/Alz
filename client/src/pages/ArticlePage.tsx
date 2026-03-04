@@ -15,10 +15,10 @@ function renderMarkdown(content: string): string {
   let html = content;
 
   // Headers — support both standard markdown (## text) and ##text## format
-  html = html.replace(/^###(.+?)###\s*$/gm, '<h3 class="text-xl font-semibold mt-6 mb-3" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h3>');
-  html = html.replace(/^##(.+?)##\s*$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-foreground" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h2>');
-  html = html.replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold mt-6 mb-3" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-foreground" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h2>');
+  html = html.replace(/^###(.+?)###\s*$/gm, '<h3 class="text-lg font-semibold mt-5 mb-2 text-foreground" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h3>');
+  html = html.replace(/^##(.+?)##\s*$/gm, '<h2 class="text-2xl font-bold mt-10 mb-4 text-foreground pb-2 border-b-2 border-[#c05746]/20" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h2>');
+  html = html.replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mt-5 mb-2 text-foreground" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mt-10 mb-4 text-foreground pb-2 border-b-2 border-[#c05746]/20" style="font-family: \'Source Sans 3\', system-ui, sans-serif">$1</h2>');
   html = html.replace(/^# (.+)$/gm, '<h1 class="text-3xl md:text-4xl mt-4 mb-6" style="font-family: \'DM Serif Display\', Georgia, serif">$1</h1>');
 
   // Bold
@@ -26,6 +26,9 @@ function renderMarkdown(content: string): string {
 
   // Italic
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Critical notes ("Kritisk synpunkt:" or "Critical note:")
+  html = html.replace(/^((?:Kritisk synpunkt|Critical note|Critical view|Critical observation):.+)$/gm, '<p class="text-base leading-relaxed mb-4 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 p-3 rounded-lg border-l-4 border-amber-400 italic">⚠️ $1</p>');
 
   // Unordered lists (standard markdown and tab+bullet format)
   html = html.replace(/^- (.+)$/gm, '<li class="ml-6 mb-1.5 list-disc text-lg leading-relaxed">$1</li>');
@@ -35,9 +38,9 @@ function renderMarkdown(content: string): string {
   // Ordered lists
   html = html.replace(/^\d+\. (.+)$/gm, '<li class="ml-6 mb-1.5 list-decimal text-lg leading-relaxed">$1</li>');
 
-  // Horizontal rules (--- and unicode ⸻)
-  html = html.replace(/^---$/gm, '<hr class="my-8 border-border" />');
-  html = html.replace(/^⸻\s*$/gm, '<hr class="my-8 border-border" />');
+  // Horizontal rules (--- and unicode ⸻) — styled as decorative section dividers
+  html = html.replace(/^---$/gm, '<div class="my-10 flex items-center gap-4"><div class="flex-1 h-px bg-gradient-to-r from-transparent via-[#c05746]/30 to-transparent"></div><div class="w-2 h-2 rounded-full bg-[#c05746]/30"></div><div class="flex-1 h-px bg-gradient-to-r from-transparent via-[#c05746]/30 to-transparent"></div></div>');
+  html = html.replace(/^⸻\s*$/gm, '<div class="my-10 flex items-center gap-4"><div class="flex-1 h-px bg-gradient-to-r from-transparent via-[#c05746]/30 to-transparent"></div><div class="w-2 h-2 rounded-full bg-[#c05746]/30"></div><div class="flex-1 h-px bg-gradient-to-r from-transparent via-[#c05746]/30 to-transparent"></div></div>');
 
   // Emoji lines (like 👉)
   html = html.replace(/^(👉.+)$/gm, '<p class="text-lg leading-relaxed mb-4 bg-accent/50 p-4 rounded-lg border-l-4 border-[#c05746]/30">$1</p>');
@@ -62,7 +65,7 @@ function renderMarkdown(content: string): string {
         inList = true;
       }
       result += trimmed;
-    } else if (trimmed.startsWith('<h') || trimmed.startsWith('<hr') || trimmed.startsWith('<p class="text-lg leading-relaxed mb-4 bg-accent')) {
+    } else if (trimmed.startsWith('<h') || trimmed.startsWith('<div class="my-10') || trimmed.startsWith('<p class="text-lg leading-relaxed mb-4 bg-accent') || trimmed.startsWith('<p class="text-base leading-relaxed mb-4 bg-amber')) {
       if (inList) {
         result += '</ul>';
         inList = false;
