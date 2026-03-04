@@ -97,3 +97,6 @@
 - [x] Replace old "Min behandlingsplan" article content with new text
 - [x] Auto-translate the updated article to English
 - [x] Improve graphical presentation of structured medical articles (decorative dividers, bold h2 headings with border)
+- [x] Add Ctrl+B keyboard shortcut for bold (**text**) in admin article editor
+- [x] Add Ctrl+I keyboard shortcut for italic (*text*) in admin article editor
+- [x] Ensure bold/italic markdown renders correctly in article pages (already supported in renderMarkdown)

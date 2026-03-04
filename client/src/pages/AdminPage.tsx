@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, KeyboardEvent } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -90,6 +90,11 @@ export default function AdminPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ---- Textarea refs for keyboard shortcuts ----
+  const articleContentRef = useRef<HTMLTextAreaElement>(null);
+  const articleExcerptRef = useRef<HTMLTextAreaElement>(null);
+  const diaryContentRef = useRef<HTMLTextAreaElement>(null);
 
   // ---- Diary state ----
   const [editingDiaryId, setEditingDiaryId] = useState<number | null>(null);
@@ -246,6 +251,92 @@ export default function AdminPage() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [showArticleForm, articleForm, performAutoSave]);
+
+  // ---- Keyboard shortcut handler for text formatting ----
+  const handleTextareaKeyDown = (
+    e: KeyboardEvent<HTMLTextAreaElement>,
+    formField: "articleContent" | "articleExcerpt" | "diaryContent"
+  ) => {
+    const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+    if (!isCtrlOrCmd) return;
+
+    let wrapper = "";
+    let prefix = "";
+    if (e.key === "b" || e.key === "B") {
+      e.preventDefault();
+      wrapper = "**";
+    } else if (e.key === "i" || e.key === "I") {
+      e.preventDefault();
+      wrapper = "*";
+    } else if (e.key === "h" || e.key === "H") {
+      e.preventDefault();
+      prefix = "## ";
+    } else {
+      return;
+    }
+
+    const textarea = e.currentTarget;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+
+    let newText: string;
+    let newCursorStart: number;
+    let newCursorEnd: number;
+
+    if (prefix) {
+      // Heading: add prefix at start of line
+      const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+      const lineText = text.substring(lineStart, end || start);
+      // Check if already a heading
+      if (lineText.startsWith("## ")) {
+        // Remove heading prefix
+        newText = text.substring(0, lineStart) + lineText.substring(3) + text.substring(end || start);
+        newCursorStart = Math.max(lineStart, start - 3);
+        newCursorEnd = Math.max(lineStart, end - 3);
+      } else {
+        newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+        newCursorStart = start + prefix.length;
+        newCursorEnd = end + prefix.length;
+      }
+    } else if (selectedText) {
+      // Check if already wrapped
+      const beforeWrapper = text.substring(start - wrapper.length, start);
+      const afterWrapper = text.substring(end, end + wrapper.length);
+      if (beforeWrapper === wrapper && afterWrapper === wrapper) {
+        // Remove wrapping
+        newText = text.substring(0, start - wrapper.length) + selectedText + text.substring(end + wrapper.length);
+        newCursorStart = start - wrapper.length;
+        newCursorEnd = end - wrapper.length;
+      } else {
+        // Add wrapping
+        newText = text.substring(0, start) + wrapper + selectedText + wrapper + text.substring(end);
+        newCursorStart = start + wrapper.length;
+        newCursorEnd = end + wrapper.length;
+      }
+    } else {
+      // No selection: insert wrapper pair and place cursor in middle
+      newText = text.substring(0, start) + wrapper + wrapper + text.substring(end);
+      newCursorStart = start + wrapper.length;
+      newCursorEnd = start + wrapper.length;
+    }
+
+    // Update the form state
+    if (formField === "articleContent") {
+      setArticleForm((prev) => ({ ...prev, content: newText }));
+    } else if (formField === "articleExcerpt") {
+      setArticleForm((prev) => ({ ...prev, excerpt: newText }));
+    } else if (formField === "diaryContent") {
+      setDiaryForm((prev) => ({ ...prev, content: newText }));
+    }
+
+    // Restore cursor position after React re-render
+    requestAnimationFrame(() => {
+      textarea.selectionStart = newCursorStart;
+      textarea.selectionEnd = newCursorEnd;
+    });
+  };
 
   const clearAutoSave = () => {
     setAutoSaveStatus("idle");
@@ -711,17 +802,28 @@ export default function AdminPage() {
                     </div>
                     <div>
                       <label className="block text-lg font-medium text-foreground mb-2">{t("Sammanfattning", "Excerpt")}</label>
-                      <textarea value={articleForm.excerpt} onChange={(e) => setArticleForm({ ...articleForm, excerpt: e.target.value })}
+                      <textarea ref={articleExcerptRef} value={articleForm.excerpt} onChange={(e) => setArticleForm({ ...articleForm, excerpt: e.target.value })}
+                        onKeyDown={(e) => handleTextareaKeyDown(e, "articleExcerpt")}
                         rows={2} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-none"
                         placeholder={t("Kort sammanfattning...", "Short excerpt...")} />
                     </div>
                     <div>
                       <label className="block text-lg font-medium text-foreground mb-2">{t("Innehåll (Markdown)", "Content (Markdown)")}</label>
-                      <textarea value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
+                      <textarea ref={articleContentRef} value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
+                        onKeyDown={(e) => handleTextareaKeyDown(e, "articleContent")}
                         rows={12} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 font-mono resize-y"
                         placeholder={t("Skriv artikelns innehåll i Markdown...", "Write article content in Markdown...")} />
                       <div className="mt-3 p-4 bg-accent/50 rounded-lg border border-border/30">
                         <p className="text-lg font-semibold text-foreground mb-3">{t("Formateringsguide:", "Formatting guide:")}</p>
+                        <div className="mb-4 p-3 bg-background rounded-lg border border-[#c05746]/20">
+                          <p className="text-base font-semibold text-[#c05746] mb-2">{t("⌨️ Tangentbordsgenvägar:", "⌨️ Keyboard shortcuts:")}</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-base text-muted-foreground">
+                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+B</kbd> → <strong>{t("Fet text", "Bold")}</strong></div>
+                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+I</kbd> → <em>{t("Kursiv", "Italic")}</em></div>
+                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+H</kbd> → {t("Rubrik", "Heading")}</div>
+                          </div>
+                          <p className="text-sm text-muted-foreground/70 mt-2">{t("Markera text först, tryck sedan genvägen. På Mac: använd Cmd istället för Ctrl.", "Select text first, then press the shortcut. On Mac: use Cmd instead of Ctrl.")}</p>
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-base text-muted-foreground">
                           <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">## Rubrik</span> → <span className="font-semibold">{t("Stor mellanrubrik", "Large subheading")}</span></div>
                           <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">### Rubrik</span> → <span className="font-semibold">{t("Liten mellanrubrik", "Small subheading")}</span></div>
@@ -938,8 +1040,10 @@ export default function AdminPage() {
                         {t("Innehåll", "Content")}
                       </label>
                       <textarea
+                        ref={diaryContentRef}
                         value={diaryForm.content}
                         onChange={(e) => setDiaryForm({ ...diaryForm, content: e.target.value })}
+                        onKeyDown={(e) => handleTextareaKeyDown(e, "diaryContent")}
                         rows={8}
                         className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-y leading-relaxed"
                         placeholder={t("Skriv ditt dagboksinlägg...", "Write your diary entry...")}
