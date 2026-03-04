@@ -109,3 +109,8 @@
 - [x] Add keyboard trigger button for iPad (focuses textarea to force keyboard open)
 - [x] Fix iPad formatting: B/I buttons lose focus, keyboard disappears, text not getting bold when editing articles
 - [x] Replace selection-based formatting with inline input fields (type word → press insert → formatted text injected at cursor)
+- [x] Replace textarea with Tiptap rich text editor for article content
+- [x] Replace textarea with Tiptap rich text editor for diary content
+- [x] Add toolbar with bold, italic, heading buttons that work on iPad touch
+- [x] Convert between rich text (HTML) and markdown for storage
+- [x] Ensure existing markdown articles render correctly in the editor

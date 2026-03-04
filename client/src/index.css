@@ -158,4 +158,51 @@
   .prose blockquote { @apply border-l-4 border-primary/30 pl-4 italic my-4 text-muted-foreground text-xl; }
   .prose a { @apply text-primary underline hover:text-primary/80 transition-colors; }
   .prose hr { @apply my-8 border-border; }
+
+  /* Rich text editor (Tiptap) styles */
+  .rich-text-editor .tiptap {
+    @apply text-lg leading-relaxed;
+    min-height: 300px;
+    outline: none;
+  }
+  .rich-text-editor .tiptap p {
+    @apply mb-3 leading-relaxed;
+  }
+  .rich-text-editor .tiptap h1 {
+    @apply text-3xl font-bold mb-4 mt-6;
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+  .rich-text-editor .tiptap h2 {
+    @apply text-2xl font-bold mb-3 mt-5;
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+  .rich-text-editor .tiptap h3 {
+    @apply text-xl font-semibold mb-2 mt-4;
+    font-family: 'Source Sans 3', system-ui, sans-serif;
+  }
+  .rich-text-editor .tiptap strong {
+    @apply font-bold;
+  }
+  .rich-text-editor .tiptap em {
+    @apply italic;
+  }
+  .rich-text-editor .tiptap ul {
+    @apply mb-3 pl-6 list-disc;
+  }
+  .rich-text-editor .tiptap ol {
+    @apply mb-3 pl-6 list-decimal;
+  }
+  .rich-text-editor .tiptap li {
+    @apply mb-1 leading-relaxed;
+  }
+  .rich-text-editor .tiptap hr {
+    @apply my-6 border-border;
+  }
+  .rich-text-editor .tiptap p.is-editor-empty:first-child::before {
+    @apply text-muted-foreground/40;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
 }

@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
-import { useState, useEffect, useRef, useCallback, KeyboardEvent } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -24,6 +24,8 @@ import {
   ImageIcon,
 } from "lucide-react";
 import { Link } from "wouter";
+import RichTextEditor from "@/components/RichTextEditor";
+import { markdownToHtml, htmlToMarkdown } from "@/lib/markdownUtils";
 
 // ---- Article form types ----
 type ArticleForm = {
@@ -91,22 +93,14 @@ export default function AdminPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ---- Textarea refs for keyboard shortcuts ----
-  const articleContentRef = useRef<HTMLTextAreaElement>(null);
+  // ---- Rich text editor HTML state ----
+  const [articleContentHtml, setArticleContentHtml] = useState("");
+  const [diaryContentHtml, setDiaryContentHtml] = useState("");
+  const [articleContentInitialized, setArticleContentInitialized] = useState(false);
+  const [diaryContentInitialized, setDiaryContentInitialized] = useState(false);
+
+  // ---- Textarea ref for excerpt keyboard shortcuts ----
   const articleExcerptRef = useRef<HTMLTextAreaElement>(null);
-  const diaryContentRef = useRef<HTMLTextAreaElement>(null);
-
-  // ---- Toggle formatting state (for iPad touch mode) ----
-  const [activeBold, setActiveBold] = useState<string | null>(null); // which formField has bold active
-  const [activeItalic, setActiveItalic] = useState<string | null>(null); // which formField has italic active
-
-  // ---- Inline formatting input state (iPad-friendly: no text selection needed) ----
-  const [inlineFormatText, setInlineFormatText] = useState("");
-  const [inlineFormatType, setInlineFormatType] = useState<"bold" | "italic" | "heading" | null>(null);
-  const [inlineFormatField, setInlineFormatField] = useState<"articleContent" | "articleExcerpt" | "diaryContent" | null>(null);
-  const inlineInputRef = useRef<HTMLInputElement>(null);
-  // Track cursor position when user leaves the textarea
-  const cursorPositionRef = useRef<{ field: string; pos: number }>({ field: "", pos: 0 });
 
   // ---- Diary state ----
   const [editingDiaryId, setEditingDiaryId] = useState<number | null>(null);
@@ -264,269 +258,25 @@ export default function AdminPage() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [showArticleForm, articleForm, performAutoSave]);
 
-  // ---- Keyboard shortcut handler for text formatting ----
-  const handleTextareaKeyDown = (
-    e: KeyboardEvent<HTMLTextAreaElement>,
-    formField: "articleContent" | "articleExcerpt" | "diaryContent"
-  ) => {
-    const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-    if (!isCtrlOrCmd) return;
+  // ---- Handle rich text editor content changes ----
+  const handleArticleContentChange = useCallback((html: string) => {
+    setArticleContentHtml(html);
+    // Convert HTML to markdown for storage
+    const md = htmlToMarkdown(html);
+    setArticleForm((prev) => ({ ...prev, content: md }));
+  }, []);
 
-    let wrapper = "";
-    let prefix = "";
-    if (e.key === "b" || e.key === "B") {
-      e.preventDefault();
-      wrapper = "**";
-    } else if (e.key === "i" || e.key === "I") {
-      e.preventDefault();
-      wrapper = "*";
-    } else if (e.key === "h" || e.key === "H") {
-      e.preventDefault();
-      prefix = "## ";
-    } else {
-      return;
-    }
+  const handleDiaryContentChange = useCallback((html: string) => {
+    setDiaryContentHtml(html);
+    const md = htmlToMarkdown(html);
+    setDiaryForm((prev) => ({ ...prev, content: md }));
+  }, []);
 
-    const textarea = e.currentTarget;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-    const selectedText = text.substring(start, end);
 
-    let newText: string;
-    let newCursorStart: number;
-    let newCursorEnd: number;
 
-    if (prefix) {
-      // Heading: add prefix at start of line
-      const lineStart = text.lastIndexOf("\n", start - 1) + 1;
-      const lineText = text.substring(lineStart, end || start);
-      // Check if already a heading
-      if (lineText.startsWith("## ")) {
-        // Remove heading prefix
-        newText = text.substring(0, lineStart) + lineText.substring(3) + text.substring(end || start);
-        newCursorStart = Math.max(lineStart, start - 3);
-        newCursorEnd = Math.max(lineStart, end - 3);
-      } else {
-        newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
-        newCursorStart = start + prefix.length;
-        newCursorEnd = end + prefix.length;
-      }
-    } else if (selectedText) {
-      // Check if already wrapped
-      const beforeWrapper = text.substring(start - wrapper.length, start);
-      const afterWrapper = text.substring(end, end + wrapper.length);
-      if (beforeWrapper === wrapper && afterWrapper === wrapper) {
-        // Remove wrapping
-        newText = text.substring(0, start - wrapper.length) + selectedText + text.substring(end + wrapper.length);
-        newCursorStart = start - wrapper.length;
-        newCursorEnd = end - wrapper.length;
-      } else {
-        // Add wrapping
-        newText = text.substring(0, start) + wrapper + selectedText + wrapper + text.substring(end);
-        newCursorStart = start + wrapper.length;
-        newCursorEnd = end + wrapper.length;
-      }
-    } else {
-      // No selection: insert wrapper pair and place cursor in middle
-      newText = text.substring(0, start) + wrapper + wrapper + text.substring(end);
-      newCursorStart = start + wrapper.length;
-      newCursorEnd = start + wrapper.length;
-    }
 
-    // Update the form state
-    if (formField === "articleContent") {
-      setArticleForm((prev) => ({ ...prev, content: newText }));
-    } else if (formField === "articleExcerpt") {
-      setArticleForm((prev) => ({ ...prev, excerpt: newText }));
-    } else if (formField === "diaryContent") {
-      setDiaryForm((prev) => ({ ...prev, content: newText }));
-    }
 
-    // Restore cursor position after React re-render
-    requestAnimationFrame(() => {
-      textarea.selectionStart = newCursorStart;
-      textarea.selectionEnd = newCursorEnd;
-    });
-  };
 
-  // ---- Insert formatted text at cursor position ----
-  const insertFormattedText = (word: string, type: "bold" | "italic" | "heading", formField: "articleContent" | "articleExcerpt" | "diaryContent") => {
-    if (!word.trim()) return;
-
-    let formatted = "";
-    if (type === "bold") formatted = `**${word.trim()}**`;
-    else if (type === "italic") formatted = `*${word.trim()}*`;
-    else if (type === "heading") formatted = `\n## ${word.trim()}\n`;
-
-    const pos = cursorPositionRef.current.field === formField ? cursorPositionRef.current.pos : -1;
-
-    if (formField === "articleContent") {
-      setArticleForm((prev) => {
-        const text = prev.content;
-        const insertAt = pos >= 0 && pos <= text.length ? pos : text.length;
-        // Add a space before if not at start and previous char isn't whitespace
-        const spaceBefore = insertAt > 0 && text[insertAt - 1] !== " " && text[insertAt - 1] !== "\n" ? " " : "";
-        const spaceAfter = insertAt < text.length && text[insertAt] !== " " && text[insertAt] !== "\n" ? " " : "";
-        const newText = text.substring(0, insertAt) + spaceBefore + formatted + spaceAfter + text.substring(insertAt);
-        // Update cursor position for next insert
-        cursorPositionRef.current = { field: formField, pos: insertAt + spaceBefore.length + formatted.length + spaceAfter.length };
-        return { ...prev, content: newText };
-      });
-    } else if (formField === "articleExcerpt") {
-      setArticleForm((prev) => {
-        const text = prev.excerpt;
-        const insertAt = pos >= 0 && pos <= text.length ? pos : text.length;
-        const spaceBefore = insertAt > 0 && text[insertAt - 1] !== " " && text[insertAt - 1] !== "\n" ? " " : "";
-        const spaceAfter = insertAt < text.length && text[insertAt] !== " " && text[insertAt] !== "\n" ? " " : "";
-        const newText = text.substring(0, insertAt) + spaceBefore + formatted + spaceAfter + text.substring(insertAt);
-        cursorPositionRef.current = { field: formField, pos: insertAt + spaceBefore.length + formatted.length + spaceAfter.length };
-        return { ...prev, excerpt: newText };
-      });
-    } else if (formField === "diaryContent") {
-      setDiaryForm((prev) => {
-        const text = prev.content;
-        const insertAt = pos >= 0 && pos <= text.length ? pos : text.length;
-        const spaceBefore = insertAt > 0 && text[insertAt - 1] !== " " && text[insertAt - 1] !== "\n" ? " " : "";
-        const spaceAfter = insertAt < text.length && text[insertAt] !== " " && text[insertAt] !== "\n" ? " " : "";
-        const newText = text.substring(0, insertAt) + spaceBefore + formatted + spaceAfter + text.substring(insertAt);
-        cursorPositionRef.current = { field: formField, pos: insertAt + spaceBefore.length + formatted.length + spaceAfter.length };
-        return { ...prev, content: newText };
-      });
-    }
-
-    // Clear the inline input and close
-    setInlineFormatText("");
-    setInlineFormatType(null);
-    setInlineFormatField(null);
-    toast.success(t(
-      type === "bold" ? `"${word.trim()}" infogat som fet text` : type === "italic" ? `"${word.trim()}" infogat som kursiv text` : `"${word.trim()}" infogat som rubrik`,
-      type === "bold" ? `"${word.trim()}" inserted as bold` : type === "italic" ? `"${word.trim()}" inserted as italic` : `"${word.trim()}" inserted as heading`
-    ));
-  };
-
-  // ---- Track cursor position when user interacts with textarea ----
-  const handleTextareaSelect = (formField: "articleContent" | "articleExcerpt" | "diaryContent") => (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
-    const textarea = e.currentTarget;
-    cursorPositionRef.current = { field: formField, pos: textarea.selectionStart };
-  };
-
-  // Reusable formatting toolbar component — iPad-friendly with inline input
-  const FormattingToolbar = ({
-    textareaRef,
-    formField,
-  }: {
-    textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-    formField: "articleContent" | "articleExcerpt" | "diaryContent";
-  }) => {
-    const isActiveForThisField = inlineFormatField === formField;
-
-    const openInlineInput = (type: "bold" | "italic" | "heading") => {
-      setInlineFormatType(type);
-      setInlineFormatField(formField);
-      setInlineFormatText("");
-      // Focus the inline input after render
-      setTimeout(() => inlineInputRef.current?.focus(), 50);
-    };
-
-    const typeLabel = inlineFormatType === "bold" ? t("fet", "bold") : inlineFormatType === "italic" ? t("kursiv", "italic") : t("rubrik", "heading");
-
-    return (
-      <div className="mb-2 space-y-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-muted-foreground mr-1">{t("Infoga:", "Insert:")} </span>
-          <button
-            type="button"
-            onClick={() => openInlineInput("bold")}
-            className={`inline-flex items-center gap-1.5 px-5 py-3 rounded-lg text-lg font-bold transition-all touch-manipulation ${
-              isActiveForThisField && inlineFormatType === "bold"
-                ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
-                : "bg-card border border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10"
-            }`}
-          >
-            <span className="text-xl font-bold">B</span>
-            <span className="text-base font-normal">{t("Fet", "Bold")}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => openInlineInput("italic")}
-            className={`inline-flex items-center gap-1.5 px-5 py-3 rounded-lg text-lg transition-all touch-manipulation ${
-              isActiveForThisField && inlineFormatType === "italic"
-                ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
-                : "bg-card border border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10"
-            }`}
-          >
-            <span className="text-xl italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
-            <span className="text-base font-normal">{t("Kursiv", "Italic")}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => openInlineInput("heading")}
-            className={`inline-flex items-center gap-1.5 px-5 py-3 rounded-lg text-lg transition-all touch-manipulation ${
-              isActiveForThisField && inlineFormatType === "heading"
-                ? "bg-[#c05746] text-white border-2 border-[#c05746] shadow-md"
-                : "bg-card border border-border/50 text-foreground hover:bg-accent active:bg-[#c05746]/10"
-            }`}
-          >
-            <span className="text-xl font-bold">H</span>
-            <span className="text-base font-normal">{t("Rubrik", "Heading")}</span>
-          </button>
-        </div>
-        {isActiveForThisField && inlineFormatType && (
-          <div className="flex items-center gap-2 p-3 bg-[#c05746]/5 rounded-lg border-2 border-[#c05746]/40 animate-in fade-in">
-            <span className="text-base font-semibold text-[#c05746] shrink-0">
-              {t(`Skriv ${typeLabel} text:`, `Type ${typeLabel} text:`)}
-            </span>
-            <input
-              ref={inlineInputRef}
-              type="text"
-              value={inlineFormatText}
-              onChange={(e) => setInlineFormatText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && inlineFormatText.trim()) {
-                  e.preventDefault();
-                  insertFormattedText(inlineFormatText, inlineFormatType, formField);
-                } else if (e.key === "Escape") {
-                  setInlineFormatType(null);
-                  setInlineFormatField(null);
-                  setInlineFormatText("");
-                }
-              }}
-              className="flex-1 px-4 py-2.5 rounded-lg bg-background border-2 border-[#c05746]/30 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/40 min-w-0"
-              placeholder={t(
-                inlineFormatType === "heading" ? "Skriv rubriktext..." : "Skriv ord eller mening...",
-                inlineFormatType === "heading" ? "Type heading text..." : "Type word or phrase..."
-              )}
-              autoFocus
-            />
-            <button
-              type="button"
-              onClick={() => {
-                if (inlineFormatText.trim()) {
-                  insertFormattedText(inlineFormatText, inlineFormatType, formField);
-                }
-              }}
-              disabled={!inlineFormatText.trim()}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#c05746] text-white text-lg font-semibold hover:bg-[#a84836] active:bg-[#8f3d2e] disabled:opacity-40 disabled:cursor-not-allowed transition-all touch-manipulation shrink-0"
-            >
-              {t("Infoga", "Insert")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setInlineFormatType(null);
-                setInlineFormatField(null);
-                setInlineFormatText("");
-              }}
-              className="p-2.5 rounded-lg hover:bg-accent transition-colors touch-manipulation shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const clearAutoSave = () => {
     setAutoSaveStatus("idle");
@@ -712,6 +462,8 @@ export default function AdminPage() {
       published: article.published,
       publishedAt: new Date(article.publishedAt).toISOString().slice(0, 16),
     });
+    // Convert markdown to HTML for the rich text editor
+    setArticleContentHtml(markdownToHtml(article.content));
     lastSavedFormRef.current = "";
     setAutoSaveStatus("idle");
     setLastSavedAt(null);
@@ -721,6 +473,7 @@ export default function AdminPage() {
     setEditingArticleId(null);
     setShowArticleForm(true);
     setArticleForm(emptyArticleForm);
+    setArticleContentHtml("");
     lastSavedFormRef.current = "";
     setAutoSaveStatus("idle");
     setLastSavedAt(null);
@@ -731,6 +484,7 @@ export default function AdminPage() {
       setEditingArticleId(recoveredArticleId);
       setShowArticleForm(true);
       setArticleForm(recoveredDraft);
+      setArticleContentHtml(markdownToHtml(recoveredDraft.content));
       setHasDraftToRecover(false);
       lastSavedFormRef.current = JSON.stringify(recoveredDraft);
       setAutoSaveStatus("idle");
@@ -756,6 +510,7 @@ export default function AdminPage() {
     setShowArticleForm(false);
     setEditingArticleId(null);
     setArticleForm(emptyArticleForm);
+    setArticleContentHtml("");
     clearAutoSave();
   };
 
@@ -790,12 +545,15 @@ export default function AdminPage() {
       published: entry.published,
       entryDate: new Date(entry.entryDate).toISOString().slice(0, 16),
     });
+    // Convert markdown to HTML for the rich text editor
+    setDiaryContentHtml(markdownToHtml(entry.content));
   };
 
   const handleNewDiary = () => {
     setEditingDiaryId(null);
     setShowDiaryForm(true);
     setDiaryForm(emptyDiaryForm);
+    setDiaryContentHtml("");
   };
 
   const handleSaveDiary = () => {
@@ -993,66 +751,16 @@ export default function AdminPage() {
                     <div>
                       <label className="block text-lg font-medium text-foreground mb-2">{t("Sammanfattning", "Excerpt")}</label>
                       <textarea ref={articleExcerptRef} value={articleForm.excerpt} onChange={(e) => setArticleForm({ ...articleForm, excerpt: e.target.value })}
-                        onKeyDown={(e) => handleTextareaKeyDown(e, "articleExcerpt")}
                         rows={2} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-none"
                         placeholder={t("Kort sammanfattning...", "Short excerpt...")} />
                     </div>
                     <div>
-                      <label className="block text-lg font-medium text-foreground mb-2">{t("Innehåll (Markdown)", "Content (Markdown)")}</label>
-                      <FormattingToolbar textareaRef={articleContentRef} formField="articleContent" />
-                      <textarea ref={articleContentRef} value={articleForm.content} onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
-                        onKeyDown={(e) => handleTextareaKeyDown(e, "articleContent")}
-                        onSelect={handleTextareaSelect("articleContent")}
-                        onClick={handleTextareaSelect("articleContent")}
-                        onBlur={handleTextareaSelect("articleContent")}
-                        rows={12} className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 font-mono resize-y"
-                        placeholder={t("Skriv artikelns innehåll i Markdown...", "Write article content in Markdown...")} />
-                      <div className="mt-3 p-4 bg-accent/50 rounded-lg border border-border/30">
-                        <p className="text-lg font-semibold text-foreground mb-3">{t("Formateringsguide:", "Formatting guide:")}</p>
-                        {/* iPad / touch mode guide */}
-                        <div className="mb-4 p-3 bg-[#c05746]/5 rounded-lg border-2 border-[#c05746]/30">
-                          <p className="text-base font-semibold text-[#c05746] mb-2">{t("📱 Så här gör du (iPad / pekskärm):", "📱 How to format (iPad / touch):")}</p>
-                          <div className="space-y-2 text-base text-foreground">
-                            <div className="flex items-start gap-2">
-                              <span className="font-bold text-[#c05746] shrink-0">1.</span>
-                              <span>{t("Skriv din vanliga text i det stora textfältet", "Write your normal text in the large text field")}</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <span className="font-bold text-[#c05746] shrink-0">2.</span>
-                              <span>{t("Tryck på B (Fet), I (Kursiv) eller H (Rubrik) ovanför", "Press B (Bold), I (Italic) or H (Heading) above")}</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <span className="font-bold text-[#c05746] shrink-0">3.</span>
-                              <span>{t("Ett litet textfält öppnas — skriv ditt ord eller mening där", "A small text field opens — type your word or phrase there")}</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <span className="font-bold text-[#c05746] shrink-0">4.</span>
-                              <span>{t('Tryck "Infoga" — texten läggs in formaterad i din artikel', 'Press "Insert" — the text is added formatted into your article')}</span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-2">{t("Ingen markering behövs! Texten infogas där markören senast stod.", "No selection needed! Text is inserted where the cursor was last placed.")}</p>
-                        </div>
-                        {/* Keyboard shortcuts for physical keyboard */}
-                        <div className="mb-4 p-3 bg-background rounded-lg border border-border/30">
-                          <p className="text-base font-semibold text-muted-foreground mb-2">{t("⌨️ Med tangentbord:", "⌨️ With keyboard:")}</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-base text-muted-foreground">
-                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+B</kbd> → <strong>{t("Fet", "Bold")}</strong></div>
-                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+I</kbd> → <em>{t("Kursiv", "Italic")}</em></div>
-                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+H</kbd> → {t("Rubrik", "Heading")}</div>
-                          </div>
-                        </div>
-                        {/* Markdown syntax reference */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-base text-muted-foreground">
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">## Rubrik</span> → <span className="font-semibold">{t("Stor mellanrubrik", "Large subheading")}</span></div>
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">### Rubrik</span> → <span className="font-semibold">{t("Liten mellanrubrik", "Small subheading")}</span></div>
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">**fet text**</span> → <strong>{t("Fet text", "Bold text")}</strong></div>
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">*kursiv text*</span> → <em>{t("Kursiv text", "Italic text")}</em></div>
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">- Punkt</span> → {t("Punktlista", "Bullet list")}</div>
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">1. Punkt</span> → {t("Numrerad lista", "Numbered list")}</div>
-                          <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">---</span> → {t("Horisontell linje", "Horizontal line")}</div>
-                          <div className="text-base">{t("Tom rad = nytt stycke", "Empty line = new paragraph")}</div>
-                        </div>
-                      </div>
+                      <label className="block text-lg font-medium text-foreground mb-2">{t("Innehåll", "Content")}</label>
+                      <RichTextEditor
+                        content={articleContentHtml}
+                        onChange={handleArticleContentChange}
+                        placeholder={t("Skriv artikelns innehåll...", "Write article content...")}
+                      />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
@@ -1257,17 +965,9 @@ export default function AdminPage() {
                       <label className="block text-lg font-medium text-foreground mb-2">
                         {t("Innehåll", "Content")}
                       </label>
-                      <FormattingToolbar textareaRef={diaryContentRef} formField="diaryContent" />
-                      <textarea
-                        ref={diaryContentRef}
-                        value={diaryForm.content}
-                        onChange={(e) => setDiaryForm({ ...diaryForm, content: e.target.value })}
-                        onKeyDown={(e) => handleTextareaKeyDown(e, "diaryContent")}
-                        onSelect={handleTextareaSelect("diaryContent")}
-                        onClick={handleTextareaSelect("diaryContent")}
-                        onBlur={handleTextareaSelect("diaryContent")}
-                        rows={8}
-                        className="w-full px-5 py-3 rounded-lg bg-background border border-border/50 text-lg focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-y leading-relaxed"
+                      <RichTextEditor
+                        content={diaryContentHtml}
+                        onChange={handleDiaryContentChange}
                         placeholder={t("Skriv ditt dagboksinlägg...", "Write your diary entry...")}
                       />
                     </div>
