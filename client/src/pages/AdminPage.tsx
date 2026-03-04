@@ -444,6 +444,20 @@ export default function AdminPage() {
     });
   };
 
+  // Force keyboard open on iPad by focusing textarea
+  const forceKeyboardOpen = (textareaRef: React.RefObject<HTMLTextAreaElement | null>) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    // On iOS, focus() must happen in a user-gesture handler to trigger the keyboard
+    textarea.focus();
+    // Move cursor to end of content
+    const len = textarea.value.length;
+    textarea.selectionStart = len;
+    textarea.selectionEnd = len;
+    // Scroll textarea into view
+    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   // Reusable formatting toolbar component with toggle state indicators
   const FormattingToolbar = ({
     textareaRef,
@@ -457,6 +471,15 @@ export default function AdminPage() {
 
     return (
       <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <button
+          type="button"
+          onClick={() => forceKeyboardOpen(textareaRef)}
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-blue-50 border-2 border-blue-300 text-blue-700 text-lg font-semibold hover:bg-blue-100 active:bg-blue-200 transition-all touch-manipulation"
+          title={t("Visa tangentbord", "Show keyboard")}
+        >
+          <span className="text-xl">⌨️</span>
+          <span className="text-base">{t("Skriv", "Type")}</span>
+        </button>
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -990,15 +1013,39 @@ export default function AdminPage() {
                         placeholder={t("Skriv artikelns innehåll i Markdown...", "Write article content in Markdown...")} />
                       <div className="mt-3 p-4 bg-accent/50 rounded-lg border border-border/30">
                         <p className="text-lg font-semibold text-foreground mb-3">{t("Formateringsguide:", "Formatting guide:")}</p>
-                        <div className="mb-4 p-3 bg-background rounded-lg border border-[#c05746]/20">
-                          <p className="text-base font-semibold text-[#c05746] mb-2">{t("⌨️ Tangentbordsgenvägar:", "⌨️ Keyboard shortcuts:")}</p>
+                        {/* iPad / touch mode guide */}
+                        <div className="mb-4 p-3 bg-[#c05746]/5 rounded-lg border-2 border-[#c05746]/30">
+                          <p className="text-base font-semibold text-[#c05746] mb-2">{t("📱 Så här gör du (iPad / pekskärm):", "📱 How to format (iPad / touch):")}</p>
+                          <div className="space-y-2 text-base text-foreground">
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-[#c05746] shrink-0">1.</span>
+                              <span>{t("Tryck i textfältet för att börja skriva", "Tap the text field to start writing")}</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-[#c05746] shrink-0">2.</span>
+                              <span>{t('Tryck på B-knappen → den blir röd och visar "PÅ"', 'Press the B button → it turns red and shows "ON"')}</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-[#c05746] shrink-0">3.</span>
+                              <span>{t("Skriv ditt feta ord", "Type your bold word")}</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <span className="font-bold text-[#c05746] shrink-0">4.</span>
+                              <span>{t("Tryck på B igen → formateringen stängs", "Press B again → formatting closes")}</span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-2">{t("Samma sak för I (kursiv). H lägger till en rubrik.", "Same for I (italic). H adds a heading.")}</p>
+                        </div>
+                        {/* Keyboard shortcuts for physical keyboard */}
+                        <div className="mb-4 p-3 bg-background rounded-lg border border-border/30">
+                          <p className="text-base font-semibold text-muted-foreground mb-2">{t("⌨️ Med tangentbord:", "⌨️ With keyboard:")}</p>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-base text-muted-foreground">
-                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+B</kbd> → <strong>{t("Fet text", "Bold")}</strong></div>
+                            <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+B</kbd> → <strong>{t("Fet", "Bold")}</strong></div>
                             <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+I</kbd> → <em>{t("Kursiv", "Italic")}</em></div>
                             <div><kbd className="px-2 py-0.5 bg-card border border-border rounded text-sm font-mono">Ctrl+H</kbd> → {t("Rubrik", "Heading")}</div>
                           </div>
-                          <p className="text-sm text-muted-foreground/70 mt-2">{t("Markera text först, tryck sedan genvägen. På Mac: använd Cmd istället för Ctrl.", "Select text first, then press the shortcut. On Mac: use Cmd instead of Ctrl.")}</p>
                         </div>
+                        {/* Markdown syntax reference */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-base text-muted-foreground">
                           <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">## Rubrik</span> → <span className="font-semibold">{t("Stor mellanrubrik", "Large subheading")}</span></div>
                           <div><span className="font-mono bg-background px-2 py-1 rounded text-foreground">### Rubrik</span> → <span className="font-semibold">{t("Liten mellanrubrik", "Small subheading")}</span></div>

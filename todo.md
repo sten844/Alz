@@ -105,3 +105,5 @@
 - [x] Ensure toolbar works on iPad (touch-based, no keyboard needed)
 - [x] Improve formatting toolbar: toggle mode (no text selection needed) for iPad usability
 - [x] Add visual indicator showing active formatting state (e.g. bold mode ON)
+- [x] Update formatting guide to describe toggle mode (press B → type → press B again)
+- [x] Add keyboard trigger button for iPad (focuses textarea to force keyboard open)
