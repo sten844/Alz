@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { z } from "zod";
@@ -432,6 +432,26 @@ export const appRouter = router({
           limit: input?.limit ?? 50,
           offset: input?.offset ?? 0,
         });
+      }),
+  }),
+
+  pages: router({
+    get: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        return getSitePage(input.slug) ?? null;
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        slug: z.string(),
+        contentSv: z.string().nullable().optional(),
+        contentEn: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { slug, ...data } = input;
+        await upsertSitePage(slug, data);
+        return { success: true };
       }),
   }),
 });

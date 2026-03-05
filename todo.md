@@ -122,3 +122,8 @@
 - [x] Place insert buttons both above and below editor content
 - [x] Add "Sök och feta" feature: type a word/phrase from the text and it gets bolded automatically (no selection needed)
 - [x] Add similar "Sök och kursivera" feature for italic
+- [x] Create database table for About page content (site_pages)
+- [x] Create API endpoints for loading and saving About page content
+- [x] Add simple About page editor in admin panel (plain textarea, copy-paste friendly)
+- [x] Add technical description to bottom of About page
+- [x] Load About page content from database instead of hardcoded

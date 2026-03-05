@@ -1,6 +1,6 @@
 import { eq, desc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -258,4 +258,27 @@ export async function listDrafts(userId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(articleDrafts).where(eq(articleDrafts.userId, userId)).orderBy(desc(articleDrafts.savedAt));
+}
+
+// ---- Site pages queries ----
+
+export async function getSitePage(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function upsertSitePage(slug: string, data: { contentSv?: string | null; contentEn?: string | null }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await db.select().from(sitePages).where(eq(sitePages.slug, slug)).limit(1);
+  if (existing.length > 0) {
+    await db.update(sitePages).set(data).where(eq(sitePages.slug, slug));
+    return { id: existing[0].id };
+  } else {
+    const result = await db.insert(sitePages).values({ slug, ...data });
+    return { id: result[0].insertId };
+  }
 }

@@ -71,7 +71,7 @@ const AUTO_SAVE_INTERVAL = 30000;
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -666,6 +666,17 @@ export default function AdminPage() {
               <BookOpen className="w-5 h-5" />
               {t("Dagbok", "Diary")}
             </button>
+            <button
+              onClick={() => setActiveTab("about")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "about"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <FileText className="w-5 h-5" />
+              {t("Om mig", "About")}
+            </button>
           </div>
 
           {/* ============ ARTICLES TAB ============ */}
@@ -1050,10 +1061,117 @@ export default function AdminPage() {
               )}
             </>
           )}
+
+          {/* ============ ABOUT TAB ============ */}
+          {activeTab === "about" && (
+            <AboutPageEditor />
+          )}
         </div>
       </main>
 
       <SiteFooter />
+    </div>
+  );
+}
+
+// ---- About Page Editor (simple textarea) ----
+function AboutPageEditor() {
+  const { t } = useLanguage();
+  const [contentSv, setContentSv] = useState("");
+  const [contentEn, setContentEn] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const { data: pageData, isLoading } = trpc.pages.get.useQuery({ slug: "about" });
+  const updatePageMutation = trpc.pages.update.useMutation();
+  const utils = trpc.useUtils();
+
+  useEffect(() => {
+    if (pageData && !loaded) {
+      setContentSv(pageData.contentSv || "");
+      setContentEn(pageData.contentEn || "");
+      setLoaded(true);
+    }
+  }, [pageData, loaded]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await updatePageMutation.mutateAsync({
+        slug: "about",
+        contentSv,
+        contentEn,
+      });
+      utils.pages.get.invalidate();
+      toast.success(t("Om mig-sidan sparad!", "About page saved!"));
+    } catch (error) {
+      toast.error(t("Kunde inte spara", "Failed to save"));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="flex justify-center py-16"><Loader2 className="w-10 h-10 animate-spin text-[#c05746]" /></div>;
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold text-foreground">
+          {t("Redigera Om mig-sidan", "Edit About page")}
+        </h2>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="inline-flex items-center gap-2 px-10 py-3 bg-[#c05746] text-white rounded-full text-lg font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50"
+        >
+          {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+          {t("Spara", "Save")}
+        </button>
+      </div>
+
+      <p className="text-lg text-muted-foreground">
+        {t(
+          "Redigera texten nedan. Du kan klippa ut, klistra in och redigera fritt. Texten visas på Om mig-sidan.",
+          "Edit the text below. You can cut, paste and edit freely. The text is shown on the About page."
+        )}
+      </p>
+
+      <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
+        <label className="block text-xl font-semibold text-foreground mb-3">
+          {t("Svenska", "Swedish")}
+        </label>
+        <textarea
+          value={contentSv}
+          onChange={(e) => setContentSv(e.target.value)}
+          placeholder={t("Skriv din Om mig-text på svenska...", "Write your About text in Swedish...")}
+          className="w-full min-h-[400px] px-5 py-4 rounded-lg bg-background border border-border/50 text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-y"
+        />
+      </div>
+
+      <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
+        <label className="block text-xl font-semibold text-foreground mb-3">
+          {t("Engelska", "English")}
+        </label>
+        <textarea
+          value={contentEn}
+          onChange={(e) => setContentEn(e.target.value)}
+          placeholder={t("Skriv din Om mig-text på engelska...", "Write your About text in English...")}
+          className="w-full min-h-[400px] px-5 py-4 rounded-lg bg-background border border-border/50 text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 resize-y"
+        />
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="inline-flex items-center gap-2 px-10 py-3 bg-[#c05746] text-white rounded-full text-lg font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50"
+        >
+          {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+          {t("Spara", "Save")}
+        </button>
+      </div>
     </div>
   );
 }

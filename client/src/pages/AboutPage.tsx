@@ -3,16 +3,142 @@
  * - Personal, warm tone
  * - Profile photo prominently displayed
  * - Clean reading layout
+ * - Loads editable content from database
+ * - Shows technical description at bottom
  */
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { IMAGES } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+
+// Simple markdown-like renderer for the about page content
+function renderAboutContent(text: string) {
+  if (!text) return null;
+
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Table detection
+    if (line.includes("|") && i + 1 < lines.length && lines[i + 1]?.match(/^\|[\s-|]+\|$/)) {
+      // Parse table
+      const headerCells = line.split("|").filter(c => c.trim()).map(c => c.trim());
+      i += 2; // skip header and separator
+      const rows: string[][] = [];
+      while (i < lines.length && lines[i].includes("|")) {
+        const cells = lines[i].split("|").filter(c => c.trim()).map(c => c.trim());
+        rows.push(cells);
+        i++;
+      }
+      elements.push(
+        <div key={`table-${i}`} className="overflow-x-auto my-4">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b-2 border-border">
+                {headerCells.map((cell, ci) => (
+                  <th key={ci} className="px-4 py-2 text-base font-semibold text-foreground">{renderInline(cell)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri} className="border-b border-border/30">
+                  {row.map((cell, ci) => (
+                    <td key={ci} className="px-4 py-2 text-base text-foreground/90">{renderInline(cell)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      continue;
+    }
+
+    // Heading ### 
+    if (line.startsWith("### ")) {
+      elements.push(
+        <h3 key={`h3-${i}`} className="text-xl font-semibold text-foreground mt-8 mb-3">
+          {line.slice(4)}
+        </h3>
+      );
+      i++;
+      continue;
+    }
+
+    // Heading ##
+    if (line.startsWith("## ")) {
+      elements.push(
+        <h2 key={`h2-${i}`} className="text-2xl font-bold text-foreground mt-10 mb-4">
+          {line.slice(3)}
+        </h2>
+      );
+      i++;
+      continue;
+    }
+
+    // Horizontal rule
+    if (line.trim() === "---") {
+      elements.push(<hr key={`hr-${i}`} className="my-6 border-border" />);
+      i++;
+      continue;
+    }
+
+    // Empty line
+    if (line.trim() === "") {
+      i++;
+      continue;
+    }
+
+    // Regular paragraph
+    elements.push(
+      <p key={`p-${i}`} className="text-lg leading-relaxed text-foreground/90 mb-4">
+        {renderInline(line)}
+      </p>
+    );
+    i++;
+  }
+
+  return <>{elements}</>;
+}
+
+// Render inline markdown (bold, italic)
+function renderInline(text: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    // Bold **text**
+    const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
+    if (boldMatch && boldMatch.index !== undefined) {
+      if (boldMatch.index > 0) {
+        parts.push(<span key={key++}>{remaining.slice(0, boldMatch.index)}</span>);
+      }
+      parts.push(<strong key={key++} className="font-semibold">{boldMatch[1]}</strong>);
+      remaining = remaining.slice(boldMatch.index + boldMatch[0].length);
+      continue;
+    }
+
+    // No more matches
+    parts.push(<span key={key++}>{remaining}</span>);
+    break;
+  }
+
+  return parts.length === 1 ? parts[0] : <>{parts}</>;
+}
 
 export default function AboutPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const { data: pageData, isLoading } = trpc.pages.get.useQuery({ slug: "about" });
+
+  const dbContent = language === "sv" ? pageData?.contentSv : pageData?.contentEn;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -85,6 +211,19 @@ export default function AboutPage() {
               {t("Följ på X", "Follow on X")}
             </a>
           </div>
+
+          {/* Database-loaded content (editable from admin) */}
+          {isLoading && (
+            <div className="mt-10 pt-8 border-t border-border flex justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+            </div>
+          )}
+
+          {dbContent && (
+            <div className="mt-10 pt-8 border-t border-border">
+              {renderAboutContent(dbContent)}
+            </div>
+          )}
         </div>
       </main>
 

@@ -79,3 +79,18 @@ export const articleDrafts = mysqlTable("article_drafts", {
 
 export type ArticleDraft = typeof articleDrafts.$inferSelect;
 export type InsertArticleDraft = typeof articleDrafts.$inferInsert;
+
+/**
+ * Site pages table for editable static pages (e.g. About page).
+ * Stores content as markdown, with Swedish and English versions.
+ */
+export const sitePages = mysqlTable("site_pages", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  contentSv: text("content_sv"),
+  contentEn: text("content_en"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SitePage = typeof sitePages.$inferSelect;
+export type InsertSitePage = typeof sitePages.$inferInsert;
