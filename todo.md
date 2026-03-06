@@ -127,3 +127,6 @@
 - [x] Add simple About page editor in admin panel (plain textarea, copy-paste friendly)
 - [x] Add technical description to bottom of About page
 - [x] Load About page content from database instead of hardcoded
+- [x] Redesign bottom sections (AI, Newsletter, Comments, X) from full-width bands to 2x2 grid blocks on PC/iPad
+- [x] Keep single column layout on mobile
+- [x] Make Comments section easy to hide/show later

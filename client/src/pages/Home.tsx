@@ -239,117 +239,120 @@ export default function Home() {
 
         </section>
 
-        {/* AI Section - full width band */}
-        <section className="relative overflow-hidden">
-          <img
-            src={IMAGES.aiSectionBg}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-900/70 to-slate-900/50" />
-          <div className="relative container py-8 md:py-10 text-center">
-            <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              {t("AI långt bortom Google", "AI far beyond Google")}
-            </h2>
-            <p className="text-slate-200 text-xl max-w-2xl mx-auto mb-8 leading-relaxed">
-              {t(
-                "Som alzheimerdrabbad behöver jag modern teknik. Här presenterar jag AI och ger lite exempel på tillämpningar.",
-                "As someone affected by Alzheimer's, I need modern technology. Here I present AI and give some examples of applications."
-              )}
-            </p>
-            <Link
-              href="/ai"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-white/90 text-slate-800 rounded-full text-lg font-semibold hover:bg-white transition-colors shadow-lg"
-            >
-              {t("Utforska AI-världen", "Explore the AI world")}
-              <ExternalLink className="w-4 h-4" />
-            </Link>
-          </div>
-        </section>
+        {/* Bottom sections - 2x2 grid on PC/iPad, single column on mobile */}
+        <section className="container py-6 md:py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
-        {/* Newsletter - full width band */}
-        <section className="bg-[#c05746] py-8 md:py-10">
-          <div className="container text-center">
-            <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
-            </h2>
-            <p className="text-white/80 text-xl max-w-xl mx-auto mb-8 leading-relaxed">
-              {t(
-                "Prenumerera för att få notiser när nya artiklar publiceras.",
-                "Subscribe to get notifications when new articles are published."
-              )}
-            </p>
-            <div className="flex gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder={t("Din email-adress", "Your email address")}
-                className="flex-1 px-5 py-3 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
+            {/* AI Block */}
+            <div className="relative overflow-hidden rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center">
+              <img
+                src={IMAGES.aiSectionBg}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <button className="px-7 py-3 bg-slate-900 text-white rounded-full text-base font-semibold hover:bg-slate-800 transition-colors shadow-lg">
-                {t("Prenumerera", "Subscribe")}
-              </button>
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-slate-900/70 to-slate-900/50" />
+              <div className="relative p-6 md:p-8 text-center flex flex-col items-center justify-center h-full">
+                <h2 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                  {t("AI långt bortom Google", "AI far beyond Google")}
+                </h2>
+                <p className="text-slate-200 text-lg max-w-sm mx-auto mb-5 leading-relaxed">
+                  {t(
+                    "Som alzheimerdrabbad behöver jag modern teknik. Här presenterar jag AI och ger lite exempel på tillämpningar.",
+                    "As someone affected by Alzheimer's, I need modern technology. Here I present AI and give some examples of applications."
+                  )}
+                </p>
+                <Link
+                  href="/ai"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/90 text-slate-800 rounded-full text-base font-semibold hover:bg-white transition-colors shadow-lg"
+                >
+                  {t("Utforska AI-världen", "Explore the AI world")}
+                  <ExternalLink className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
 
-        {/* Comments - full width band */}
-        <section className="bg-background py-8 md:py-10">
-          <div className="container text-center">
-            <h2 className="text-3xl md:text-4xl text-foreground mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              {t("Kommentarer och diskussion", "Comments and discussion")}
-            </h2>
-            <p className="text-muted-foreground text-xl max-w-xl mx-auto mb-8 leading-relaxed">
-              {t(
-                "Dela dina tankar, ställ frågor eller diskutera artiklar.",
-                "Share your thoughts, ask questions, or discuss articles."
-              )}
-            </p>
-            <a
-              href="https://jagochminalzheimer.manus.space/comments"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-700 text-white rounded-full text-lg font-semibold hover:bg-emerald-800 transition-colors shadow-lg"
-            >
-              {t("Gå till diskussionen", "Go to the discussion")}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-        </section>
+            {/* Newsletter Block */}
+            <div className="bg-[#c05746] rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
+              <h2 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
+              </h2>
+              <p className="text-white/80 text-lg max-w-sm mx-auto mb-5 leading-relaxed">
+                {t(
+                  "Prenumerera för att få notiser när nya artiklar publiceras.",
+                  "Subscribe to get notifications when new articles are published."
+                )}
+              </p>
+              <div className="flex gap-3 max-w-sm mx-auto">
+                <input
+                  type="email"
+                  placeholder={t("Din email-adress", "Your email address")}
+                  className="flex-1 px-4 py-2.5 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
+                />
+                <button className="px-5 py-2.5 bg-slate-900 text-white rounded-full text-base font-semibold hover:bg-slate-800 transition-colors shadow-lg">
+                  {t("Prenumerera", "Subscribe")}
+                </button>
+              </div>
+            </div>
 
-        {/* Follow on X - full width band */}
-        <section className="bg-slate-900 py-8 md:py-10">
-          <div className="container text-center">
-            <h2 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: "'DM Serif Display', serif" }}>
-              {t("Följ mig på X", "Follow me on X")}
-            </h2>
-            <p className="text-slate-300 text-xl max-w-xl mx-auto mb-8 leading-relaxed">
-              {t(
-                "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
-                "I write about my new life with Alzheimer's on X (Twitter)."
-              )}
-            </p>
-            <a
-              href="https://x.com/stendellby"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-white text-slate-900 rounded-full text-lg font-semibold hover:bg-slate-100 transition-colors shadow-lg mb-8"
-            >
-              {t("Ta mig till X", "Take me to X")}
-              <ExternalLink className="w-4 h-4" />
-            </a>
-
-            {/* Embedded Twitter Timeline */}
-            <div className="max-w-lg mx-auto rounded-xl overflow-hidden">
+            {/* Comments Block - easy to hide later: set SHOW_COMMENTS to false */}
+            {true && (
+            <div className="bg-card border border-border/50 rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
+              <h2 className="text-2xl md:text-3xl text-foreground mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                {t("Kommentarer och diskussion", "Comments and discussion")}
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-sm mx-auto mb-5 leading-relaxed">
+                {t(
+                  "Dela dina tankar, ställ frågor eller diskutera artiklar.",
+                  "Share your thoughts, ask questions, or discuss articles."
+                )}
+              </p>
               <a
-                className="twitter-timeline"
-                data-theme="dark"
-                data-height="500"
-                data-chrome="noheader nofooter noborders transparent"
-                href="https://twitter.com/stendellby?ref_src=twsrc%5Etfw"
+                href="https://jagochminalzheimer.manus.space/comments"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-700 text-white rounded-full text-base font-semibold hover:bg-emerald-800 transition-colors shadow-lg mx-auto"
               >
-                Tweets by stendellby
+                {t("Gå till diskussionen", "Go to the discussion")}
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
+            )}
+
+            {/* Follow on X Block */}
+            <div className="bg-slate-900 rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
+              <h2 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                {t("Följ mig på X", "Follow me on X")}
+              </h2>
+              <p className="text-slate-300 text-lg max-w-sm mx-auto mb-5 leading-relaxed">
+                {t(
+                  "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
+                  "I write about my new life with Alzheimer's on X (Twitter)."
+                )}
+              </p>
+              <a
+                href="https://x.com/stendellby"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-slate-900 rounded-full text-base font-semibold hover:bg-slate-100 transition-colors shadow-lg mx-auto mb-4"
+              >
+                {t("Ta mig till X", "Take me to X")}
+                <ExternalLink className="w-4 h-4" />
+              </a>
+
+              {/* Embedded Twitter Timeline */}
+              <div className="max-w-sm mx-auto rounded-xl overflow-hidden">
+                <a
+                  className="twitter-timeline"
+                  data-theme="dark"
+                  data-height="300"
+                  data-chrome="noheader nofooter noborders transparent"
+                  href="https://twitter.com/stendellby?ref_src=twsrc%5Etfw"
+                >
+                  Tweets by stendellby
+                </a>
+              </div>
+            </div>
+
           </div>
         </section>
 
