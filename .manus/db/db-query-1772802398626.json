@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, slug, LEFT(content_sv, 100) as sv_preview, LEFT(content_en, 100) as en_preview FROM site_pages WHERE slug = 'about';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, slug, LEFT(content_sv, 100) as sv_preview, LEFT(content_en, 100) as en_preview FROM site_pages WHERE slug = 'about';",
+  "rows": [],
+  "messages": [
+    "1\tabout\t## Teknisk beskrivning av sajten",
+    "### Projektets omfattning",
+    "| Mätvärde | Antal |",
+    "|---|---|",
+    "| Rader \t## Technical Description of the Website",
+    "### Project Scope",
+    "| Metric | Count |",
+    "|---|---|",
+    "| Lines of "
+  ],
+  "stdout": "id\tslug\tsv_preview\ten_preview\n1\tabout\t## Teknisk beskrivning av sajten\n\n### Projektets omfattning\n\n| Mätvärde | Antal |\n|---|---|\n| Rader \t## Technical Description of the Website\n\n### Project Scope\n\n| Metric | Count |\n|---|---|\n| Lines of \n",
+  "stderr": "",
+  "execution_time_ms": 81
+}

@@ -3,8 +3,7 @@
  * - Personal, warm tone
  * - Profile photo prominently displayed
  * - Clean reading layout
- * - Loads editable content from database
- * - Shows technical description at bottom
+ * - ALL content loaded from database (editable from admin)
  */
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -168,32 +167,18 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="space-y-5 text-lg leading-relaxed text-foreground/90">
-            <p>
-              {t(
-                "Jag heter Sten Dellby och har fått diagnosen Alzheimers sjukdom. Denna webbplats är mitt försök att bygga en kunskapsbank – inte bara för mig själv, utan för alla som lever med samma diagnos.",
-                "My name is Sten Dellby and I have been diagnosed with Alzheimer's disease. This website is my attempt to build a knowledge base – not just for myself, but for everyone living with the same diagnosis."
-              )}
-            </p>
-            <p>
-              {t(
-                "Jag tror på att dela kunskap öppet. Genom att dokumentera min resa – behandlingsplaner, forskningsrön, vardagstips och erfarenheter med AI-verktyg – hoppas jag kunna hjälpa andra i samma situation.",
-                "I believe in sharing knowledge openly. By documenting my journey – treatment plans, research findings, everyday tips, and experiences with AI tools – I hope to help others in the same situation."
-              )}
-            </p>
-            <p>
-              {t(
-                "Denna webbplats är också mitt \"meningsskapande projekt\" – en central del av min behandlingsplan. Forskning visar att sammanhängande, meningsfullt engagemang stärker hjärnans motståndskraft. Att bygga och underhålla denna kunskapsbank ger mig kognitiv stimulans, social koppling och struktur i vardagen.",
-                "This website is also my \"meaning-making project\" – a central part of my treatment plan. Research shows that coherent, meaningful engagement strengthens the brain's resilience. Building and maintaining this knowledge base gives me cognitive stimulation, social connection, and structure in everyday life."
-              )}
-            </p>
-            <p>
-              {t(
-                "Jag nås enklast via e-post på sten@dellby.info eller via X (Twitter) där jag skriver om mitt nya liv med Alzheimers.",
-                "I'm easiest to reach via email at sten@dellby.info or via X (Twitter) where I write about my new life with Alzheimer's."
-              )}
-            </p>
-          </div>
+          {/* All content loaded from database (editable from admin) */}
+          {isLoading && (
+            <div className="flex justify-center py-10">
+              <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+            </div>
+          )}
+
+          {dbContent && (
+            <div className="space-y-1">
+              {renderAboutContent(dbContent)}
+            </div>
+          )}
 
           <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-4">
             <a
@@ -211,19 +196,6 @@ export default function AboutPage() {
               {t("Följ på X", "Follow on X")}
             </a>
           </div>
-
-          {/* Database-loaded content (editable from admin) */}
-          {isLoading && (
-            <div className="mt-10 pt-8 border-t border-border flex justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
-            </div>
-          )}
-
-          {dbContent && (
-            <div className="mt-10 pt-8 border-t border-border">
-              {renderAboutContent(dbContent)}
-            </div>
-          )}
         </div>
       </main>
 

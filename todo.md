@@ -130,3 +130,4 @@
 - [x] Redesign bottom sections (AI, Newsletter, Comments, X) from full-width bands to 2x2 grid blocks on PC/iPad
 - [x] Keep single column layout on mobile
 - [x] Make Comments section easy to hide/show later
+- [x] Fix About page editor: move all biographical text to database so everything is editable from admin
