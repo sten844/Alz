@@ -1,6 +1,6 @@
-import { eq, desc, and, sql, isNull } from "drizzle-orm";
+import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -281,4 +281,71 @@ export async function upsertSitePage(slug: string, data: { contentSv?: string | 
     const result = await db.insert(sitePages).values({ slug, ...data });
     return { id: result[0].insertId };
   }
+}
+
+// ---- AI page section queries ----
+
+export async function listAiSections() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(aiSections).orderBy(asc(aiSections.sortOrder));
+}
+
+export async function getAiSection(sectionKey: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(aiSections).where(eq(aiSections.sectionKey, sectionKey)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function upsertAiSection(sectionKey: string, data: Partial<InsertAiSection>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await db.select().from(aiSections).where(eq(aiSections.sectionKey, sectionKey)).limit(1);
+  if (existing.length > 0) {
+    await db.update(aiSections).set(data).where(eq(aiSections.sectionKey, sectionKey));
+    return { id: existing[0].id };
+  } else {
+    const result = await db.insert(aiSections).values({ sectionKey, ...data } as InsertAiSection);
+    return { id: result[0].insertId };
+  }
+}
+
+// ---- AI page item queries ----
+
+export async function listAiItems(sectionKey?: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  if (sectionKey) {
+    return db.select().from(aiItems).where(eq(aiItems.sectionKey, sectionKey)).orderBy(asc(aiItems.sortOrder));
+  }
+  return db.select().from(aiItems).orderBy(asc(aiItems.sortOrder));
+}
+
+export async function getAiItem(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(aiItems).where(eq(aiItems.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createAiItem(item: InsertAiItem) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(aiItems).values(item);
+  return { id: result[0].insertId };
+}
+
+export async function updateAiItem(id: number, data: Partial<InsertAiItem>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(aiItems).set(data).where(eq(aiItems.id, id));
+}
+
+export async function deleteAiItem(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(aiItems).where(eq(aiItems.id, id));
 }

@@ -26,6 +26,7 @@ import {
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
 import { markdownToHtml, htmlToMarkdown } from "@/lib/markdownUtils";
+import AIPageEditor from "@/components/AIPageEditor";
 
 // ---- Article form types ----
 type ArticleForm = {
@@ -71,7 +72,7 @@ const AUTO_SAVE_INTERVAL = 30000;
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -677,6 +678,17 @@ export default function AdminPage() {
               <FileText className="w-5 h-5" />
               {t("Om mig", "About")}
             </button>
+            <button
+              onClick={() => setActiveTab("ai")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "ai"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <FileText className="w-5 h-5" />
+              {t("AI-sida", "AI page")}
+            </button>
           </div>
 
           {/* ============ ARTICLES TAB ============ */}
@@ -1065,6 +1077,11 @@ export default function AdminPage() {
           {/* ============ ABOUT TAB ============ */}
           {activeTab === "about" && (
             <AboutPageEditor />
+          )}
+
+          {/* ============ AI PAGE TAB ============ */}
+          {activeTab === "ai" && (
+            <AIPageEditor />
           )}
         </div>
       </main>

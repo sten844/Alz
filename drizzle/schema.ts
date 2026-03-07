@@ -94,3 +94,47 @@ export const sitePages = mysqlTable("site_pages", {
 
 export type SitePage = typeof sitePages.$inferSelect;
 export type InsertSitePage = typeof sitePages.$inferInsert;
+
+/**
+ * AI page sections (e.g. "AI som hjälpmedel", "Verktyg att testa", etc.)
+ * Each section has a title, subtitle, and display settings.
+ */
+export const aiSections = mysqlTable("ai_sections", {
+  id: int("id").autoincrement().primaryKey(),
+  sectionKey: varchar("section_key", { length: 100 }).notNull().unique(),
+  titleSv: varchar("title_sv", { length: 500 }).notNull(),
+  titleEn: varchar("title_en", { length: 500 }).notNull(),
+  subtitleSv: varchar("subtitle_sv", { length: 1000 }),
+  subtitleEn: varchar("subtitle_en", { length: 1000 }),
+  sortOrder: int("sort_order").notNull().default(0),
+  visible: boolean("visible").default(true).notNull(),
+  variant: varchar("variant", { length: 50 }).default("light").notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AiSection = typeof aiSections.$inferSelect;
+export type InsertAiSection = typeof aiSections.$inferInsert;
+
+/**
+ * AI page items/cards within sections.
+ * Each item has a name, description (SV/EN), URL, and optional icon.
+ */
+export const aiItems = mysqlTable("ai_items", {
+  id: int("id").autoincrement().primaryKey(),
+  sectionKey: varchar("section_key", { length: 100 }).notNull(),
+  nameSv: varchar("name_sv", { length: 300 }).notNull(),
+  nameEn: varchar("name_en", { length: 300 }).notNull(),
+  descSv: varchar("desc_sv", { length: 1000 }).notNull(),
+  descEn: varchar("desc_en", { length: 1000 }).notNull(),
+  url: varchar("url", { length: 2000 }).notNull(),
+  linkTextSv: varchar("link_text_sv", { length: 200 }),
+  linkTextEn: varchar("link_text_en", { length: 200 }),
+  iconName: varchar("icon_name", { length: 100 }),
+  sortOrder: int("sort_order").notNull().default(0),
+  visible: boolean("visible").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AiItem = typeof aiItems.$inferSelect;
+export type InsertAiItem = typeof aiItems.$inferInsert;

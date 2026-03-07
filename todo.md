@@ -131,3 +131,10 @@
 - [x] Keep single column layout on mobile
 - [x] Make Comments section easy to hide/show later
 - [x] Fix About page editor: move all biographical text to database so everything is editable from admin
+- [x] Make AI page content editable from admin panel
+- [x] Create database table for AI page sections and services
+- [x] Build API endpoints for AI page CRUD
+- [x] Build admin editor UI for AI page (edit texts, add/remove services)
+- [x] Update public AI page to load content from database
+- [x] Seed database with current hardcoded content
+- [x] Write tests for AI page admin functionality

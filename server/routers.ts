@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { z } from "zod";
@@ -432,6 +432,83 @@ export const appRouter = router({
           limit: input?.limit ?? 50,
           offset: input?.offset ?? 0,
         });
+      }),
+  }),
+
+  aiPage: router({
+    // Public: get all sections with their items
+    getSections: publicProcedure.query(async () => {
+      const sections = await listAiSections();
+      const items = await listAiItems();
+      return sections.map(s => ({
+        ...s,
+        items: items.filter(i => i.sectionKey === s.sectionKey),
+      }));
+    }),
+
+    // Admin: update a section's titles/subtitles
+    updateSection: adminProcedure
+      .input(z.object({
+        sectionKey: z.string(),
+        titleSv: z.string().optional(),
+        titleEn: z.string().optional(),
+        subtitleSv: z.string().nullable().optional(),
+        subtitleEn: z.string().nullable().optional(),
+        sortOrder: z.number().optional(),
+        visible: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { sectionKey, ...data } = input;
+        await upsertAiSection(sectionKey, data);
+        return { success: true };
+      }),
+
+    // Admin: create a new item in a section
+    createItem: adminProcedure
+      .input(z.object({
+        sectionKey: z.string(),
+        nameSv: z.string().min(1),
+        nameEn: z.string().min(1),
+        descSv: z.string().min(1),
+        descEn: z.string().min(1),
+        url: z.string().min(1),
+        linkTextSv: z.string().nullable().optional(),
+        linkTextEn: z.string().nullable().optional(),
+        iconName: z.string().nullable().optional(),
+        sortOrder: z.number().default(0),
+        visible: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        return createAiItem(input);
+      }),
+
+    // Admin: update an existing item
+    updateItem: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        nameSv: z.string().optional(),
+        nameEn: z.string().optional(),
+        descSv: z.string().optional(),
+        descEn: z.string().optional(),
+        url: z.string().optional(),
+        linkTextSv: z.string().nullable().optional(),
+        linkTextEn: z.string().nullable().optional(),
+        iconName: z.string().nullable().optional(),
+        sortOrder: z.number().optional(),
+        visible: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateAiItem(id, data);
+        return { success: true };
+      }),
+
+    // Admin: delete an item
+    deleteItem: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteAiItem(input.id);
+        return { success: true };
       }),
   }),
 

@@ -43,6 +43,13 @@
       "when": 1772699021749,
       "tag": "0005_jittery_shadowcat",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1772871097947,
+      "tag": "0006_flippant_scarlet_spider",
+      "breakpoints": true
     }
   ]
 }
