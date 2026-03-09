@@ -2,7 +2,7 @@
  * Nordic Warmth Design: Home Page
  * - Fetches articles from database via tRPC
  * - Editorial article listing with category filter, search, pagination
- * - Diary column sidebar (desktop/iPad) or section (mobile)
+ * - Diary section below articles
  * - AI section, newsletter, comments, X feed
  */
 import { useState, useMemo, useEffect } from "react";
@@ -87,156 +87,117 @@ export default function Home() {
       <SiteHeader />
 
       <main className="flex-1">
-        {/* Mobile diary section - visible only on smaller screens, ABOVE articles */}
-        <section className="lg:hidden container pt-3 pb-0">
-          <div className="bg-card/50 rounded-xl border border-border/30 p-3 shadow-sm">
-            <h2
-              className="text-xl text-foreground mb-2 pb-2 border-b border-[#c05746]/20 flex items-center gap-2 font-bold"
-              style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
-            >
-              <span>{t("Min dagbok", "My diary")}</span>
-            </h2>
-            <DiaryColumn compact maxEntries={2} hideHeader />
-          </div>
-        </section>
-
-        {/* Section heading: Kunskapsbank (mobile only, since desktop has it in the row) */}
-        <section className="lg:hidden container pt-4 sm:pt-6 pb-1 sm:pb-2">
+        {/* Articles section */}
+        <section className="container py-4 sm:py-6">
           <h2
-            className="text-xl sm:text-2xl text-foreground"
+            className="text-2xl sm:text-3xl md:text-4xl text-foreground mb-4 sm:mb-6"
             style={{ fontFamily: "'DM Serif Display', serif" }}
           >
             {t("Försök till en kunskapsbank", "Notes towards a knowledge base")}
           </h2>
+
+          {/* Category filters + Search */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex flex-wrap gap-1.5">
+              {displayCategories.map((cat) => {
+                const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
+                const isActive = mappedCat === activeCategory;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategoryClick(cat)}
+                    className={`px-5 py-2.5 rounded-full text-base font-medium transition-all ${
+                      isActive
+                        ? "bg-[#c05746] text-white shadow-md"
+                        : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder={t("Sök artiklar...", "Search articles...")}
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-3 rounded-full bg-card border border-border/50 text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 focus:border-[#c05746]/50 transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Articles list */}
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="flex justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+              </div>
+            ) : paginatedArticles.length > 0 ? (
+              paginatedArticles.map((article) => (
+                <ArticleCard key={article.id} article={{
+                  id: article.id,
+                  title: article.title,
+                  excerpt: article.excerpt,
+                  content: article.content,
+                  category: article.category,
+                  language: article.language,
+                  imageUrl: article.imageUrl,
+                  publishedAt: new Date(article.publishedAt).toISOString(),
+                }} />
+              ))
+            ) : (
+              <div className="text-center py-16 text-muted-foreground">
+                <p className="text-xl">
+                  {t("Inga artiklar hittades.", "No articles found.")}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-base font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                {t("Föregående", "Previous")}
+              </button>
+              <span className="text-base text-muted-foreground">
+                {t("Sida", "Page")} {currentPage} {t("av", "of")} {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-base font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                {t("Nästa", "Next")}
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </section>
 
-        {/* Main content area: Headings row + Diary sidebar + Articles */}
-        <section className="container py-2 sm:py-4">
-          {/* Desktop: Both headings on same row */}
-          <div className="hidden lg:flex gap-8 mb-4">
-            <div className="w-80 xl:w-96 shrink-0">
-              <h2
-                className="text-3xl text-foreground font-bold"
-                style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
-              >
-                {t("Min dagbok", "My diary")}
-              </h2>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2
-                className="text-3xl md:text-4xl text-foreground"
-                style={{ fontFamily: "'DM Serif Display', serif" }}
-              >
-                {t("Försök till en kunskapsbank", "Notes towards a knowledge base")}
-              </h2>
-            </div>
+        {/* Diary section - BELOW articles */}
+        <section className="container py-6 sm:py-8">
+          <div className="max-w-3xl">
+            <h2
+              className="text-2xl sm:text-3xl text-foreground font-bold mb-4 pb-3 border-b border-[#c05746]/20"
+              style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+            >
+              {t("Min dagbok", "My diary")}
+            </h2>
+            <DiaryColumn />
           </div>
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left: Diary sidebar - visible on lg+ screens */}
-            <aside className="hidden lg:block w-80 xl:w-96 shrink-0">
-              <div className="sticky top-8 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm backdrop-blur-sm">
-                <DiaryColumn hideHeader />
-              </div>
-            </aside>
-
-            {/* Right: Articles (main content) */}
-            <div className="flex-1 min-w-0">
-              {/* Category filters + Search */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="flex flex-wrap gap-1.5">
-                  {displayCategories.map((cat) => {
-                    const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
-                    const isActive = mappedCat === activeCategory;
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => handleCategoryClick(cat)}
-                        className={`px-5 py-2.5 rounded-full text-base font-medium transition-all ${
-                          isActive
-                            ? "bg-[#c05746] text-white shadow-md"
-                            : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="relative w-full sm:w-72">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder={t("Sök artiklar...", "Search articles...")}
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full pl-10 pr-4 py-3 rounded-full bg-card border border-border/50 text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30 focus:border-[#c05746]/50 transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Articles list */}
-              <div className="space-y-4">
-                {isLoading ? (
-                  <div className="flex justify-center py-16">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
-                  </div>
-                ) : paginatedArticles.length > 0 ? (
-                  paginatedArticles.map((article) => (
-                    <ArticleCard key={article.id} article={{
-                      id: article.id,
-                      title: article.title,
-                      excerpt: article.excerpt,
-                      content: article.content,
-                      category: article.category,
-                      language: article.language,
-                      imageUrl: article.imageUrl,
-                      publishedAt: new Date(article.publishedAt).toISOString(),
-                    }} />
-                  ))
-                ) : (
-                  <div className="text-center py-16 text-muted-foreground">
-                    <p className="text-xl">
-                      {t("Inga artiklar hittades.", "No articles found.")}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-4 mt-8">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-base font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    {t("Föregående", "Previous")}
-                  </button>
-                  <span className="text-base text-muted-foreground">
-                    {t("Sida", "Page")} {currentPage} {t("av", "of")} {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-base font-medium bg-card border border-border/50 hover:bg-accent disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                  >
-                    {t("Nästa", "Next")}
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-
-          </div>
-
-
         </section>
 
         {/* Bottom sections - 2x2 grid on PC/iPad, single column on mobile */}

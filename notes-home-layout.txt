@@ -1,0 +1,23 @@
+Current Home.tsx layout (lines 85-379):
+- SiteHeader
+- MAIN:
+  - Mobile diary section (lg:hidden) - lines 91-101 - ABOVE articles on mobile
+  - Mobile "Kunskapsbank" heading (lg:hidden) - lines 104-111
+  - Main content section (container):
+    - Desktop: both headings on same row (hidden lg:flex) - lines 116-133
+      - Left: "Min dagbok" heading (w-80 xl:w-96)
+      - Right: "Försök till en kunskapsbank" heading
+    - Flex row (lg:flex-row):
+      - Left aside: Diary sidebar (hidden lg:block, w-80 xl:w-96) - lines 137-141
+      - Right: Articles with filters, search, pagination - lines 144-234
+  - Bottom 2x2 grid (AI, Newsletter, Comments, X) - lines 243-357
+  - About link section - lines 360-373
+- SiteFooter
+
+USER WANTS: Move diary BELOW articles (not beside/above)
+This means:
+- Remove the mobile diary section from above
+- Remove the desktop diary sidebar
+- Remove the two-column heading row
+- Place diary as a full-width section below articles
+- Keep "Min dagbok" heading

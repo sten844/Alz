@@ -138,3 +138,4 @@
 - [x] Update public AI page to load content from database
 - [x] Seed database with current hardcoded content
 - [x] Write tests for AI page admin functionality
+- [x] Move diary section below articles section on homepage
