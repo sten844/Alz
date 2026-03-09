@@ -139,3 +139,4 @@
 - [x] Seed database with current hardcoded content
 - [x] Write tests for AI page admin functionality
 - [x] Move diary section below articles section on homepage
+- [x] Fix: diary below articles should only apply to mobile, keep sidebar on desktop/iPad
