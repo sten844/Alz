@@ -2,7 +2,8 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount } from "./db";
+import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { z } from "zod";
@@ -177,6 +178,25 @@ export const appRouter = router({
               }
             } catch (error) {
               console.error("[Translation] Failed to create translation:", error);
+            }
+          })();
+        }
+
+        // Auto-notify owner with subscriber list when a published article is created
+        if (input.published && !input.pairId) {
+          (async () => {
+            try {
+              const subs = await listSubscribers({ activeOnly: true });
+              if (subs.length > 0) {
+                const emailList = subs.map(s => s.email).join(", ");
+                await notifyOwner({
+                  title: `Ny artikel publicerad: ${input.title}`,
+                  content: `Artikeln "${input.title}" har publicerats.\n\n${subs.length} prenumeranter bör notifieras:\n${emailList}`,
+                });
+                console.log(`[Subscribers] Notified owner about ${subs.length} subscribers for article: ${input.title}`);
+              }
+            } catch (error) {
+              console.error("[Subscribers] Failed to notify owner:", error);
             }
           })();
         }
@@ -509,6 +529,69 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await deleteAiItem(input.id);
         return { success: true };
+      }),
+  }),
+
+  subscribers: router({
+    // Public: subscribe with email
+    subscribe: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const result = await createSubscriber(input.email);
+        return {
+          success: true,
+          alreadyExists: result.alreadyExists,
+        };
+      }),
+
+    // Public: unsubscribe with email
+    unsubscribe: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        await unsubscribe(input.email);
+        return { success: true };
+      }),
+
+    // Admin: list all subscribers
+    list: adminProcedure
+      .query(async () => {
+        return listSubscribers();
+      }),
+
+    // Admin: get active subscriber count
+    count: adminProcedure
+      .query(async () => {
+        return getActiveSubscriberCount();
+      }),
+
+    // Admin: delete a subscriber
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteSubscriber(input.id);
+        return { success: true };
+      }),
+
+    // Admin: send notification to all active subscribers about a new article
+    notifyNewArticle: adminProcedure
+      .input(z.object({
+        articleId: z.number(),
+        articleTitle: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const subs = await listSubscribers({ activeOnly: true });
+        if (subs.length === 0) {
+          return { success: true, notified: 0 };
+        }
+
+        // Notify the site owner about the new subscribers notification
+        const emailList = subs.map(s => s.email).join(", ");
+        await notifyOwner({
+          title: `Ny artikel publicerad: ${input.articleTitle}`,
+          content: `Artikeln "${input.articleTitle}" har publicerats. ${subs.length} prenumeranter bör notifieras.\n\nPrenumeranter: ${emailList}`,
+        });
+
+        return { success: true, notified: subs.length };
       }),
   }),
 

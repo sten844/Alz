@@ -22,6 +22,7 @@ import {
   Check,
   Upload,
   ImageIcon,
+  Mail,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -72,7 +73,7 @@ const AUTO_SAVE_INTERVAL = 30000;
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "subscribers">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -689,6 +690,17 @@ export default function AdminPage() {
               <FileText className="w-5 h-5" />
               {t("AI-sida", "AI page")}
             </button>
+            <button
+              onClick={() => setActiveTab("subscribers")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "subscribers"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <Mail className="w-5 h-5" />
+              {t("Prenumeranter", "Subscribers")}
+            </button>
           </div>
 
           {/* ============ ARTICLES TAB ============ */}
@@ -1083,6 +1095,11 @@ export default function AdminPage() {
           {activeTab === "ai" && (
             <AIPageEditor />
           )}
+
+          {/* ============ SUBSCRIBERS TAB ============ */}
+          {activeTab === "subscribers" && (
+            <SubscribersEditor />
+          )}
         </div>
       </main>
 
@@ -1189,6 +1206,126 @@ function AboutPageEditor() {
           {t("Spara", "Save")}
         </button>
       </div>
+    </div>
+  );
+}
+
+// ---- Subscribers Editor ----
+function SubscribersEditor() {
+  const { t } = useLanguage();
+  const utils = trpc.useUtils();
+
+  const { data: subscribersList, isLoading } = trpc.subscribers.list.useQuery();
+  const { data: activeCount } = trpc.subscribers.count.useQuery();
+
+  const deleteMutation = trpc.subscribers.delete.useMutation({
+    onSuccess: () => {
+      utils.subscribers.list.invalidate();
+      utils.subscribers.count.invalidate();
+      toast.success(t("Prenumerant borttagen", "Subscriber removed"));
+    },
+    onError: () => {
+      toast.error(t("Kunde inte ta bort prenumerant", "Could not remove subscriber"));
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 className="w-10 h-10 animate-spin text-[#c05746]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold text-foreground">
+          {t("Prenumeranter", "Subscribers")}
+        </h2>
+        <div className="flex items-center gap-2 px-4 py-2 bg-card rounded-full border border-border/50">
+          <Mail className="w-5 h-5 text-[#c05746]" />
+          <span className="text-lg font-medium text-foreground">
+            {activeCount ?? 0} {t("aktiva", "active")}
+          </span>
+        </div>
+      </div>
+
+      <p className="text-lg text-muted-foreground">
+        {t(
+          "Här ser du alla som prenumererar på nya artiklar. Du får en notis med prenumerantlistan när du publicerar en ny artikel.",
+          "Here you can see everyone who subscribes to new articles. You will receive a notification with the subscriber list when you publish a new article."
+        )}
+      </p>
+
+      {(!subscribersList || subscribersList.length === 0) ? (
+        <div className="bg-card rounded-2xl border border-border/50 p-12 text-center shadow-sm">
+          <Mail className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
+          <p className="text-xl text-muted-foreground">
+            {t("Inga prenumeranter ännu.", "No subscribers yet.")}
+          </p>
+          <p className="text-base text-muted-foreground/60 mt-2">
+            {t(
+              "När besökare prenumererar via formuläret på startsidan visas de här.",
+              "When visitors subscribe via the form on the homepage they will appear here."
+            )}
+          </p>
+        </div>
+      ) : (
+        <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border/50 bg-accent/30">
+                <th className="text-left px-6 py-4 text-base font-semibold text-foreground">
+                  {t("Email", "Email")}
+                </th>
+                <th className="text-left px-6 py-4 text-base font-semibold text-foreground">
+                  {t("Status", "Status")}
+                </th>
+                <th className="text-left px-6 py-4 text-base font-semibold text-foreground">
+                  {t("Datum", "Date")}
+                </th>
+                <th className="text-right px-6 py-4 text-base font-semibold text-foreground">
+                  {t("Åtgärd", "Action")}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {subscribersList.map((sub) => (
+                <tr key={sub.id} className="border-b border-border/30 hover:bg-accent/10 transition-colors">
+                  <td className="px-6 py-4 text-base text-foreground">{sub.email}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium ${
+                      sub.active
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-slate-100 text-slate-500"
+                    }`}>
+                      <span className={`w-2 h-2 rounded-full ${sub.active ? "bg-emerald-500" : "bg-slate-400"}`} />
+                      {sub.active ? t("Aktiv", "Active") : t("Avslutad", "Unsubscribed")}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-base text-muted-foreground">
+                    {new Date(sub.createdAt).toLocaleDateString("sv-SE")}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => {
+                        if (confirm(t("Vill du ta bort denna prenumerant?", "Do you want to remove this subscriber?"))) {
+                          deleteMutation.mutate({ id: sub.id });
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {t("Ta bort", "Remove")}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

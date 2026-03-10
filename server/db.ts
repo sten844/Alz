@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -348,4 +348,61 @@ export async function deleteAiItem(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(aiItems).where(eq(aiItems.id, id));
+}
+
+// ---- Subscriber queries ----
+
+export async function listSubscribers(opts?: { activeOnly?: boolean }) {
+  const db = await getDb();
+  if (!db) return [];
+
+  if (opts?.activeOnly) {
+    return db.select().from(subscribers).where(eq(subscribers.active, true)).orderBy(desc(subscribers.createdAt));
+  }
+  return db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
+}
+
+export async function getSubscriberByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(subscribers).where(eq(subscribers.email, email.toLowerCase().trim())).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createSubscriber(email: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Check if already exists
+  const existing = await getSubscriberByEmail(normalizedEmail);
+  if (existing) {
+    // Reactivate if previously unsubscribed
+    if (!existing.active) {
+      await db.update(subscribers).set({ active: true }).where(eq(subscribers.id, existing.id));
+    }
+    return { id: existing.id, alreadyExists: true };
+  }
+
+  const result = await db.insert(subscribers).values({ email: normalizedEmail });
+  return { id: result[0].insertId, alreadyExists: false };
+}
+
+export async function unsubscribe(email: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(subscribers).set({ active: false }).where(eq(subscribers.email, email.toLowerCase().trim()));
+}
+
+export async function deleteSubscriber(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(subscribers).where(eq(subscribers.id, id));
+}
+
+export async function getActiveSubscriberCount() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql<number>`count(*)` }).from(subscribers).where(eq(subscribers.active, true));
+  return Number(result[0]?.count ?? 0);
 }

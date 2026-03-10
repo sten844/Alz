@@ -140,3 +140,11 @@
 - [x] Write tests for AI page admin functionality
 - [x] Move diary section below articles section on homepage
 - [x] Fix: diary below articles should only apply to mobile, keep sidebar on desktop/iPad
+- [x] Create subscribers database table
+- [x] API endpoint for subscribing (save email)
+- [x] API endpoint for unsubscribing
+- [x] API endpoint for listing subscribers (admin)
+- [x] Connect frontend subscription form to API
+- [x] Add subscribers management in admin panel
+- [x] Auto-notify subscribers when new article is published
+- [x] Tests for subscription system

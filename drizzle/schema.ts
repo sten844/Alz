@@ -138,3 +138,19 @@ export const aiItems = mysqlTable("ai_items", {
 
 export type AiItem = typeof aiItems.$inferSelect;
 export type InsertAiItem = typeof aiItems.$inferInsert;
+
+/**
+ * Email subscribers for article notifications.
+ * Stores email addresses of people who want to be notified when new articles are published.
+ */
+export const subscribers = mysqlTable("subscribers", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  confirmed: boolean("confirmed").default(true).notNull(),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Subscriber = typeof subscribers.$inferSelect;
+export type InsertSubscriber = typeof subscribers.$inferInsert;

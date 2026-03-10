@@ -6,7 +6,7 @@
  * - Diary section below articles on mobile
  * - AI section, newsletter, comments, X feed
  */
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
@@ -82,6 +82,20 @@ export default function Home() {
     setActiveCategory(mapped);
     setCurrentPage(1);
   };
+
+  const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success" | "exists" | "error">("idle");
+  const subscribeMutation = trpc.subscribers.subscribe.useMutation({
+    onSuccess: (data) => {
+      setSubscribeStatus(data.alreadyExists ? "exists" : "success");
+      setSubscribeEmail("");
+      setTimeout(() => setSubscribeStatus("idle"), 5000);
+    },
+    onError: () => {
+      setSubscribeStatus("error");
+      setTimeout(() => setSubscribeStatus("idle"), 5000);
+    },
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -279,16 +293,47 @@ export default function Home() {
                   "Subscribe to get notifications when new articles are published."
                 )}
               </p>
-              <div className="flex gap-3 max-w-sm mx-auto">
-                <input
-                  type="email"
-                  placeholder={t("Din email-adress", "Your email address")}
-                  className="flex-1 px-4 py-2.5 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
-                />
-                <button className="px-5 py-2.5 bg-slate-900 text-white rounded-full text-base font-semibold hover:bg-slate-800 transition-colors shadow-lg">
-                  {t("Prenumerera", "Subscribe")}
-                </button>
-              </div>
+              {subscribeStatus === "success" ? (
+                <p className="text-white text-lg font-semibold">
+                  {t("Tack! Du är nu prenumerant.", "Thank you! You are now subscribed.")}
+                </p>
+              ) : subscribeStatus === "exists" ? (
+                <p className="text-white text-lg font-semibold">
+                  {t("Du prenumererar redan!", "You are already subscribed!")}
+                </p>
+              ) : subscribeStatus === "error" ? (
+                <p className="text-white text-lg font-semibold">
+                  {t("Något gick fel. Försök igen.", "Something went wrong. Try again.")}
+                </p>
+              ) : (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (subscribeEmail.trim()) {
+                      subscribeMutation.mutate({ email: subscribeEmail.trim() });
+                    }
+                  }}
+                  className="flex gap-3 max-w-sm mx-auto"
+                >
+                  <input
+                    type="email"
+                    required
+                    value={subscribeEmail}
+                    onChange={(e) => setSubscribeEmail(e.target.value)}
+                    placeholder={t("Din email-adress", "Your email address")}
+                    className="flex-1 px-4 py-2.5 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
+                  />
+                  <button
+                    type="submit"
+                    disabled={subscribeMutation.isPending}
+                    className="px-5 py-2.5 bg-slate-900 text-white rounded-full text-base font-semibold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-60"
+                  >
+                    {subscribeMutation.isPending
+                      ? t("Sparar...", "Saving...")
+                      : t("Prenumerera", "Subscribe")}
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* Comments Block - easy to hide later: set SHOW_COMMENTS to false */}
