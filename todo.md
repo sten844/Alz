@@ -157,3 +157,4 @@
 - [x] Create diary archive page for older entries
 - [x] Add "Läs fler inlägg" link from homepage to archive
 - [x] Add route for diary archive page
+- [x] Move "Följ mig på X" to a wide slim bar below the two square cards (newsletter + comments)

@@ -364,41 +364,32 @@ export default function Home() {
             </div>
             )}
 
-            {/* Follow on X Block */}
-            <div className="bg-slate-900 rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
-              <h2 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                {t("Följ mig på X", "Follow me on X")}
-              </h2>
-              <p className="text-slate-300 text-lg max-w-sm mx-auto mb-5 leading-relaxed">
-                {t(
-                  "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
-                  "I write about my new life with Alzheimer's on X (Twitter)."
-                )}
-              </p>
+          </div>
+
+          {/* Follow on X Block - full-width slim bar below the grid */}
+          <div className="bg-slate-900 rounded-2xl shadow-lg mt-4 md:mt-6 p-4 md:p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+                <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                  {t("Följ mig på X", "Follow me on X")}
+                </h2>
+                <p className="text-slate-300 text-base md:text-lg leading-relaxed text-center md:text-left">
+                  {t(
+                    "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
+                    "I write about my new life with Alzheimer's on X (Twitter)."
+                  )}
+                </p>
+              </div>
               <a
                 href="https://x.com/stendellby"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-slate-900 rounded-full text-base font-semibold hover:bg-slate-100 transition-colors shadow-lg mx-auto mb-4"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-slate-900 rounded-full text-base font-semibold hover:bg-slate-100 transition-colors shadow-lg shrink-0"
               >
                 {t("Ta mig till X", "Take me to X")}
                 <ExternalLink className="w-4 h-4" />
               </a>
-
-              {/* Embedded Twitter Timeline */}
-              <div className="max-w-sm mx-auto rounded-xl overflow-hidden">
-                <a
-                  className="twitter-timeline"
-                  data-theme="dark"
-                  data-height="300"
-                  data-chrome="noheader nofooter noborders transparent"
-                  href="https://twitter.com/stendellby?ref_src=twsrc%5Etfw"
-                >
-                  Tweets by stendellby
-                </a>
-              </div>
             </div>
-
           </div>
         </section>
 
