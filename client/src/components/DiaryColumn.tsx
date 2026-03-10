@@ -8,7 +8,8 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { BookOpen, Loader2 } from "lucide-react";
+import { BookOpen, Loader2, Archive } from "lucide-react";
+import { Link } from "wouter";
 
 const ENTRIES_PER_PAGE = 5;
 
@@ -101,7 +102,7 @@ function DiaryEntry({
   );
 }
 
-export default function DiaryColumn({ compact = false, maxEntries, hideHeader = false }: { compact?: boolean; maxEntries?: number; hideHeader?: boolean }) {
+export default function DiaryColumn({ compact = false, maxEntries, hideHeader = false, showArchiveLink = false }: { compact?: boolean; maxEntries?: number; hideHeader?: boolean; showArchiveLink?: boolean }) {
   const { t } = useLanguage();
   const [page, setPage] = useState(0);
 
@@ -151,28 +152,42 @@ export default function DiaryColumn({ compact = false, maxEntries, hideHeader = 
         ))}
       </div>
 
-      {/* Pagination */}
-      {(hasPrev || hasMore) && (
-        <div className={`flex items-center justify-between ${compact ? "mt-3 pt-2" : "mt-5 pt-3"}`}>
-          {hasPrev ? (
-            <button
-              onClick={() => setPage((p) => p - 1)}
-              className="text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
+      {/* Archive link or pagination */}
+      {showArchiveLink ? (
+        total > limit && (
+          <div className={`${compact ? "mt-3 pt-2" : "mt-5 pt-3"}`}>
+            <Link
+              href="/diary"
+              className="inline-flex items-center gap-2 text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
             >
-              {t("← Nyare", "← Newer")}
-            </button>
-          ) : (
-            <span />
-          )}
-          {hasMore && (
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className="text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
-            >
-              {t("Äldre →", "Older →")}
-            </button>
-          )}
-        </div>
+              <Archive className="w-4 h-4" />
+              {t(`Läs fler inlägg (${total - limit} till)`, `Read more entries (${total - limit} more)`)}
+            </Link>
+          </div>
+        )
+      ) : (
+        (hasPrev || hasMore) && (
+          <div className={`flex items-center justify-between ${compact ? "mt-3 pt-2" : "mt-5 pt-3"}`}>
+            {hasPrev ? (
+              <button
+                onClick={() => setPage((p) => p - 1)}
+                className="text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
+              >
+                {t("← Nyare", "← Newer")}
+              </button>
+            ) : (
+              <span />
+            )}
+            {hasMore && (
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                className="text-base font-medium text-[#c05746] hover:text-[#a8483b] transition-colors"
+              >
+                {t("Äldre →", "Older →")}
+              </button>
+            )}
+          </div>
+        )
       )}
     </div>
   );

@@ -142,7 +142,7 @@ export default function Home() {
             {/* Left: Diary sidebar - visible on lg+ screens */}
             <aside className="hidden lg:block w-80 xl:w-96 shrink-0">
               <div className="sticky top-8 bg-card/50 rounded-2xl border border-border/30 p-5 shadow-sm backdrop-blur-sm">
-                <DiaryColumn hideHeader />
+                <DiaryColumn hideHeader maxEntries={2} showArchiveLink />
               </div>
             </aside>
 
@@ -250,7 +250,7 @@ export default function Home() {
             >
               <span>{t("Min dagbok", "My diary")}</span>
             </h2>
-            <DiaryColumn compact maxEntries={2} hideHeader />
+            <DiaryColumn compact maxEntries={2} hideHeader showArchiveLink />
           </div>
         </section>
 

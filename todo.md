@@ -153,3 +153,7 @@
 - [x] Admin UI toggle for comments section (on/off switch)
 - [x] Homepage reads comments visibility from database
 - [x] Tests for site settings
+- [x] Show only 2 latest diary entries on homepage
+- [x] Create diary archive page for older entries
+- [x] Add "Läs fler inlägg" link from homepage to archive
+- [x] Add route for diary archive page

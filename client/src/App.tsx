@@ -10,6 +10,7 @@ import ArticlePage from "./pages/ArticlePage";
 import AboutPage from "./pages/AboutPage";
 import AdminPage from "./pages/AdminPage";
 import AIPage from "./pages/AIPage";
+import DiaryArchivePage from "./pages/DiaryArchivePage";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/about" component={AboutPage} />
       <Route path="/admin" component={AdminPage} />
       <Route path="/ai" component={AIPage} />
+      <Route path="/diary" component={DiaryArchivePage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
