@@ -38,6 +38,10 @@ export default function Home() {
     published: true,
   });
 
+  // Fetch site settings for comments visibility
+  const { data: commentsSettingValue } = trpc.settings.get.useQuery({ key: "comments_enabled" });
+  const commentsEnabled = commentsSettingValue === "true";
+
   const filteredArticles = useMemo(() => {
     if (!dbArticles) return [];
     let filtered = [...dbArticles];
@@ -336,8 +340,8 @@ export default function Home() {
               )}
             </div>
 
-            {/* Comments Block - easy to hide later: set SHOW_COMMENTS to false */}
-            {true && (
+            {/* Comments Block - controlled from admin Settings */}
+            {commentsEnabled && (
             <div className="bg-card border border-border/50 rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
               <h2 className="text-2xl md:text-3xl text-foreground mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
                 {t("Kommentarer och diskussion", "Comments and discussion")}

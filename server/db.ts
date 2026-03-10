@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -405,4 +405,33 @@ export async function getActiveSubscriberCount() {
   if (!db) return 0;
   const result = await db.select({ count: sql<number>`count(*)` }).from(subscribers).where(eq(subscribers.active, true));
   return Number(result[0]?.count ?? 0);
+}
+
+// ---- Site settings queries ----
+
+export async function getSiteSetting(key: string): Promise<string | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(siteSettings).where(eq(siteSettings.settingKey, key)).limit(1);
+  return result.length > 0 ? result[0].settingValue : undefined;
+}
+
+export async function upsertSiteSetting(key: string, value: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await db.select().from(siteSettings).where(eq(siteSettings.settingKey, key)).limit(1);
+  if (existing.length > 0) {
+    await db.update(siteSettings).set({ settingValue: value }).where(eq(siteSettings.settingKey, key));
+    return { id: existing[0].id };
+  } else {
+    const result = await db.insert(siteSettings).values({ settingKey: key, settingValue: value });
+    return { id: result[0].insertId };
+  }
+}
+
+export async function listSiteSettings() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(siteSettings);
 }

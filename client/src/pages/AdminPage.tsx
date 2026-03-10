@@ -23,6 +23,7 @@ import {
   Upload,
   ImageIcon,
   Mail,
+  Settings2,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -73,7 +74,7 @@ const AUTO_SAVE_INTERVAL = 30000;
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "subscribers">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "subscribers" | "settings">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -701,6 +702,17 @@ export default function AdminPage() {
               <Mail className="w-5 h-5" />
               {t("Prenumeranter", "Subscribers")}
             </button>
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "settings"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <Settings2 className="w-5 h-5" />
+              {t("Inställningar", "Settings")}
+            </button>
           </div>
 
           {/* ============ ARTICLES TAB ============ */}
@@ -1100,6 +1112,11 @@ export default function AdminPage() {
           {activeTab === "subscribers" && (
             <SubscribersEditor />
           )}
+
+          {/* ============ SETTINGS TAB ============ */}
+          {activeTab === "settings" && (
+            <SiteSettingsEditor />
+          )}
         </div>
       </main>
 
@@ -1326,6 +1343,93 @@ function SubscribersEditor() {
           </table>
         </div>
       )}
+    </div>
+  );
+}
+
+// ---- Site Settings Editor ----
+function SiteSettingsEditor() {
+  const { t } = useLanguage();
+  const utils = trpc.useUtils();
+
+  const { data: commentsEnabled, isLoading } = trpc.settings.get.useQuery({ key: "comments_enabled" });
+
+  const updateSetting = trpc.settings.update.useMutation({
+    onSuccess: () => {
+      utils.settings.get.invalidate({ key: "comments_enabled" });
+      toast.success(t("Inställning sparad", "Setting saved"));
+    },
+    onError: () => {
+      toast.error(t("Kunde inte spara inställning", "Could not save setting"));
+    },
+  });
+
+  const isCommentsOn = commentsEnabled === "true";
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 className="w-10 h-10 animate-spin text-[#c05746]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-2xl font-semibold text-foreground">
+        {t("Inställningar", "Settings")}
+      </h2>
+
+      <p className="text-lg text-muted-foreground">
+        {t(
+          "Här kan du slå på och av funktioner på sajten.",
+          "Here you can toggle features on and off on the site."
+        )}
+      </p>
+
+      <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold text-foreground">
+              {t("Kommentarsfunktion", "Comments section")}
+            </h3>
+            <p className="text-base text-muted-foreground mt-1">
+              {t(
+                "Visa eller dölj kommentarssektionen på startsidan. När den är avstängd ser besökare inte kommentarsfältet.",
+                "Show or hide the comments section on the homepage. When off, visitors won't see the comments area."
+              )}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              updateSetting.mutate({
+                key: "comments_enabled",
+                value: isCommentsOn ? "false" : "true",
+              });
+            }}
+            disabled={updateSetting.isPending}
+            className={`relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c05746] focus-visible:ring-offset-2 ${
+              isCommentsOn ? "bg-[#c05746]" : "bg-slate-300"
+            } ${updateSetting.isPending ? "opacity-50" : ""}`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-9 w-9 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                isCommentsOn ? "translate-x-10" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium ${
+            isCommentsOn
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-slate-100 text-slate-500"
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${isCommentsOn ? "bg-emerald-500" : "bg-slate-400"}`} />
+            {isCommentsOn ? t("Påslagen", "Enabled") : t("Avstängd", "Disabled")}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

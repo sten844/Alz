@@ -148,3 +148,8 @@
 - [x] Add subscribers management in admin panel
 - [x] Auto-notify subscribers when new article is published
 - [x] Tests for subscription system
+- [x] Add site_settings table for feature toggles (comments on/off)
+- [x] API endpoints for reading/updating site settings
+- [x] Admin UI toggle for comments section (on/off switch)
+- [x] Homepage reads comments visibility from database
+- [x] Tests for site settings
