@@ -24,6 +24,9 @@ import {
   ImageIcon,
   Mail,
   Settings2,
+  Download,
+  UploadCloud,
+  Database,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -74,7 +77,7 @@ const AUTO_SAVE_INTERVAL = 30000;
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "subscribers" | "settings">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "subscribers" | "settings" | "backup">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -713,6 +716,17 @@ export default function AdminPage() {
               <Settings2 className="w-5 h-5" />
               {t("Inställningar", "Settings")}
             </button>
+            <button
+              onClick={() => setActiveTab("backup")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "backup"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <Database className="w-5 h-5" />
+              {t("Backup", "Backup")}
+            </button>
           </div>
 
           {/* ============ ARTICLES TAB ============ */}
@@ -1117,6 +1131,11 @@ export default function AdminPage() {
           {activeTab === "settings" && (
             <SiteSettingsEditor />
           )}
+
+          {/* ============ BACKUP TAB ============ */}
+          {activeTab === "backup" && (
+            <BackupEditor />
+          )}
         </div>
       </main>
 
@@ -1430,6 +1449,326 @@ function SiteSettingsEditor() {
           </span>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ---- Backup / Export / Import Editor ----
+function BackupEditor() {
+  const { t } = useLanguage();
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importStats, setImportStats] = useState<Record<string, number> | null>(null);
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [pendingImportData, setPendingImportData] = useState<any>(null);
+  const [pendingFileName, setPendingFileName] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const exportQuery = trpc.backup.export.useQuery(undefined, {
+    enabled: false, // Only fetch on demand
+  });
+
+  const importMutation = trpc.backup.import.useMutation({
+    onSuccess: (result) => {
+      setImportStats(result.stats);
+      setIsImporting(false);
+      setShowImportConfirm(false);
+      setPendingImportData(null);
+      setPendingFileName("");
+      toast.success(t("Import klar!", "Import complete!"));
+    },
+    onError: (error) => {
+      setIsImporting(false);
+      toast.error(t("Import misslyckades: ", "Import failed: ") + error.message);
+    },
+  });
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const result = await exportQuery.refetch();
+      if (result.data) {
+        const jsonStr = JSON.stringify(result.data, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const date = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = `dellby-backup-${date}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success(t("Backup nedladdad!", "Backup downloaded!"));
+      }
+    } catch (error) {
+      toast.error(t("Kunde inte exportera data", "Could not export data"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (!data.exportVersion) {
+          toast.error(t(
+            "Ogiltig backupfil. Filen måste vara en JSON-export från denna sajt.",
+            "Invalid backup file. The file must be a JSON export from this site."
+          ));
+          return;
+        }
+        setPendingImportData(data);
+        setPendingFileName(file.name);
+        setShowImportConfirm(true);
+      } catch {
+        toast.error(t("Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.", "Could not read file. Make sure it is a valid JSON file."));
+      }
+    };
+    reader.readAsText(file);
+    // Reset file input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleImportConfirm = () => {
+    if (!pendingImportData) return;
+    setIsImporting(true);
+    const { exportVersion, exportDate, ...importData } = pendingImportData;
+    importMutation.mutate(importData);
+  };
+
+  const handleImportCancel = () => {
+    setShowImportConfirm(false);
+    setPendingImportData(null);
+    setPendingFileName("");
+  };
+
+  // Count items in pending import data
+  const pendingCounts = pendingImportData ? {
+    articles: pendingImportData.articles?.length ?? 0,
+    diaryEntries: pendingImportData.diaryEntries?.length ?? 0,
+    aiSections: pendingImportData.aiSections?.length ?? 0,
+    aiItems: pendingImportData.aiItems?.length ?? 0,
+    subscribers: pendingImportData.subscribers?.length ?? 0,
+    sitePages: pendingImportData.sitePages?.length ?? 0,
+    siteSettings: pendingImportData.siteSettings?.length ?? 0,
+  } : null;
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-2xl font-semibold text-foreground">
+        {t("Säkerhetskopiering", "Backup")}
+      </h2>
+
+      <p className="text-lg text-muted-foreground">
+        {t(
+          "Ladda ner allt innehåll som en fil (artiklar, dagbok, AI-sida, prenumeranter, inställningar). Du kan använda filen för att återställa innehållet om det behövs.",
+          "Download all content as a file (articles, diary, AI page, subscribers, settings). You can use the file to restore content if needed."
+        )}
+      </p>
+
+      {/* ---- EXPORT SECTION ---- */}
+      <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+            <Download className="w-7 h-7 text-emerald-700" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold text-foreground">
+              {t("Ladda ner backup", "Download backup")}
+            </h3>
+            <p className="text-base text-muted-foreground mt-1">
+              {t(
+                "Sparar allt innehåll på sajten som en JSON-fil på din dator. Gör detta regelbundet!",
+                "Saves all site content as a JSON file on your computer. Do this regularly!"
+              )}
+            </p>
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-lg font-medium transition-colors disabled:opacity-50"
+            >
+              {isExporting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Download className="w-5 h-5" />
+              )}
+              {isExporting
+                ? t("Laddar ner...", "Downloading...")
+                : t("Ladda ner backup", "Download backup")}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ---- IMPORT SECTION ---- */}
+      <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+            <UploadCloud className="w-7 h-7 text-amber-700" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold text-foreground">
+              {t("Återställ från backup", "Restore from backup")}
+            </h3>
+            <p className="text-base text-muted-foreground mt-1">
+              {t(
+                "Ladda upp en tidigare nedladdad backupfil för att återställa innehållet. Befintligt innehåll uppdateras, inget raderas.",
+                "Upload a previously downloaded backup file to restore content. Existing content is updated, nothing is deleted."
+              )}
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isImporting}
+              className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-full text-lg font-medium transition-colors disabled:opacity-50"
+            >
+              {isImporting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <UploadCloud className="w-5 h-5" />
+              )}
+              {isImporting
+                ? t("Importerar...", "Importing...")
+                : t("Välj backupfil...", "Choose backup file...")}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ---- IMPORT CONFIRMATION DIALOG ---- */}
+      {showImportConfirm && pendingCounts && (
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-8 shadow-md">
+          <h3 className="text-xl font-semibold text-amber-900 mb-4">
+            {t("Bekräfta import", "Confirm import")}
+          </h3>
+          <p className="text-base text-amber-800 mb-2">
+            {t("Fil: ", "File: ")}<strong>{pendingFileName}</strong>
+          </p>
+          {pendingImportData?.exportDate && (
+            <p className="text-base text-amber-800 mb-4">
+              {t("Exporterad: ", "Exported: ")}
+              <strong>{new Date(pendingImportData.exportDate).toLocaleString("sv-SE")}</strong>
+            </p>
+          )}
+          <p className="text-base text-amber-800 mb-4">
+            {t("Filen innehåller:", "The file contains:")}
+          </p>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {pendingCounts.articles > 0 && (
+              <div className="bg-white rounded-xl px-4 py-3 border border-amber-200">
+                <span className="text-2xl font-bold text-amber-900">{pendingCounts.articles}</span>
+                <span className="text-base text-amber-700 ml-2">{t("artiklar", "articles")}</span>
+              </div>
+            )}
+            {pendingCounts.diaryEntries > 0 && (
+              <div className="bg-white rounded-xl px-4 py-3 border border-amber-200">
+                <span className="text-2xl font-bold text-amber-900">{pendingCounts.diaryEntries}</span>
+                <span className="text-base text-amber-700 ml-2">{t("dagboksinlägg", "diary entries")}</span>
+              </div>
+            )}
+            {pendingCounts.aiItems > 0 && (
+              <div className="bg-white rounded-xl px-4 py-3 border border-amber-200">
+                <span className="text-2xl font-bold text-amber-900">{pendingCounts.aiItems}</span>
+                <span className="text-base text-amber-700 ml-2">{t("AI-kort", "AI cards")}</span>
+              </div>
+            )}
+            {pendingCounts.subscribers > 0 && (
+              <div className="bg-white rounded-xl px-4 py-3 border border-amber-200">
+                <span className="text-2xl font-bold text-amber-900">{pendingCounts.subscribers}</span>
+                <span className="text-base text-amber-700 ml-2">{t("prenumeranter", "subscribers")}</span>
+              </div>
+            )}
+            {pendingCounts.sitePages > 0 && (
+              <div className="bg-white rounded-xl px-4 py-3 border border-amber-200">
+                <span className="text-2xl font-bold text-amber-900">{pendingCounts.sitePages}</span>
+                <span className="text-base text-amber-700 ml-2">{t("sidor", "pages")}</span>
+              </div>
+            )}
+            {pendingCounts.siteSettings > 0 && (
+              <div className="bg-white rounded-xl px-4 py-3 border border-amber-200">
+                <span className="text-2xl font-bold text-amber-900">{pendingCounts.siteSettings}</span>
+                <span className="text-base text-amber-700 ml-2">{t("inställningar", "settings")}</span>
+              </div>
+            )}
+          </div>
+          <p className="text-sm text-amber-700 mb-6">
+            {t(
+              "Befintligt innehåll uppdateras med data från filen. Inget raderas, men ändringar skrivs över.",
+              "Existing content will be updated with data from the file. Nothing is deleted, but changes are overwritten."
+            )}
+          </p>
+          <div className="flex gap-4">
+            <button
+              onClick={handleImportConfirm}
+              disabled={isImporting}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-full text-lg font-medium transition-colors disabled:opacity-50"
+            >
+              {isImporting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Check className="w-5 h-5" />
+              )}
+              {isImporting
+                ? t("Importerar...", "Importing...")
+                : t("Ja, importera", "Yes, import")}
+            </button>
+            <button
+              onClick={handleImportCancel}
+              disabled={isImporting}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-full text-lg font-medium border border-slate-300 transition-colors disabled:opacity-50"
+            >
+              <X className="w-5 h-5" />
+              {t("Avbryt", "Cancel")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ---- IMPORT RESULTS ---- */}
+      {importStats && (
+        <div className="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-8 shadow-md">
+          <h3 className="text-xl font-semibold text-emerald-900 mb-4 flex items-center gap-2">
+            <Check className="w-6 h-6" />
+            {t("Import slutförd!", "Import complete!")}
+          </h3>
+          <p className="text-base text-emerald-800 mb-4">
+            {t("Följande innehåll importerades:", "The following content was imported:")}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {Object.entries(importStats).map(([key, count]) => {
+              if (count === 0) return null;
+              const labels: Record<string, [string, string]> = {
+                articles: ["artiklar", "articles"],
+                diaryEntries: ["dagboksinlägg", "diary entries"],
+                aiSections: ["AI-sektioner", "AI sections"],
+                aiItems: ["AI-kort", "AI cards"],
+                subscribers: ["prenumeranter", "subscribers"],
+                sitePages: ["sidor", "pages"],
+                siteSettings: ["inställningar", "settings"],
+              };
+              const [sv, en] = labels[key] ?? [key, key];
+              return (
+                <div key={key} className="bg-white rounded-xl px-4 py-3 border border-emerald-200">
+                  <span className="text-2xl font-bold text-emerald-900">{count}</span>
+                  <span className="text-base text-emerald-700 ml-2">{t(sv, en)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

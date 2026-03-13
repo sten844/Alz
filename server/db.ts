@@ -435,3 +435,116 @@ export async function listSiteSettings() {
   if (!db) return [];
   return db.select().from(siteSettings);
 }
+
+// ---- Export / Import helpers ----
+
+export async function exportAllContent() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const allArticles = await db.select().from(articles).orderBy(desc(articles.publishedAt));
+  const allDiary = await db.select().from(diaryEntries).orderBy(desc(diaryEntries.entryDate));
+  const allAiSections = await db.select().from(aiSections).orderBy(asc(aiSections.sortOrder));
+  const allAiItems = await db.select().from(aiItems).orderBy(asc(aiItems.sortOrder));
+  const allSubscribers = await db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
+  const allSitePages = await db.select().from(sitePages);
+  const allSettings = await db.select().from(siteSettings);
+
+  return {
+    exportVersion: 1,
+    exportDate: new Date().toISOString(),
+    articles: allArticles,
+    diaryEntries: allDiary,
+    aiSections: allAiSections,
+    aiItems: allAiItems,
+    subscribers: allSubscribers,
+    sitePages: allSitePages,
+    siteSettings: allSettings,
+  };
+}
+
+export async function importAllContent(data: {
+  articles?: any[];
+  diaryEntries?: any[];
+  aiSections?: any[];
+  aiItems?: any[];
+  subscribers?: any[];
+  sitePages?: any[];
+  siteSettings?: any[];
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const stats = { articles: 0, diaryEntries: 0, aiSections: 0, aiItems: 0, subscribers: 0, sitePages: 0, siteSettings: 0 };
+
+  // Import articles
+  if (data.articles?.length) {
+    for (const a of data.articles) {
+      const { id, createdAt, updatedAt, ...rest } = a;
+      await db.insert(articles).values({
+        ...rest,
+        publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : new Date(),
+      }).onDuplicateKeyUpdate({ set: { title: rest.title } });
+      stats.articles++;
+    }
+  }
+
+  // Import diary entries
+  if (data.diaryEntries?.length) {
+    for (const d of data.diaryEntries) {
+      const { id, createdAt, updatedAt, ...rest } = d;
+      await db.insert(diaryEntries).values({
+        ...rest,
+        entryDate: rest.entryDate ? new Date(rest.entryDate) : new Date(),
+      }).onDuplicateKeyUpdate({ set: { content: rest.content } });
+      stats.diaryEntries++;
+    }
+  }
+
+  // Import AI sections
+  if (data.aiSections?.length) {
+    for (const s of data.aiSections) {
+      const { id, updatedAt, ...rest } = s;
+      await db.insert(aiSections).values(rest).onDuplicateKeyUpdate({ set: { titleSv: rest.titleSv } });
+      stats.aiSections++;
+    }
+  }
+
+  // Import AI items
+  if (data.aiItems?.length) {
+    for (const item of data.aiItems) {
+      const { id, createdAt, updatedAt, ...rest } = item;
+      await db.insert(aiItems).values(rest).onDuplicateKeyUpdate({ set: { nameSv: rest.nameSv } });
+      stats.aiItems++;
+    }
+  }
+
+  // Import subscribers
+  if (data.subscribers?.length) {
+    for (const sub of data.subscribers) {
+      const { id, createdAt, updatedAt, ...rest } = sub;
+      await db.insert(subscribers).values(rest).onDuplicateKeyUpdate({ set: { active: rest.active } });
+      stats.subscribers++;
+    }
+  }
+
+  // Import site pages
+  if (data.sitePages?.length) {
+    for (const page of data.sitePages) {
+      const { id, updatedAt, ...rest } = page;
+      await db.insert(sitePages).values(rest).onDuplicateKeyUpdate({ set: { contentSv: rest.contentSv } });
+      stats.sitePages++;
+    }
+  }
+
+  // Import site settings
+  if (data.siteSettings?.length) {
+    for (const setting of data.siteSettings) {
+      const { id, updatedAt, ...rest } = setting;
+      await db.insert(siteSettings).values(rest).onDuplicateKeyUpdate({ set: { settingValue: rest.settingValue } });
+      stats.siteSettings++;
+    }
+  }
+
+  return stats;
+}

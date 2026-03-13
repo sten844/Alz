@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
@@ -633,6 +633,29 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await upsertSiteSetting(input.key, input.value);
         return { success: true };
+      }),
+  }),
+
+  // ---- Export / Import ----
+  backup: router({
+    export: adminProcedure
+      .query(async () => {
+        return exportAllContent();
+      }),
+
+    import: adminProcedure
+      .input(z.object({
+        articles: z.array(z.any()).optional(),
+        diaryEntries: z.array(z.any()).optional(),
+        aiSections: z.array(z.any()).optional(),
+        aiItems: z.array(z.any()).optional(),
+        subscribers: z.array(z.any()).optional(),
+        sitePages: z.array(z.any()).optional(),
+        siteSettings: z.array(z.any()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const stats = await importAllContent(input);
+        return { success: true, stats };
       }),
   }),
 });

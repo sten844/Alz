@@ -158,3 +158,7 @@
 - [x] Add "Läs fler inlägg" link from homepage to archive
 - [x] Add route for diary archive page
 - [x] Move "Följ mig på X" to a wide slim bar below the two square cards (newsletter + comments)
+- [x] Build backend export endpoint (all articles, diary, AI items, subscribers, settings)
+- [x] Build backend import endpoint (restore from exported file)
+- [x] Add export/import buttons in admin panel (Backup tab)
+- [x] Tests for export/import functionality (7 tests passing)
