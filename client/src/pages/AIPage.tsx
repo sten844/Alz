@@ -8,7 +8,8 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { ExternalLink, Bell, Mic, Shield, MessageCircle, FileText, Brain, Camera, PenLine, ListChecks, Headphones, MapPin, Languages, Heart, Atom, Car, Cloud, Film, Palette, Music, Bot, Sparkles, Mail, Navigation, Lock, Keyboard, Loader2 } from "lucide-react";
+import { ExternalLink, Bell, Mic, Shield, MessageCircle, FileText, Brain, Camera, PenLine, ListChecks, Headphones, MapPin, Languages, Heart, Atom, Car, Cloud, Film, Palette, Music, Bot, Sparkles, Mail, Navigation, Lock, Keyboard, Loader2, ArrowRight, Zap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 // Icon map for database items (iconName → component)
 const iconMap: Record<string, any> = {
@@ -214,6 +215,133 @@ function FactCardsSection({ items, t, variant }: { items: any[]; t: (sv: string,
   );
 }
 
+// Color gradients for each spectacular card
+const spectacularGradients = [
+  "from-rose-600/30 via-pink-500/10 to-transparent",      // Cancer
+  "from-violet-600/30 via-purple-500/10 to-transparent",  // AlphaFold
+  "from-cyan-500/30 via-blue-500/10 to-transparent",      // Waymo
+  "from-emerald-500/30 via-teal-500/10 to-transparent",   // GraphCast
+  "from-amber-500/30 via-orange-500/10 to-transparent",   // Sora
+  "from-fuchsia-500/30 via-pink-500/10 to-transparent",   // Midjourney
+  "from-indigo-500/30 via-blue-500/10 to-transparent",    // Suno
+  "from-sky-500/30 via-cyan-500/10 to-transparent",       // Ameca
+];
+
+const spectacularHighlights = [
+  { numSv: "Före symtom", numEn: "Before symptoms", color: "text-rose-400" },
+  { numSv: "200 miljoner", numEn: "200 million", color: "text-violet-400" },
+  { numSv: "50 000/vecka", numEn: "50,000/week", color: "text-cyan-400" },
+  { numSv: "#1 i världen", numEn: "#1 worldwide", color: "text-emerald-400" },
+  { numSv: "Text → Film", numEn: "Text → Video", color: "text-amber-400" },
+  { numSv: "1:a pris 2022", numEn: "1st prize 2022", color: "text-fuchsia-400" },
+  { numSv: "Sekunder", numEn: "Seconds", color: "text-indigo-400" },
+  { numSv: "Mänskligt", numEn: "Human-like", color: "text-sky-400" },
+];
+
+const spectacularBorderColors = [
+  "hover:border-rose-500/40",
+  "hover:border-violet-500/40",
+  "hover:border-cyan-500/40",
+  "hover:border-emerald-500/40",
+  "hover:border-amber-500/40",
+  "hover:border-fuchsia-500/40",
+  "hover:border-indigo-500/40",
+  "hover:border-sky-500/40",
+];
+
+// Spectacular section with scroll-triggered animations
+function SpectacularSection({ items, t }: { items: any[]; t: (sv: string, en: string) => string }) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = Number(entry.target.getAttribute("data-idx"));
+            setVisibleCards((prev) => new Set(prev).add(idx));
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    const cards = sectionRef.current?.querySelectorAll("[data-idx]");
+    cards?.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [items]);
+
+  const visibleItems = items.filter((i: any) => i.visible !== false);
+
+  return (
+    <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {visibleItems.map((item: any, i: number) => {
+        const Icon = iconMap[item.iconName] || Sparkles;
+        const gradient = spectacularGradients[i % spectacularGradients.length];
+        const highlight = spectacularHighlights[i % spectacularHighlights.length];
+        const borderColor = spectacularBorderColors[i % spectacularBorderColors.length];
+        const isVisible = visibleCards.has(i);
+
+        return (
+          <a
+            key={item.id || i}
+            data-idx={i}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`group relative overflow-hidden rounded-2xl border border-white/10 ${borderColor} transition-all duration-500 ease-out block
+              ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+            style={{ transitionDelay: `${i * 100}ms` }}
+          >
+            {/* Gradient overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-500`} />
+
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-white/5 to-transparent" />
+
+            {/* Content */}
+            <div className="relative z-10 p-6 md:p-8">
+              {/* Highlight number/stat */}
+              <div className={`text-sm font-bold tracking-widest uppercase mb-3 ${highlight.color} flex items-center gap-2`}>
+                <Zap className="w-3.5 h-3.5" />
+                {t(highlight.numSv, highlight.numEn)}
+              </div>
+
+              {/* Icon + Title */}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl md:text-2xl text-white font-semibold" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                  {t(item.nameSv, item.nameEn)}
+                </h3>
+              </div>
+
+              {/* Description */}
+              <p className="text-white/70 text-base leading-relaxed mb-4">
+                {t(item.descSv, item.descEn)}
+              </p>
+
+              {/* Link arrow */}
+              <div className="flex items-center gap-2 text-white/50 group-hover:text-white transition-colors duration-300">
+                <span className="text-sm font-medium">
+                  {t(item.linkTextSv || item.nameSv, item.linkTextEn || item.nameEn)}
+                </span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              </div>
+            </div>
+
+            {/* Bottom accent line */}
+            <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${gradient.replace('/30', '/60').replace('/10', '/40')} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function AIPage() {
   const { t } = useLanguage();
   const { data: dbSections, isLoading } = trpc.aiPage.getSections.useQuery();
@@ -266,6 +394,55 @@ export default function AIPage() {
           const isDark = section.variant === "dark" || section.sectionKey === "spectacular";
           const isTools = section.sectionKey === "tools";
           const isLinks = section.sectionKey === "useful_links";
+          const isSpectacular = section.sectionKey === "spectacular";
+
+          if (isSpectacular) {
+            return (
+              <section
+                key={section.sectionKey}
+                className="relative py-20 md:py-28 overflow-hidden"
+                style={{
+                  background: `linear-gradient(to bottom, rgba(2,6,23,0.95), rgba(2,6,23,0.85)), url('https://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/spectacular-bg-CX4H9CPnMXdLvdjppviez9.webp')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundAttachment: 'fixed',
+                }}
+              >
+                {/* Animated particles overlay */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#c05746]/10 rounded-full blur-3xl animate-pulse" />
+                  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+                  <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-violet-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }} />
+                </div>
+
+                <div className="container relative z-10">
+                  {/* Section header */}
+                  <div className="text-center mb-14">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-6">
+                      <Sparkles className="w-4 h-4 text-[#c05746]" />
+                      <span className="text-sm text-white/70 font-medium tracking-wide uppercase">
+                        {t("Värt att känna till", "Worth knowing about")}
+                      </span>
+                    </div>
+                    <h2
+                      className="text-4xl md:text-5xl lg:text-6xl text-white mb-4"
+                      style={{ fontFamily: "'DM Serif Display', serif" }}
+                    >
+                      {t(section.titleSv, section.titleEn)}
+                    </h2>
+                    <p className="text-white/50 text-lg max-w-2xl mx-auto">
+                      {t(
+                        "AI gör redan saker som låter som science fiction. Här är bevisen.",
+                        "AI is already doing things that sound like science fiction. Here's the proof."
+                      )}
+                    </p>
+                  </div>
+
+                  <SpectacularSection items={section.items} t={t} />
+                </div>
+              </section>
+            );
+          }
 
           return (
             <section key={section.sectionKey} className={`${config.bg} py-16`}>

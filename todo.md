@@ -162,3 +162,5 @@
 - [x] Build backend import endpoint (restore from exported file)
 - [x] Add export/import buttons in admin panel (Backup tab)
 - [x] Tests for export/import functionality (7 tests passing)
+- [ ] Bug: User cannot access /admin page after logging in
+- [x] Make 'Det spektakulära' section on AI page visually spectacular (not just descriptive)

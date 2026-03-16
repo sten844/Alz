@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, openId, name, email, role FROM users ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, openId, name, email, role FROM users ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "3HkRKcaGBJZnHJAeZLmew2",
+      "name": "Sten Dellby",
+      "email": "syfabriken@gmail.com",
+      "role": "admin"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\n1\t3HkRKcaGBJZnHJAeZLmew2\tSten Dellby\tsyfabriken@gmail.com\tadmin\n",
+  "stderr": "",
+  "execution_time_ms": 96
+}
