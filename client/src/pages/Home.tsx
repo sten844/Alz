@@ -4,7 +4,7 @@
  * - Editorial article listing with category filter, search, pagination
  * - Diary column sidebar on desktop/iPad (left side)
  * - Diary section below articles on mobile
- * - AI section, newsletter, comments, X feed
+ * - Newsletter, comments, X feed
  */
 import { useState, useMemo, useEffect, useRef } from "react";
 import SiteHeader from "@/components/SiteHeader";
@@ -257,34 +257,6 @@ export default function Home() {
         {/* Bottom sections - 2x2 grid on PC/iPad, single column on mobile */}
         <section className="container py-6 md:py-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-
-            {/* AI Block */}
-            <div className="relative overflow-hidden rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center">
-              <img
-                src={IMAGES.aiSectionBg}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-slate-900/70 to-slate-900/50" />
-              <div className="relative p-6 md:p-8 text-center flex flex-col items-center justify-center h-full">
-                <h2 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                  {t("AI långt bortom Google", "AI far beyond Google")}
-                </h2>
-                <p className="text-slate-200 text-lg max-w-sm mx-auto mb-5 leading-relaxed">
-                  {t(
-                    "Som alzheimerdrabbad behöver jag modern teknik. Här presenterar jag AI och ger lite exempel på tillämpningar.",
-                    "As someone affected by Alzheimer's, I need modern technology. Here I present AI and give some examples of applications."
-                  )}
-                </p>
-                <Link
-                  href="/ai"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/90 text-slate-800 rounded-full text-base font-semibold hover:bg-white transition-colors shadow-lg"
-                >
-                  {t("Utforska AI-världen", "Explore the AI world")}
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
 
             {/* Newsletter Block */}
             <div className="bg-[#c05746] rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">

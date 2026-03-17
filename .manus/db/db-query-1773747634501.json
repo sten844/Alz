@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, LEFT(title, 60) as title, language, pairId, updatedAt FROM articles WHERE pairId = 600001 ORDER BY language;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, LEFT(title, 60) as title, language, pairId, updatedAt FROM articles WHERE pairId = 600001 ORDER BY language;",
+  "rows": [
+    {
+      "id": "600002",
+      "title": "When Bureaucracy Slows Medical Breakthroughs",
+      "language": "en",
+      "pairId": "600001",
+      "updatedAt": "2026-03-17 10:50:11"
+    },
+    {
+      "id": "600001",
+      "title": "När byråkratin bromsar medicinska genombrott",
+      "language": "sv",
+      "pairId": "600001",
+      "updatedAt": "2026-03-17 10:50:06"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tpairId\tupdatedAt\n600002\tWhen Bureaucracy Slows Medical Breakthroughs\ten\t600001\t2026-03-17 10:50:11\n600001\tNär byråkratin bromsar medicinska genombrott\tsv\t600001\t2026-03-17 10:50:06\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

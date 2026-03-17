@@ -1,0 +1,87 @@
+{
+  "query": "SELECT id, LEFT(title, 50) as title, language, published, pairId FROM articles WHERE language = 'sv' ORDER BY id DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, LEFT(title, 50) as title, language, published, pairId FROM articles WHERE language = 'sv' ORDER BY id DESC;",
+  "rows": [
+    {
+      "id": "600001",
+      "title": "När byråkratin bromsar medicinska genombrott",
+      "language": "sv",
+      "published": "1",
+      "pairId": "600001"
+    },
+    {
+      "id": "570001",
+      "title": "Dagens Nyheter: Supergamlingar - människor över 80",
+      "language": "sv",
+      "published": "1",
+      "pairId": "570001"
+    },
+    {
+      "id": "510001",
+      "title": "Litium och Alzheimers – vad har hänt sedan Nature-",
+      "language": "sv",
+      "published": "1",
+      "pairId": "510001"
+    },
+    {
+      "id": "390001",
+      "title": "Alzheimer, kost, blodsocker och insulin",
+      "language": "sv",
+      "published": "1",
+      "pairId": "390001"
+    },
+    {
+      "id": "60001",
+      "title": "Alzheimer: Vad vet vi om orsakerna?",
+      "language": "sv",
+      "published": "1",
+      "pairId": "60001"
+    },
+    {
+      "id": "30001",
+      "title": "Drivet gör sjukdomen mindre",
+      "language": "sv",
+      "published": "1",
+      "pairId": "30001"
+    },
+    {
+      "id": "7",
+      "title": "Läkemedel avsedda för andra diagnoser – och som po",
+      "language": "sv",
+      "published": "1",
+      "pairId": "7"
+    },
+    {
+      "id": "5",
+      "title": "Regionens riktlinjer vid Alzheimer",
+      "language": "sv",
+      "published": "1",
+      "pairId": "5"
+    },
+    {
+      "id": "4",
+      "title": "Ai för oss med Alzheimer",
+      "language": "sv",
+      "published": "1",
+      "pairId": "4"
+    },
+    {
+      "id": "2",
+      "title": "AI och meningen med livet",
+      "language": "sv",
+      "published": "1",
+      "pairId": "2"
+    },
+    {
+      "id": "1",
+      "title": "Min behandlingsplan",
+      "language": "sv",
+      "published": "1",
+      "pairId": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tpublished\tpairId\n600001\tNär byråkratin bromsar medicinska genombrott\tsv\t1\t600001\n570001\tDagens Nyheter: Supergamlingar - människor över 80\tsv\t1\t570001\n510001\tLitium och Alzheimers – vad har hänt sedan Nature-\tsv\t1\t510001\n390001\tAlzheimer, kost, blodsocker och insulin\tsv\t1\t390001\n60001\tAlzheimer: Vad vet vi om orsakerna?\tsv\t1\t60001\n30001\tDrivet gör sjukdomen mindre\tsv\t1\t30001\n7\tLäkemedel avsedda för andra diagnoser – och som po\tsv\t1\t7\n5\tRegionens riktlinjer vid Alzheimer\tsv\t1\t5\n4\tAi för oss med Alzheimer\tsv\t1\t4\n2\tAI och meningen med livet\tsv\t1\t2\n1\tMin behandlingsplan\tsv\t1\t1\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

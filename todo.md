@@ -164,3 +164,7 @@
 - [x] Tests for export/import functionality (7 tests passing)
 - [ ] Bug: User cannot access /admin page after logging in
 - [x] Make 'Det spektakulära' section on AI page visually spectacular (not just descriptive)
+- [ ] Bug: Editing English article excerpt removed 'ny' from Swedish version but kept 'new' in English
+- [x] Remove AI sub-page from public navigation (keep code intact, keep admin tab)
+- [x] Remove AI block from homepage grid
+- [x] Verified: no AI nav link in header/menu or footer
