@@ -168,3 +168,6 @@
 - [x] Remove AI sub-page from public navigation (keep code intact, keep admin tab)
 - [x] Remove AI block from homepage grid
 - [x] Verified: no AI nav link in header/menu or footer
+- [x] Redesign Newsletter block as slim horizontal band (matching X band style)
+- [x] Redesign Comments block as slim horizontal band (matching X band style)
+- [x] Remove 2x2 grid layout, stack all bottom sections as slim bands

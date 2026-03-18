@@ -254,32 +254,34 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Bottom sections - 2x2 grid on PC/iPad, single column on mobile */}
-        <section className="container py-6 md:py-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {/* Bottom sections - stacked slim bands */}
+        <section className="container py-6 md:py-10 space-y-4 md:space-y-5">
 
-            {/* Newsletter Block */}
-            <div className="bg-[#c05746] rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
-              <h2 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
-              </h2>
-              <p className="text-white/80 text-lg max-w-sm mx-auto mb-5 leading-relaxed">
-                {t(
-                  "Prenumerera för att få notiser när nya artiklar publiceras.",
-                  "Subscribe to get notifications when new articles are published."
-                )}
-              </p>
+          {/* Newsletter Band */}
+          <div className="bg-[#c05746] rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+                <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                  {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
+                </h2>
+                <p className="text-white/80 text-base md:text-lg leading-relaxed text-center md:text-left">
+                  {t(
+                    "Prenumerera för att få notiser när nya artiklar publiceras.",
+                    "Subscribe to get notifications when new articles are published."
+                  )}
+                </p>
+              </div>
               {subscribeStatus === "success" ? (
-                <p className="text-white text-lg font-semibold">
-                  {t("Tack! Du är nu prenumerant.", "Thank you! You are now subscribed.")}
+                <p className="text-white text-base font-semibold whitespace-nowrap shrink-0">
+                  {t("Tack! Du prenumererar nu.", "Thanks! You're subscribed.")}
                 </p>
               ) : subscribeStatus === "exists" ? (
-                <p className="text-white text-lg font-semibold">
-                  {t("Du prenumererar redan!", "You are already subscribed!")}
+                <p className="text-white text-base font-semibold whitespace-nowrap shrink-0">
+                  {t("Du prenumererar redan!", "Already subscribed!")}
                 </p>
               ) : subscribeStatus === "error" ? (
-                <p className="text-white text-lg font-semibold">
-                  {t("Något gick fel. Försök igen.", "Something went wrong. Try again.")}
+                <p className="text-white text-base font-semibold whitespace-nowrap shrink-0">
+                  {t("Något gick fel.", "Something went wrong.")}
                 </p>
               ) : (
                 <form
@@ -289,7 +291,7 @@ export default function Home() {
                       subscribeMutation.mutate({ email: subscribeEmail.trim() });
                     }
                   }}
-                  className="flex gap-3 max-w-sm mx-auto"
+                  className="flex gap-3 shrink-0"
                 >
                   <input
                     type="email"
@@ -297,7 +299,7 @@ export default function Home() {
                     value={subscribeEmail}
                     onChange={(e) => setSubscribeEmail(e.target.value)}
                     placeholder={t("Din email-adress", "Your email address")}
-                    className="flex-1 px-4 py-2.5 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
+                    className="px-4 py-2.5 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 w-52 md:w-64"
                   />
                   <button
                     type="submit"
@@ -311,35 +313,38 @@ export default function Home() {
                 </form>
               )}
             </div>
+          </div>
 
-            {/* Comments Block - controlled from admin Settings */}
-            {commentsEnabled && (
-            <div className="bg-card border border-border/50 rounded-2xl shadow-lg min-h-[280px] flex flex-col justify-center p-6 md:p-8 text-center">
-              <h2 className="text-2xl md:text-3xl text-foreground mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
-                {t("Kommentarer och diskussion", "Comments and discussion")}
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-sm mx-auto mb-5 leading-relaxed">
-                {t(
-                  "Dela dina tankar, ställ frågor eller diskutera artiklar.",
-                  "Share your thoughts, ask questions, or discuss articles."
-                )}
-              </p>
+          {/* Comments Band - controlled from admin Settings */}
+          {commentsEnabled && (
+          <div className="bg-emerald-800 rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+                <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                  {t("Kommentarer och diskussion", "Comments and discussion")}
+                </h2>
+                <p className="text-white/80 text-base md:text-lg leading-relaxed text-center md:text-left">
+                  {t(
+                    "Dela dina tankar, ställ frågor eller diskutera artiklar.",
+                    "Share your thoughts, ask questions, or discuss articles."
+                  )}
+                </p>
+              </div>
               <a
                 href="https://jagochminalzheimer.manus.space/comments"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-700 text-white rounded-full text-base font-semibold hover:bg-emerald-800 transition-colors shadow-lg mx-auto"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-emerald-900 rounded-full text-base font-semibold hover:bg-emerald-50 transition-colors shadow-lg shrink-0"
               >
                 {t("Gå till diskussionen", "Go to the discussion")}
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>
-            )}
-
           </div>
+          )}
 
-          {/* Follow on X Block - full-width slim bar below the grid */}
-          <div className="bg-slate-900 rounded-2xl shadow-lg mt-4 md:mt-6 p-4 md:p-6">
+          {/* Follow on X Band */}
+          <div className="bg-slate-900 rounded-2xl shadow-lg p-4 md:p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
                 <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
