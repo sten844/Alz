@@ -179,3 +179,6 @@
 - [x] Build public /lankar page with Swedish and international sections
 - [x] Update footer: replace current links with link to /lankar page
 - [x] Write vitest tests for links API
+- [x] Ensure LinksPage.tsx has proper English translations for all text
+- [x] Ensure LinksEditor.tsx has proper English translations for all text
+- [x] Ensure seed data has English translations for all link descriptions (fixed Alzheimer Sverige missing desc_en)

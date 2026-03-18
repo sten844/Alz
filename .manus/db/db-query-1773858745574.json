@@ -1,0 +1,58 @@
+{
+  "query": "SELECT id, name_sv, visible, sort_order FROM resource_links ORDER BY category, sort_order;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, name_sv, visible, sort_order FROM resource_links ORDER BY category, sort_order;",
+  "rows": [
+    {
+      "id": "6",
+      "name_sv": "Alzheimer's Association",
+      "visible": "1",
+      "sort_order": "10"
+    },
+    {
+      "id": "7",
+      "name_sv": "Alzheimer's Disease International",
+      "visible": "1",
+      "sort_order": "11"
+    },
+    {
+      "id": "8",
+      "name_sv": "Alzheimer Europe",
+      "visible": "1",
+      "sort_order": "12"
+    },
+    {
+      "id": "10",
+      "name_sv": "Alzheimer Sverige",
+      "visible": "0",
+      "sort_order": "0"
+    },
+    {
+      "id": "2",
+      "name_sv": "Alzheimerfonden",
+      "visible": "1",
+      "sort_order": "2"
+    },
+    {
+      "id": "3",
+      "name_sv": "Demensförbundet",
+      "visible": "1",
+      "sort_order": "3"
+    },
+    {
+      "id": "4",
+      "name_sv": "Svenskt Demenscentrum",
+      "visible": "1",
+      "sort_order": "4"
+    },
+    {
+      "id": "5",
+      "name_sv": "Karolinska Institutet Center for Alzheimer Research",
+      "visible": "1",
+      "sort_order": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname_sv\tvisible\tsort_order\n6\tAlzheimer's Association\t1\t10\n7\tAlzheimer's Disease International\t1\t11\n8\tAlzheimer Europe\t1\t12\n10\tAlzheimer Sverige\t0\t0\n2\tAlzheimerfonden\t1\t2\n3\tDemensförbundet\t1\t3\n4\tSvenskt Demenscentrum\t1\t4\n5\tKarolinska Institutet Center for Alzheimer Research\t1\t5\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

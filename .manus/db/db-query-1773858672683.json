@@ -1,0 +1,13 @@
+{
+  "query": "SELECT desc_sv FROM resource_links WHERE id = 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT desc_sv FROM resource_links WHERE id = 10;",
+  "rows": [
+    {
+      "desc_sv": "Nationell organisation som erbjuder stöd, information och rådgivning till personer med Alzheimers sjukdom och deras anhöriga."
+    }
+  ],
+  "messages": [],
+  "stdout": "desc_sv\nNationell organisation som erbjuder stöd, information och rådgivning till personer med Alzheimers sjukdom och deras anhöriga.\n\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

@@ -1,0 +1,61 @@
+{
+  "query": "SELECT id, name_sv, name_en, desc_sv, desc_en FROM resource_links ORDER BY category, sort_order;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, name_sv, name_en, desc_sv, desc_en FROM resource_links ORDER BY category, sort_order;",
+  "rows": [
+    {
+      "id": "6",
+      "name_sv": "Alzheimer's Association",
+      "name_en": "Alzheimer's Association",
+      "desc_sv": "Världsledande organisation. Information om behandling, symtom och stöd. Stora satsningar på forskning.",
+      "desc_en": "World-leading organization. Information on treatment, symptoms and support. Major research investments."
+    },
+    {
+      "id": "7",
+      "name_sv": "Alzheimer's Disease International",
+      "name_en": "Alzheimer's Disease International",
+      "desc_sv": "Global samarbetsorganisation. Samlar Alzheimerorganisationer världen över.",
+      "desc_en": "Global collaborative organization. Unites Alzheimer organizations worldwide."
+    },
+    {
+      "id": "8",
+      "name_sv": "Alzheimer Europe",
+      "name_en": "Alzheimer Europe",
+      "desc_sv": "Europeisk policy, forskning och statistik. Bra översikter över utvecklingen i EU.",
+      "desc_en": "European policy, research and statistics. Good overviews of developments in the EU."
+    },
+    {
+      "id": "2",
+      "name_sv": "Alzheimerfonden",
+      "name_en": "The Alzheimer Foundation",
+      "desc_sv": "Finansierar svensk forskning om demens. Populärvetenskapliga artiklar och nyheter.",
+      "desc_en": "Funds Swedish dementia research. Popular science articles and news."
+    },
+    {
+      "id": "3",
+      "name_sv": "Demensförbundet",
+      "name_en": "The Dementia Association",
+      "desc_sv": "Information, stöd och forskning. Driver Demensfonden.",
+      "desc_en": "Information, support and research. Runs the Dementia Fund."
+    },
+    {
+      "id": "4",
+      "name_sv": "Svenskt Demenscentrum",
+      "name_en": "Swedish Dementia Centre",
+      "desc_sv": "Nationellt kunskapscentrum. Evidensbaserad information för vård och allmänhet.",
+      "desc_en": "National knowledge center. Evidence-based information for healthcare and the public."
+    },
+    {
+      "id": "5",
+      "name_sv": "Karolinska Institutet Center for Alzheimer Research",
+      "name_en": "Karolinska Institutet Center for Alzheimer Research",
+      "desc_sv": "Forskning från molekylnivå till klinik. En av Sveriges viktigaste forskningsmiljöer.",
+      "desc_en": "Research from molecular level to clinic. One of Sweden's most important research environments."
+    }
+  ],
+  "messages": [
+    "10\tAlzheimer Sverige\tAlzheimer Sweden\tNationell organisation som erbjuder stöd, information och rådgivning till personer med Alzheimers sjukdom och deras anhöriga."
+  ],
+  "stdout": "id\tname_sv\tname_en\tdesc_sv\tdesc_en\n6\tAlzheimer's Association\tAlzheimer's Association\tVärldsledande organisation. Information om behandling, symtom och stöd. Stora satsningar på forskning.\tWorld-leading organization. Information on treatment, symptoms and support. Major research investments.\n7\tAlzheimer's Disease International\tAlzheimer's Disease International\tGlobal samarbetsorganisation. Samlar Alzheimerorganisationer världen över.\tGlobal collaborative organization. Unites Alzheimer organizations worldwide.\n8\tAlzheimer Europe\tAlzheimer Europe\tEuropeisk policy, forskning och statistik. Bra översikter över utvecklingen i EU.\tEuropean policy, research and statistics. Good overviews of developments in the EU.\n10\tAlzheimer Sverige\tAlzheimer Sweden\tNationell organisation som erbjuder stöd, information och rådgivning till personer med Alzheimers sjukdom och deras anhöriga.\n\t\n2\tAlzheimerfonden\tThe Alzheimer Foundation\tFinansierar svensk forskning om demens. Populärvetenskapliga artiklar och nyheter.\tFunds Swedish dementia research. Popular science articles and news.\n3\tDemensförbundet\tThe Dementia Association\tInformation, stöd och forskning. Driver Demensfonden.\tInformation, support and research. Runs the Dementia Fund.\n4\tSvenskt Demenscentrum\tSwedish Dementia Centre\tNationellt kunskapscentrum. Evidensbaserad information för vård och allmänhet.\tNational knowledge center. Evidence-based information for healthcare and the public.\n5\tKarolinska Institutet Center for Alzheimer Research\tKarolinska Institutet Center for Alzheimer Research\tForskning från molekylnivå till klinik. En av Sveriges viktigaste forskningsmiljöer.\tResearch from molecular level to clinic. One of Sweden's most important research environments.\n",
+  "stderr": "",
+  "execution_time_ms": 72
+}
