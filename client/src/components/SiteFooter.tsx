@@ -38,6 +38,11 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/lankar" className="hover:text-white transition-colors">
+                  {t("Länkar och resurser", "Links and resources")}
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://x.com/stendellby"
                   target="_blank"

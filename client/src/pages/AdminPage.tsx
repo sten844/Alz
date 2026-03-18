@@ -27,11 +27,13 @@ import {
   Download,
   UploadCloud,
   Database,
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
 import { markdownToHtml, htmlToMarkdown } from "@/lib/markdownUtils";
 import AIPageEditor from "@/components/AIPageEditor";
+import LinksEditor from "@/components/LinksEditor";
 
 // ---- Article form types ----
 type ArticleForm = {
@@ -77,7 +79,7 @@ const AUTO_SAVE_INTERVAL = 30000;
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "subscribers" | "settings" | "backup">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "links" | "subscribers" | "settings" | "backup">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -695,6 +697,17 @@ export default function AdminPage() {
               {t("AI-sida", "AI page")}
             </button>
             <button
+              onClick={() => setActiveTab("links")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "links"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <ExternalLink className="w-5 h-5" />
+              {t("Länkar", "Links")}
+            </button>
+            <button
               onClick={() => setActiveTab("subscribers")}
               className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
                 activeTab === "subscribers"
@@ -1125,6 +1138,11 @@ export default function AdminPage() {
           {/* ============ SUBSCRIBERS TAB ============ */}
           {activeTab === "subscribers" && (
             <SubscribersEditor />
+          )}
+
+          {/* ============ LINKS TAB ============ */}
+          {activeTab === "links" && (
+            <LinksEditor />
           )}
 
           {/* ============ SETTINGS TAB ============ */}

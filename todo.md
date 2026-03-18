@@ -172,3 +172,10 @@
 - [x] Redesign Comments block as slim horizontal band (matching X band style)
 - [x] Remove 2x2 grid layout, stack all bottom sections as slim bands
 - [x] Increase description text size on Newsletter and X bands for iPad readability
+- [x] Create database table for links (resource_links)
+- [x] Create API endpoints for links CRUD (list, create, update, delete, reorder)
+- [x] Seed database with initial Swedish and international Alzheimer links
+- [x] Build admin editor UI for links page (add/edit/delete/reorder links)
+- [x] Build public /lankar page with Swedish and international sections
+- [x] Update footer: replace current links with link to /lankar page
+- [x] Write vitest tests for links API

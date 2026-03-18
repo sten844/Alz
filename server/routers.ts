@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink } from "./db";
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
@@ -656,6 +656,60 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const stats = await importAllContent(input);
         return { success: true, stats };
+      }),
+  }),
+
+  // ---- Resource links (for /lankar page) ----
+  resourceLinks: router({
+    list: publicProcedure
+      .query(async () => {
+        return listResourceLinks({ visibleOnly: true });
+      }),
+
+    listAll: adminProcedure
+      .query(async () => {
+        return listResourceLinks();
+      }),
+
+    create: adminProcedure
+      .input(z.object({
+        category: z.string(),
+        nameSv: z.string(),
+        nameEn: z.string(),
+        descSv: z.string(),
+        descEn: z.string(),
+        url: z.string(),
+        sortOrder: z.number().optional(),
+        visible: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await createResourceLink(input);
+        return { success: true, id: result.id };
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        category: z.string().optional(),
+        nameSv: z.string().optional(),
+        nameEn: z.string().optional(),
+        descSv: z.string().optional(),
+        descEn: z.string().optional(),
+        url: z.string().optional(),
+        sortOrder: z.number().optional(),
+        visible: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateResourceLink(id, data);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteResourceLink(input.id);
+        return { success: true };
       }),
   }),
 });

@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -434,6 +434,44 @@ export async function listSiteSettings() {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(siteSettings);
+}
+
+// ---- Resource links queries ----
+
+export async function listResourceLinks(opts?: { visibleOnly?: boolean }) {
+  const db = await getDb();
+  if (!db) return [];
+
+  if (opts?.visibleOnly) {
+    return db.select().from(resourceLinks).where(eq(resourceLinks.visible, true)).orderBy(asc(resourceLinks.sortOrder));
+  }
+  return db.select().from(resourceLinks).orderBy(asc(resourceLinks.sortOrder));
+}
+
+export async function getResourceLink(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(resourceLinks).where(eq(resourceLinks.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createResourceLink(link: InsertResourceLink) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(resourceLinks).values(link);
+  return { id: result[0].insertId };
+}
+
+export async function updateResourceLink(id: number, data: Partial<InsertResourceLink>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(resourceLinks).set(data).where(eq(resourceLinks.id, id));
+}
+
+export async function deleteResourceLink(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(resourceLinks).where(eq(resourceLinks.id, id));
 }
 
 // ---- Export / Import helpers ----
