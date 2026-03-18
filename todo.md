@@ -182,3 +182,4 @@
 - [x] Ensure LinksPage.tsx has proper English translations for all text
 - [x] Ensure LinksEditor.tsx has proper English translations for all text
 - [x] Ensure seed data has English translations for all link descriptions (fixed Alzheimer Sverige missing desc_en)
+- [x] Fix Alzheimer Sverige link URL (HTTPS broken on their server, changed to HTTP)

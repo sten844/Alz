@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name_sv, url FROM resource_links WHERE name_sv = 'Alzheimer Sverige';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, name_sv, url FROM resource_links WHERE name_sv = 'Alzheimer Sverige';",
+  "rows": [
+    {
+      "id": "10",
+      "name_sv": "Alzheimer Sverige",
+      "url": "https://www.alzheimersverige.se/"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname_sv\turl\n10\tAlzheimer Sverige\thttps://www.alzheimersverige.se/\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}
