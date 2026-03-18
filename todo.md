@@ -171,3 +171,4 @@
 - [x] Redesign Newsletter block as slim horizontal band (matching X band style)
 - [x] Redesign Comments block as slim horizontal band (matching X band style)
 - [x] Remove 2x2 grid layout, stack all bottom sections as slim bands
+- [x] Increase description text size on Newsletter and X bands for iPad readability

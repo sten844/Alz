@@ -261,10 +261,10 @@ export default function Home() {
           <div className="bg-[#c05746] rounded-2xl shadow-lg p-4 md:p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
-                <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                <h2 className="text-2xl md:text-3xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
                   {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
                 </h2>
-                <p className="text-white/80 text-base md:text-lg leading-relaxed text-center md:text-left">
+                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center md:text-left">
                   {t(
                     "Prenumerera för att få notiser när nya artiklar publiceras.",
                     "Subscribe to get notifications when new articles are published."
@@ -272,15 +272,15 @@ export default function Home() {
                 </p>
               </div>
               {subscribeStatus === "success" ? (
-                <p className="text-white text-base font-semibold whitespace-nowrap shrink-0">
+                <p className="text-white text-lg font-semibold whitespace-nowrap shrink-0">
                   {t("Tack! Du prenumererar nu.", "Thanks! You're subscribed.")}
                 </p>
               ) : subscribeStatus === "exists" ? (
-                <p className="text-white text-base font-semibold whitespace-nowrap shrink-0">
+                <p className="text-white text-lg font-semibold whitespace-nowrap shrink-0">
                   {t("Du prenumererar redan!", "Already subscribed!")}
                 </p>
               ) : subscribeStatus === "error" ? (
-                <p className="text-white text-base font-semibold whitespace-nowrap shrink-0">
+                <p className="text-white text-lg font-semibold whitespace-nowrap shrink-0">
                   {t("Något gick fel.", "Something went wrong.")}
                 </p>
               ) : (
@@ -299,12 +299,12 @@ export default function Home() {
                     value={subscribeEmail}
                     onChange={(e) => setSubscribeEmail(e.target.value)}
                     placeholder={t("Din email-adress", "Your email address")}
-                    className="px-4 py-2.5 rounded-full bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 w-52 md:w-64"
+                    className="px-4 py-3 rounded-full bg-white/90 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 w-56 md:w-72"
                   />
                   <button
                     type="submit"
                     disabled={subscribeMutation.isPending}
-                    className="px-5 py-2.5 bg-slate-900 text-white rounded-full text-base font-semibold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-60"
+                    className="px-6 py-3 bg-slate-900 text-white rounded-full text-lg font-semibold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-60"
                   >
                     {subscribeMutation.isPending
                       ? t("Sparar...", "Saving...")
@@ -320,10 +320,10 @@ export default function Home() {
           <div className="bg-emerald-800 rounded-2xl shadow-lg p-4 md:p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
-                <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                <h2 className="text-2xl md:text-3xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
                   {t("Kommentarer och diskussion", "Comments and discussion")}
                 </h2>
-                <p className="text-white/80 text-base md:text-lg leading-relaxed text-center md:text-left">
+                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center md:text-left">
                   {t(
                     "Dela dina tankar, ställ frågor eller diskutera artiklar.",
                     "Share your thoughts, ask questions, or discuss articles."
@@ -334,7 +334,7 @@ export default function Home() {
                 href="https://jagochminalzheimer.manus.space/comments"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-emerald-900 rounded-full text-base font-semibold hover:bg-emerald-50 transition-colors shadow-lg shrink-0"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-900 rounded-full text-lg font-semibold hover:bg-emerald-50 transition-colors shadow-lg shrink-0"
               >
                 {t("Gå till diskussionen", "Go to the discussion")}
                 <ExternalLink className="w-4 h-4" />
@@ -347,10 +347,10 @@ export default function Home() {
           <div className="bg-slate-900 rounded-2xl shadow-lg p-4 md:p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
-                <h2 className="text-xl md:text-2xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                <h2 className="text-2xl md:text-3xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
                   {t("Följ mig på X", "Follow me on X")}
                 </h2>
-                <p className="text-slate-300 text-base md:text-lg leading-relaxed text-center md:text-left">
+                <p className="text-slate-200 text-lg md:text-xl leading-relaxed text-center md:text-left">
                   {t(
                     "Jag skriver om mitt nya liv med Alzheimers på X (Twitter).",
                     "I write about my new life with Alzheimer's on X (Twitter)."
@@ -361,7 +361,7 @@ export default function Home() {
                 href="https://x.com/stendellby"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-slate-900 rounded-full text-base font-semibold hover:bg-slate-100 transition-colors shadow-lg shrink-0"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-full text-lg font-semibold hover:bg-slate-100 transition-colors shadow-lg shrink-0"
               >
                 {t("Ta mig till X", "Take me to X")}
                 <ExternalLink className="w-4 h-4" />
