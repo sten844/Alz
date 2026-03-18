@@ -28,11 +28,6 @@ export default function SiteFooter() {
             <h4 className="font-semibold text-white mb-3 text-lg">{t("Länkar", "Links")}</h4>
             <ul className="space-y-2 text-base">
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
-                  {t("Hem", "Home")}
-                </Link>
-              </li>
-              <li>
                 <Link href="/about" className="hover:text-white transition-colors">
                   {t("Om mig", "About me")}
                 </Link>

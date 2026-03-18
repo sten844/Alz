@@ -183,3 +183,5 @@
 - [x] Ensure LinksEditor.tsx has proper English translations for all text
 - [x] Ensure seed data has English translations for all link descriptions (fixed Alzheimer Sverige missing desc_en)
 - [x] Fix Alzheimer Sverige link URL (HTTPS broken on their server, changed to HTTP)
+- [x] Remove Alzheimer Sverige link from database (organization inactive)
+- [x] Remove "Hem/Home" link from footer
