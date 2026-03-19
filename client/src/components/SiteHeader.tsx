@@ -101,6 +101,18 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
                 sten@dellby.info
               </a>
             </div>
+
+            {/* Keyword tags */}
+            <div className="hidden sm:flex mt-3 md:mt-4 flex-wrap gap-2 md:gap-3">
+              {["Vetenskap", "Behandlingsstrategi", "Samhällskritik", "Patientperspektiv"].map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 md:px-4 py-1 md:py-1.5 text-sm md:text-base font-medium text-slate-600 bg-white/60 backdrop-blur-sm border border-slate-300/60 rounded-full tracking-wide"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -131,6 +143,17 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
               <Mail className="w-4 h-4" />
               sten@dellby.info
             </a>
+            {/* Keyword tags - mobile */}
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {["Vetenskap", "Behandlingsstrategi", "Samhällskritik", "Patientperspektiv"].map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2.5 py-0.5 text-xs font-medium text-slate-600 bg-white/60 backdrop-blur-sm border border-slate-300/60 rounded-full tracking-wide"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
             {showLanguage && (
               <>
                 <span className="text-slate-300">|</span>

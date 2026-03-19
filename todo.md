@@ -185,3 +185,4 @@
 - [x] Fix Alzheimer Sverige link URL (HTTPS broken on their server, changed to HTTP)
 - [x] Remove Alzheimer Sverige link from database (organization inactive)
 - [x] Remove "Hem/Home" link from footer
+- [x] Add keyword tags (Vetenskap, Behandlingsstrategi, Samhällskritik, Patientperspektiv) below hero header
