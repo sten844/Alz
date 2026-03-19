@@ -73,8 +73,6 @@ const emptyDiaryForm: DiaryForm = {
 
 const CATEGORIES = ["Behandling", "Forskning", "Vardagsliv", "Läkemedel", "Åsikt"];
 
-// Auto-save interval in milliseconds (30 seconds)
-const AUTO_SAVE_INTERVAL = 30000;
 
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -87,14 +85,7 @@ export default function AdminPage() {
   const [articleForm, setArticleForm] = useState<ArticleForm>(emptyArticleForm);
   const [deleteArticleConfirm, setDeleteArticleConfirm] = useState<number | null>(null);
 
-  // ---- Auto-save state ----
-  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
-  const [hasDraftToRecover, setHasDraftToRecover] = useState(false);
-  const [recoveredDraft, setRecoveredDraft] = useState<ArticleForm | null>(null);
-  const [recoveredArticleId, setRecoveredArticleId] = useState<number | null>(null);
-  const autoSaveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const lastSavedFormRef = useRef<string>("");
+
 
   // ---- Image upload state ----
   const [isUploading, setIsUploading] = useState(false);
@@ -126,11 +117,8 @@ export default function AdminPage() {
     onSuccess: () => {
       utils.articles.listAll.invalidate();
       utils.articles.list.invalidate();
-      // Delete draft after successful save
-      deleteDraftMutation.mutate({ articleId: editingArticleId });
       setShowArticleForm(false);
       setArticleForm(emptyArticleForm);
-      clearAutoSave();
       toast.success("Artikel skapad!");
     },
     onError: (err) => toast.error(err.message),
@@ -139,12 +127,9 @@ export default function AdminPage() {
     onSuccess: () => {
       utils.articles.listAll.invalidate();
       utils.articles.list.invalidate();
-      // Delete draft after successful save
-      deleteDraftMutation.mutate({ articleId: editingArticleId });
       setEditingArticleId(null);
       setShowArticleForm(false);
       setArticleForm(emptyArticleForm);
-      clearAutoSave();
       toast.success("Artikel uppdaterad!");
     },
     onError: (err) => toast.error(err.message),
@@ -159,112 +144,7 @@ export default function AdminPage() {
     onError: (err) => toast.error(err.message),
   });
 
-  // ---- Draft mutations ----
-  const saveDraftMutation = trpc.drafts.save.useMutation({
-    onSuccess: () => {
-      setAutoSaveStatus("saved");
-      setLastSavedAt(new Date());
-      setTimeout(() => setAutoSaveStatus("idle"), 3000);
-    },
-    onError: () => {
-      setAutoSaveStatus("error");
-      setTimeout(() => setAutoSaveStatus("idle"), 5000);
-    },
-  });
 
-  const deleteDraftMutation = trpc.drafts.delete.useMutation({
-    onSuccess: () => {
-      setHasDraftToRecover(false);
-      setRecoveredDraft(null);
-      setRecoveredArticleId(null);
-      utils.drafts.list.invalidate();
-    },
-  });
-
-  // Check for any drafts on page load (for recovery)
-  const { data: allDrafts } = trpc.drafts.list.useQuery(undefined, {
-    enabled: isAuthenticated && user?.role === "admin" && !showArticleForm,
-  });
-
-  // Show draft recovery prompt when drafts exist
-  useEffect(() => {
-    if (allDrafts && allDrafts.length > 0 && !showArticleForm) {
-      const draft = allDrafts[0]; // Most recent draft
-      if (draft.title || draft.content || draft.excerpt) {
-        setHasDraftToRecover(true);
-        setRecoveredDraft({
-          title: draft.title || "",
-          excerpt: draft.excerpt || "",
-          content: draft.content || "",
-          category: draft.category || "Vardagsliv",
-          language: draft.language || "sv",
-          imageUrl: draft.imageUrl || "",
-          published: draft.published ?? true,
-          publishedAt: draft.publishedAt || new Date().toISOString().slice(0, 16),
-        });
-        setRecoveredArticleId(draft.articleId);
-      }
-    }
-  }, [allDrafts, showArticleForm]);
-
-  // Auto-save function
-  const performAutoSave = useCallback(() => {
-    if (!showArticleForm) return;
-
-    const currentFormJson = JSON.stringify(articleForm);
-    // Only save if form has changed since last save
-    if (currentFormJson === lastSavedFormRef.current) return;
-    // Only save if there's some content worth saving
-    if (!articleForm.title && !articleForm.content && !articleForm.excerpt) return;
-
-    lastSavedFormRef.current = currentFormJson;
-    setAutoSaveStatus("saving");
-
-    saveDraftMutation.mutate({
-      articleId: editingArticleId,
-      title: articleForm.title,
-      excerpt: articleForm.excerpt,
-      content: articleForm.content || null,
-      category: articleForm.category,
-      language: articleForm.language,
-      imageUrl: articleForm.imageUrl || null,
-      publishedAt: articleForm.publishedAt || null,
-      published: articleForm.published,
-    });
-  }, [showArticleForm, articleForm, editingArticleId, saveDraftMutation]);
-
-  // Start/stop auto-save timer when form is shown/hidden
-  useEffect(() => {
-    if (showArticleForm) {
-      autoSaveTimerRef.current = setInterval(() => {
-        performAutoSave();
-      }, AUTO_SAVE_INTERVAL);
-
-      return () => {
-        if (autoSaveTimerRef.current) {
-          clearInterval(autoSaveTimerRef.current);
-          autoSaveTimerRef.current = null;
-        }
-      };
-    } else {
-      if (autoSaveTimerRef.current) {
-        clearInterval(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
-      }
-    }
-  }, [showArticleForm, performAutoSave]);
-
-  // Save draft when user leaves the page
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (showArticleForm && (articleForm.title || articleForm.content || articleForm.excerpt)) {
-        performAutoSave();
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [showArticleForm, articleForm, performAutoSave]);
 
   // ---- Handle rich text editor content changes ----
   const handleArticleContentChange = useCallback((html: string) => {
@@ -286,15 +166,7 @@ export default function AdminPage() {
 
 
 
-  const clearAutoSave = () => {
-    setAutoSaveStatus("idle");
-    setLastSavedAt(null);
-    lastSavedFormRef.current = "";
-    if (autoSaveTimerRef.current) {
-      clearInterval(autoSaveTimerRef.current);
-      autoSaveTimerRef.current = null;
-    }
-  };
+
 
   // ---- Image upload mutation ----
   const uploadImageMutation = trpc.upload.image.useMutation({
@@ -472,9 +344,6 @@ export default function AdminPage() {
     });
     // Convert markdown to HTML for the rich text editor
     setArticleContentHtml(markdownToHtml(article.content));
-    lastSavedFormRef.current = "";
-    setAutoSaveStatus("idle");
-    setLastSavedAt(null);
   };
 
   const handleNewArticle = () => {
@@ -482,44 +351,13 @@ export default function AdminPage() {
     setShowArticleForm(true);
     setArticleForm(emptyArticleForm);
     setArticleContentHtml("");
-    lastSavedFormRef.current = "";
-    setAutoSaveStatus("idle");
-    setLastSavedAt(null);
-  };
-
-  const handleRecoverDraft = () => {
-    if (recoveredDraft) {
-      setEditingArticleId(recoveredArticleId);
-      setShowArticleForm(true);
-      setArticleForm(recoveredDraft);
-      setArticleContentHtml(markdownToHtml(recoveredDraft.content));
-      setHasDraftToRecover(false);
-      lastSavedFormRef.current = JSON.stringify(recoveredDraft);
-      setAutoSaveStatus("idle");
-      toast.success(t("Utkast återställt!", "Draft recovered!"));
-    }
-  };
-
-  const handleDiscardDraft = () => {
-    if (recoveredArticleId !== undefined) {
-      deleteDraftMutation.mutate({ articleId: recoveredArticleId });
-    }
-    setHasDraftToRecover(false);
-    setRecoveredDraft(null);
-    setRecoveredArticleId(null);
-    toast.success(t("Utkast kasserat", "Draft discarded"));
   };
 
   const handleCloseArticleForm = () => {
-    // Save one last time before closing if there's content
-    if (articleForm.title || articleForm.content || articleForm.excerpt) {
-      performAutoSave();
-    }
     setShowArticleForm(false);
     setEditingArticleId(null);
     setArticleForm(emptyArticleForm);
     setArticleContentHtml("");
-    clearAutoSave();
   };
 
   const handleSaveArticle = () => {
@@ -584,49 +422,7 @@ export default function AdminPage() {
   const isArticleSaving = createArticleMutation.isPending || updateArticleMutation.isPending;
   const isDiarySaving = createDiaryMutation.isPending || updateDiaryMutation.isPending;
 
-  // Auto-save status indicator component
-  const AutoSaveIndicator = () => {
-    if (!showArticleForm) return null;
 
-    return (
-      <div className="flex items-center gap-2 text-base">
-        {autoSaveStatus === "saving" && (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-            <span className="text-muted-foreground">{t("Sparar utkast...", "Saving draft...")}</span>
-          </>
-        )}
-        {autoSaveStatus === "saved" && (
-          <>
-            <Check className="w-4 h-4 text-green-600" />
-            <span className="text-green-600">
-              {t("Utkast sparat", "Draft saved")}
-              {lastSavedAt && (
-                <span className="ml-1 text-muted-foreground">
-                  ({lastSavedAt.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })})
-                </span>
-              )}
-            </span>
-          </>
-        )}
-        {autoSaveStatus === "error" && (
-          <>
-            <X className="w-4 h-4 text-red-500" />
-            <span className="text-red-500">{t("Kunde inte spara utkast", "Could not save draft")}</span>
-          </>
-        )}
-        {autoSaveStatus === "idle" && lastSavedAt && (
-          <>
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <span className="text-muted-foreground">
-              {t("Senast sparat", "Last saved")}{" "}
-              {lastSavedAt.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })}
-            </span>
-          </>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -745,45 +541,6 @@ export default function AdminPage() {
           {/* ============ ARTICLES TAB ============ */}
           {activeTab === "articles" && (
             <>
-              {/* Draft recovery banner */}
-              {hasDraftToRecover && !showArticleForm && recoveredDraft && (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 shadow-sm">
-                  <div className="flex items-start gap-4">
-                    <FileText className="w-8 h-8 text-amber-600 shrink-0 mt-1" />
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-amber-800 mb-2">
-                        {t("Osparat utkast hittat!", "Unsaved draft found!")}
-                      </h3>
-                      <p className="text-lg text-amber-700 mb-1">
-                        {recoveredDraft.title
-                          ? `"${recoveredDraft.title}"`
-                          : t("(Utan titel)", "(Untitled)")}
-                      </p>
-                      <p className="text-base text-amber-600 mb-4">
-                        {recoveredDraft.content
-                          ? recoveredDraft.content.slice(0, 100) + (recoveredDraft.content.length > 100 ? "..." : "")
-                          : t("(Tomt innehåll)", "(Empty content)")}
-                      </p>
-                      <div className="flex gap-3 flex-wrap">
-                        <button
-                          onClick={handleRecoverDraft}
-                          className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-full text-lg font-semibold hover:bg-amber-700 transition-colors shadow-md"
-                        >
-                          <Save className="w-5 h-5" />
-                          {t("Återställ utkast", "Recover draft")}
-                        </button>
-                        <button
-                          onClick={handleDiscardDraft}
-                          className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-amber-300 text-amber-700 rounded-full text-lg font-medium hover:bg-amber-50 transition-colors"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                          {t("Kassera", "Discard")}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-semibold text-foreground">
@@ -802,12 +559,9 @@ export default function AdminPage() {
               {showArticleForm && (
                 <div className="bg-card rounded-2xl border border-border/50 p-8 mb-8 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4 flex-wrap">
-                      <h2 className="text-2xl font-semibold text-foreground">
-                        {editingArticleId ? t("Redigera artikel", "Edit article") : t("Ny artikel", "New article")}
-                      </h2>
-                      <AutoSaveIndicator />
-                    </div>
+                    <h2 className="text-2xl font-semibold text-foreground">
+                      {editingArticleId ? t("Redigera artikel", "Edit article") : t("Ny artikel", "New article")}
+                    </h2>
                     <button
                       onClick={handleCloseArticleForm}
                       className="p-3 rounded-full hover:bg-accent transition-colors"
@@ -931,7 +685,6 @@ export default function AdminPage() {
                         <span className="text-lg text-foreground">{t("Publicerad", "Published")}</span>
                       </label>
                       <div className="flex items-center gap-4">
-                        <AutoSaveIndicator />
                         <button onClick={handleSaveArticle} disabled={isArticleSaving}
                           className="inline-flex items-center gap-2 px-10 py-3 bg-[#c05746] text-white rounded-full text-lg font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50">
                           {isArticleSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}

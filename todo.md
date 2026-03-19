@@ -191,3 +191,4 @@
 - [x] Integrate RichTextEditor into article editor in admin panel
 - [x] Ensure existing markdown articles render correctly with new editor
 - [x] Test editor functionality (75 tests pass)
+- [x] Remove draft recovery / "Opublicerat utkast hittat" notification from admin article editor
