@@ -186,3 +186,8 @@
 - [x] Remove Alzheimer Sverige link from database (organization inactive)
 - [x] Remove "Hem/Home" link from footer
 - [x] Add keyword tags (Vetenskap, Behandlingsstrategi, Samhällskritik, Patientperspektiv) below hero header
+- [x] Install WYSIWYG rich text editor library (Tiptap + Underline + Link + TextAlign)
+- [x] Build RichTextEditor component with toolbar (bold, italic, underline, strikethrough, headings, lists, quote, link, undo/redo)
+- [x] Integrate RichTextEditor into article editor in admin panel
+- [x] Ensure existing markdown articles render correctly with new editor
+- [x] Test editor functionality (75 tests pass)

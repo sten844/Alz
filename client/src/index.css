@@ -186,6 +186,20 @@
   .rich-text-editor .tiptap em {
     @apply italic;
   }
+  .rich-text-editor .tiptap u {
+    @apply underline;
+  }
+  .rich-text-editor .tiptap s {
+    @apply line-through;
+  }
+  .rich-text-editor .tiptap a {
+    color: #c05746;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .rich-text-editor .tiptap blockquote {
+    @apply pl-4 border-l-4 border-slate-300 italic text-slate-600 my-4;
+  }
   .rich-text-editor .tiptap ul {
     @apply mb-3 pl-6 list-disc;
   }
