@@ -171,16 +171,12 @@ export type InsertSiteSetting = typeof siteSettings.$inferInsert;
 
 /**
  * Resource links for the /lankar page.
- * Curated links to Alzheimer-related organizations and resources.
- * Grouped by category (e.g. "swedish", "international").
+ * Simple model: name, comment, url — fully editable from admin.
  */
 export const resourceLinks = mysqlTable("resource_links", {
   id: int("id").autoincrement().primaryKey(),
-  category: varchar("category", { length: 50 }).notNull(), // "swedish" or "international"
-  nameSv: varchar("name_sv", { length: 300 }).notNull(),
-  nameEn: varchar("name_en", { length: 300 }).notNull(),
-  descSv: text("desc_sv").notNull(),
-  descEn: text("desc_en").notNull(),
+  name: varchar("name", { length: 300 }).notNull(),
+  comment: text("comment"),
   url: varchar("url", { length: 2000 }).notNull(),
   sortOrder: int("sort_order").notNull().default(0),
   visible: boolean("visible").default(true).notNull(),

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE resource_links ADD COLUMN `name` varchar(300) NOT NULL DEFAULT '' AFTER `id`; ALTER TABLE resource_links ADD COLUMN `comment` text AFTER `name`; UPDATE resource_links SET `name` = name_sv, `comment` = desc_sv; ALTER TABLE resource_links DROP COLUMN category, DROP COLUMN name_sv, DROP COLUMN name_en, DROP COLUMN desc_sv, DROP COLUMN desc_en;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute ALTER TABLE resource_links ADD COLUMN `name` varchar(300) NOT NULL DEFAULT '' AFTER `id`; ALTER TABLE resource_links ADD COLUMN `comment` text AFTER `name`; UPDATE resource_links SET `name` = name_sv, `comment` = desc_sv; ALTER TABLE resource_links DROP COLUMN category, DROP COLUMN name_sv, DROP COLUMN name_en, DROP COLUMN desc_sv, DROP COLUMN desc_en;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 6650
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
@@ -10,28 +10,21 @@ import {
   X,
   Loader2,
   ExternalLink,
-  GripVertical,
   Eye,
   EyeOff,
 } from "lucide-react";
 
 type LinkForm = {
-  category: string;
-  nameSv: string;
-  nameEn: string;
-  descSv: string;
-  descEn: string;
+  name: string;
+  comment: string;
   url: string;
   sortOrder: number;
   visible: boolean;
 };
 
 const emptyLinkForm: LinkForm = {
-  category: "swedish",
-  nameSv: "",
-  nameEn: "",
-  descSv: "",
-  descEn: "",
+  name: "",
+  comment: "",
   url: "",
   sortOrder: 0,
   visible: true,
@@ -49,16 +42,10 @@ export default function LinksEditor() {
   const deleteMutation = trpc.resourceLinks.delete.useMutation();
   const utils = trpc.useUtils();
 
-  const swedishLinks = links?.filter((l: any) => l.category === "swedish") ?? [];
-  const internationalLinks = links?.filter((l: any) => l.category === "international") ?? [];
-
   const handleEdit = (link: any) => {
     setForm({
-      category: link.category,
-      nameSv: link.nameSv,
-      nameEn: link.nameEn,
-      descSv: link.descSv,
-      descEn: link.descEn,
+      name: link.name,
+      comment: link.comment || "",
       url: link.url,
       sortOrder: link.sortOrder,
       visible: link.visible,
@@ -68,7 +55,9 @@ export default function LinksEditor() {
   };
 
   const handleNew = () => {
-    setForm({ ...emptyLinkForm });
+    // Set sortOrder to max + 1
+    const maxSort = links?.reduce((max: number, l: any) => Math.max(max, l.sortOrder), 0) ?? 0;
+    setForm({ ...emptyLinkForm, sortOrder: maxSort + 1 });
     setEditingId(null);
     setShowForm(true);
   };
@@ -80,12 +69,29 @@ export default function LinksEditor() {
   };
 
   const handleSave = async () => {
+    if (!form.name.trim() || !form.url.trim()) {
+      toast.error(t("Namn och URL krävs", "Name and URL are required"));
+      return;
+    }
     try {
       if (editingId) {
-        await updateMutation.mutateAsync({ id: editingId, ...form });
+        await updateMutation.mutateAsync({
+          id: editingId,
+          name: form.name,
+          comment: form.comment || undefined,
+          url: form.url,
+          sortOrder: form.sortOrder,
+          visible: form.visible,
+        });
         toast.success(t("Länk uppdaterad!", "Link updated!"));
       } else {
-        await createMutation.mutateAsync(form);
+        await createMutation.mutateAsync({
+          name: form.name,
+          comment: form.comment || undefined,
+          url: form.url,
+          sortOrder: form.sortOrder,
+          visible: form.visible,
+        });
         toast.success(t("Länk skapad!", "Link created!"));
       }
       utils.resourceLinks.listAll.invalidate();
@@ -134,14 +140,16 @@ export default function LinksEditor() {
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-foreground truncate">{link.nameSv}</span>
+          <span className="text-lg font-semibold text-foreground truncate">{link.name}</span>
           {!link.visible && (
             <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
               {t("Dold", "Hidden")}
             </span>
           )}
         </div>
-        <p className="text-base text-muted-foreground truncate">{link.descSv}</p>
+        {link.comment && (
+          <p className="text-base text-muted-foreground mt-0.5">{link.comment}</p>
+        )}
         <a
           href={link.url}
           target="_blank"
@@ -197,58 +205,17 @@ export default function LinksEditor() {
             {editingId ? t("Redigera länk", "Edit link") : t("Ny länk", "New link")}
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-base font-medium text-foreground mb-1">
-                {t("Kategori", "Category")}
-              </label>
-              <select
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg"
-              >
-                <option value="swedish">{t("Svenska resurser", "Swedish resources")}</option>
-                <option value="international">{t("Internationella resurser", "International resources")}</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-base font-medium text-foreground mb-1">
-                {t("Sorteringsordning", "Sort order")}
-              </label>
-              <input
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-base font-medium text-foreground mb-1">
-                {t("Namn (svenska)", "Name (Swedish)")}
-              </label>
-              <input
-                type="text"
-                value={form.nameSv}
-                onChange={(e) => setForm({ ...form, nameSv: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg"
-                placeholder="Alzheimer Sverige"
-              />
-            </div>
-            <div>
-              <label className="block text-base font-medium text-foreground mb-1">
-                {t("Namn (engelska)", "Name (English)")}
-              </label>
-              <input
-                type="text"
-                value={form.nameEn}
-                onChange={(e) => setForm({ ...form, nameEn: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg"
-                placeholder="Alzheimer Sweden"
-              />
-            </div>
+          <div>
+            <label className="block text-base font-medium text-foreground mb-1">
+              {t("Namn", "Name")}
+            </label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg"
+              placeholder={t("T.ex. Alzheimerfonden", "E.g. Alzheimer Foundation")}
+            />
           </div>
 
           <div>
@@ -264,43 +231,42 @@ export default function LinksEditor() {
             />
           </div>
 
+          <div>
+            <label className="block text-base font-medium text-foreground mb-1">
+              {t("Kommentar", "Comment")}
+            </label>
+            <textarea
+              value={form.comment}
+              onChange={(e) => setForm({ ...form, comment: e.target.value })}
+              rows={3}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg resize-y"
+              placeholder={t("Valfri kommentar om resursen...", "Optional comment about the resource...")}
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-base font-medium text-foreground mb-1">
-                {t("Beskrivning (svenska)", "Description (Swedish)")}
+                {t("Sorteringsordning", "Sort order")}
               </label>
-              <textarea
-                value={form.descSv}
-                onChange={(e) => setForm({ ...form, descSv: e.target.value })}
-                rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg resize-y"
-                placeholder={t("Kort beskrivning av resursen...", "Short description of the resource...")}
-              />
-            </div>
-            <div>
-              <label className="block text-base font-medium text-foreground mb-1">
-                {t("Beskrivning (engelska)", "Description (English)")}
-              </label>
-              <textarea
-                value={form.descEn}
-                onChange={(e) => setForm({ ...form, descEn: e.target.value })}
-                rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg resize-y"
-                placeholder="Short description of the resource..."
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 cursor-pointer">
               <input
-                type="checkbox"
-                checked={form.visible}
-                onChange={(e) => setForm({ ...form, visible: e.target.checked })}
-                className="w-5 h-5 rounded"
+                type="number"
+                value={form.sortOrder}
+                onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg"
               />
-              <span className="text-base text-foreground">{t("Synlig", "Visible")}</span>
-            </label>
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer pb-3">
+                <input
+                  type="checkbox"
+                  checked={form.visible}
+                  onChange={(e) => setForm({ ...form, visible: e.target.checked })}
+                  className="w-5 h-5 rounded"
+                />
+                <span className="text-base text-foreground">{t("Synlig", "Visible")}</span>
+              </label>
+            </div>
           </div>
 
           <div className="flex gap-3">
@@ -327,28 +293,17 @@ export default function LinksEditor() {
         </div>
       )}
 
-      {/* Swedish links */}
+      {/* All links */}
       <div>
         <h3 className="text-xl font-semibold text-foreground mb-4">
-          {t("Svenska resurser", "Swedish resources")} ({swedishLinks.length})
+          {t("Alla länkar", "All links")} ({links?.length ?? 0})
         </h3>
         <div className="space-y-3">
-          {swedishLinks.map(renderLinkRow)}
-          {swedishLinks.length === 0 && (
-            <p className="text-muted-foreground text-lg py-4">{t("Inga svenska länkar ännu.", "No Swedish links yet.")}</p>
-          )}
-        </div>
-      </div>
-
-      {/* International links */}
-      <div>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          {t("Internationella resurser", "International resources")} ({internationalLinks.length})
-        </h3>
-        <div className="space-y-3">
-          {internationalLinks.map(renderLinkRow)}
-          {internationalLinks.length === 0 && (
-            <p className="text-muted-foreground text-lg py-4">{t("Inga internationella länkar ännu.", "No international links yet.")}</p>
+          {links?.map(renderLinkRow)}
+          {(!links || links.length === 0) && (
+            <p className="text-muted-foreground text-lg py-4">
+              {t("Inga länkar ännu. Klicka 'Ny länk' för att lägga till.", "No links yet. Click 'New link' to add one.")}
+            </p>
           )}
         </div>
       </div>

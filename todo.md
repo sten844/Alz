@@ -192,3 +192,10 @@
 - [x] Ensure existing markdown articles render correctly with new editor
 - [x] Test editor functionality (75 tests pass)
 - [x] Remove draft recovery / "Opublicerat utkast hittat" notification from admin article editor
+- [x] Rebuild links page: simplify model to name, comment, URL per link
+- [x] Update database schema for simplified links model
+- [x] Migrate existing link data to new model
+- [x] Simplify API endpoints for new links model
+- [x] Rebuild admin links editor with name/comment/URL fields
+- [x] Rebuild public /lankar page with new simplified model
+- [x] Update tests for new links model (75 tests pass)

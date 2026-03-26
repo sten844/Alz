@@ -1,9 +1,6 @@
-import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import { describe, expect, it } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
-import { getDb } from "./db";
-import { resourceLinks } from "../drizzle/schema";
-import { sql } from "drizzle-orm";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
@@ -53,11 +50,8 @@ describe("resourceLinks", () => {
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.resourceLinks.create({
-      category: "swedish",
-      nameSv: "Test Länk",
-      nameEn: "Test Link",
-      descSv: "En testlänk för vitest",
-      descEn: "A test link for vitest",
+      name: "Test Länk",
+      comment: "En testlänk för vitest",
       url: "https://test.example.com",
       sortOrder: 999,
       visible: true,
@@ -78,7 +72,7 @@ describe("resourceLinks", () => {
 
     const testLink = links.find((l: any) => l.id === testLinkId);
     expect(testLink).toBeDefined();
-    expect(testLink?.nameSv).toBe("Test Länk");
+    expect(testLink?.name).toBe("Test Länk");
   });
 
   it("public can list visible resource links", async () => {
@@ -87,7 +81,6 @@ describe("resourceLinks", () => {
 
     const links = await caller.resourceLinks.list();
     expect(Array.isArray(links)).toBe(true);
-    // All returned links should be visible
     for (const link of links) {
       expect((link as any).visible).toBe(true);
     }
@@ -99,16 +92,15 @@ describe("resourceLinks", () => {
 
     const result = await caller.resourceLinks.update({
       id: testLinkId,
-      nameSv: "Uppdaterad Länk",
+      name: "Uppdaterad Länk",
       visible: false,
     });
 
     expect(result.success).toBe(true);
 
-    // Verify the update
     const links = await caller.resourceLinks.listAll();
     const updated = links.find((l: any) => l.id === testLinkId);
-    expect(updated?.nameSv).toBe("Uppdaterad Länk");
+    expect(updated?.name).toBe("Uppdaterad Länk");
     expect(updated?.visible).toBe(false);
   });
 
@@ -128,7 +120,6 @@ describe("resourceLinks", () => {
     const result = await caller.resourceLinks.delete({ id: testLinkId });
     expect(result.success).toBe(true);
 
-    // Verify deletion
     const links = await caller.resourceLinks.listAll();
     const deleted = links.find((l: any) => l.id === testLinkId);
     expect(deleted).toBeUndefined();
@@ -140,11 +131,7 @@ describe("resourceLinks", () => {
 
     await expect(
       caller.resourceLinks.create({
-        category: "swedish",
-        nameSv: "Unauthorized",
-        nameEn: "Unauthorized",
-        descSv: "Should fail",
-        descEn: "Should fail",
+        name: "Unauthorized",
         url: "https://fail.example.com",
       })
     ).rejects.toThrow();
