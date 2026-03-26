@@ -2,7 +2,7 @@
  * Nordic Warmth Design: Links & Resources Page
  * - Simple flat list of curated links
  * - Each link has name, comment, and URL
- * - Content loaded from database (editable from admin)
+ * - Intro text loaded from database (editable from admin)
  */
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -11,9 +11,17 @@ import { Link } from "wouter";
 import { ArrowLeft, Loader2, ExternalLink } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
+const DEFAULT_INTRO_SV = "Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alzheimers sjukdom.";
+const DEFAULT_INTRO_EN = "Here I have gathered some of the most reliable sources for information, research and support regarding Alzheimer's disease.";
+
 export default function LinksPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { data: links, isLoading } = trpc.resourceLinks.list.useQuery();
+  const { data: pageData } = trpc.pages.get.useQuery({ slug: "links" });
+
+  const introText = language === "sv"
+    ? (pageData?.contentSv || DEFAULT_INTRO_SV)
+    : (pageData?.contentEn || DEFAULT_INTRO_EN);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -38,10 +46,7 @@ export default function LinksPage() {
               {t("Länkar och resurser", "Links and Resources")}
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-3xl">
-              {t(
-                "Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alzheimers sjukdom.",
-                "Here I have gathered some of the most reliable sources for information, research and support regarding Alzheimer's disease."
-              )}
+              {introText}
             </p>
           </div>
         </section>

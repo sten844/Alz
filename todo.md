@@ -199,3 +199,7 @@
 - [x] Rebuild admin links editor with name/comment/URL fields
 - [x] Rebuild public /lankar page with new simplified model
 - [x] Update tests for new links model (75 tests pass)
+- [x] Fix: Editing Swedish article should auto-update the English translation (was already working; filtered admin to show only SV articles, added toast notification)
+- [x] Make links page intro/ingress text editable from admin (uses sitePages system)
+- [x] Add optional bottom image field to articles (upload in admin, display at end of article)
+- [x] Make profile photo in header clickable to navigate to homepage (was already linked, added hover effect)

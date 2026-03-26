@@ -198,6 +198,17 @@ export default function ArticlePage() {
             />
           </div>
 
+          {/* Bottom image (optional) */}
+          {(article as any).bottomImageUrl && (
+            <div className="mt-10 mb-6 rounded-xl overflow-hidden border border-border/30 shadow-sm">
+              <img
+                src={(article as any).bottomImageUrl}
+                alt=""
+                className="w-full object-contain"
+              />
+            </div>
+          )}
+
           {/* Back to articles */}
           <div className="text-center pb-12">
             <Link

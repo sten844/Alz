@@ -138,6 +138,7 @@ export const appRouter = router({
         language: z.string().default("sv"),
         pairId: z.number().nullable().optional(),
         imageUrl: z.string().nullable().optional(),
+        bottomImageUrl: z.string().nullable().optional(),
         publishedAt: z.date().optional(),
         published: z.boolean().default(true),
       }))
@@ -147,6 +148,7 @@ export const appRouter = router({
           ...input,
           publishedAt,
           imageUrl: input.imageUrl ?? null,
+          bottomImageUrl: input.bottomImageUrl ?? null,
           pairId: input.pairId ?? null,
         });
 
@@ -214,6 +216,7 @@ export const appRouter = router({
         language: z.string().optional(),
         pairId: z.number().nullable().optional(),
         imageUrl: z.string().nullable().optional(),
+        bottomImageUrl: z.string().nullable().optional(),
         publishedAt: z.date().optional(),
         published: z.boolean().optional(),
       }))
@@ -238,6 +241,9 @@ export const appRouter = router({
             }
             if (data.imageUrl !== undefined) {
               immediateUpdates.imageUrl = data.imageUrl;
+            }
+            if (data.bottomImageUrl !== undefined) {
+              immediateUpdates.bottomImageUrl = data.bottomImageUrl;
             }
             if (data.published !== undefined) {
               immediateUpdates.published = data.published;

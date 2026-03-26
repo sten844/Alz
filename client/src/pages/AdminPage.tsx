@@ -43,6 +43,7 @@ type ArticleForm = {
   category: string;
   language: string;
   imageUrl: string;
+  bottomImageUrl: string;
   published: boolean;
   publishedAt: string;
 };
@@ -54,6 +55,7 @@ const emptyArticleForm: ArticleForm = {
   category: "Vardagsliv",
   language: "sv",
   imageUrl: "",
+  bottomImageUrl: "",
   published: true,
   publishedAt: new Date().toISOString().slice(0, 16),
 };
@@ -91,6 +93,9 @@ export default function AdminPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingBottom, setIsUploadingBottom] = useState(false);
+  const [dragOverBottom, setDragOverBottom] = useState(false);
+  const bottomFileInputRef = useRef<HTMLInputElement>(null);
 
   // ---- Rich text editor HTML state ----
   const [articleContentHtml, setArticleContentHtml] = useState("");
@@ -110,7 +115,7 @@ export default function AdminPage() {
   const utils = trpc.useUtils();
 
   // ---- Article queries/mutations ----
-  const { data: allArticles, isLoading: articlesLoading } = trpc.articles.listAll.useQuery(undefined, {
+  const { data: allArticles, isLoading: articlesLoading } = trpc.articles.listAll.useQuery({ language: "sv" }, {
     enabled: isAuthenticated && user?.role === "admin",
   });
   const createArticleMutation = trpc.articles.create.useMutation({
@@ -130,7 +135,7 @@ export default function AdminPage() {
       setEditingArticleId(null);
       setShowArticleForm(false);
       setArticleForm(emptyArticleForm);
-      toast.success("Artikel uppdaterad!");
+      toast.success("Artikel uppdaterad! Engelsk version uppdateras automatiskt...");
     },
     onError: (err) => toast.error(err.message),
   });
@@ -205,6 +210,61 @@ export default function AdminPage() {
       toast.error(t("Kunde inte läsa filen", "Could not read file"));
     };
     reader.readAsDataURL(file);
+  };
+
+  // ---- Bottom image upload mutation ----
+  const uploadBottomImageMutation = trpc.upload.image.useMutation({
+    onSuccess: (data) => {
+      setArticleForm((prev) => ({ ...prev, bottomImageUrl: data.url }));
+      setIsUploadingBottom(false);
+      toast.success(t("Bild uppladdad!", "Image uploaded!"));
+    },
+    onError: (err) => {
+      setIsUploadingBottom(false);
+      toast.error(t("Kunde inte ladda upp bild: ", "Failed to upload image: ") + err.message);
+    },
+  });
+
+  const handleBottomImageFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error(t("Välj en bildfil (JPG, PNG, etc.)", "Please select an image file (JPG, PNG, etc.)"));
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(t("Bilden är för stor (max 10 MB)", "Image is too large (max 10 MB)"));
+      return;
+    }
+    setIsUploadingBottom(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadBottomImageMutation.mutate({
+        fileName: file.name,
+        fileData: base64,
+        contentType: file.type,
+      });
+    };
+    reader.onerror = () => {
+      setIsUploadingBottom(false);
+      toast.error(t("Kunde inte läsa filen", "Could not read file"));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDropBottom = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverBottom(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleBottomImageFile(file);
+  };
+
+  const handleDragOverBottom = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverBottom(true);
+  };
+
+  const handleDragLeaveBottom = () => {
+    setDragOverBottom(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -339,6 +399,7 @@ export default function AdminPage() {
       category: article.category,
       language: article.language,
       imageUrl: article.imageUrl || "",
+      bottomImageUrl: (article as any).bottomImageUrl || "",
       published: article.published,
       publishedAt: new Date(article.publishedAt).toISOString().slice(0, 16),
     });
@@ -372,6 +433,7 @@ export default function AdminPage() {
       category: articleForm.category,
       language: articleForm.language,
       imageUrl: articleForm.imageUrl || null,
+      bottomImageUrl: articleForm.bottomImageUrl || null,
       published: articleForm.published,
       publishedAt: new Date(articleForm.publishedAt),
     };
@@ -674,6 +736,70 @@ export default function AdminPage() {
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleImageFile(file);
+                          e.target.value = "";
+                        }}
+                      />
+                    </div>
+                    {/* Bottom image (optional) */}
+                    <div>
+                      <label className="block text-lg font-medium text-foreground mb-2">{t("Bild l\u00e4ngst ned i artikeln (valfritt)", "Bottom image (optional)")}</label>
+                      {articleForm.bottomImageUrl ? (
+                        <div className="relative rounded-lg overflow-hidden border border-border/50 bg-background">
+                          <img src={articleForm.bottomImageUrl} alt="" className="w-full max-h-64 object-cover" />
+                          <div className="absolute top-3 right-3 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => bottomFileInputRef.current?.click()}
+                              className="p-2 bg-white/90 rounded-full shadow hover:bg-white transition-colors"
+                              title={t("Byt bild", "Change image")}
+                            >
+                              <Upload className="w-5 h-5 text-gray-700" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setArticleForm({ ...articleForm, bottomImageUrl: "" })}
+                              className="p-2 bg-white/90 rounded-full shadow hover:bg-white transition-colors"
+                              title={t("Ta bort bild", "Remove image")}
+                            >
+                              <X className="w-5 h-5 text-red-500" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          onDrop={handleDropBottom}
+                          onDragOver={handleDragOverBottom}
+                          onDragLeave={handleDragLeaveBottom}
+                          onClick={() => !isUploadingBottom && bottomFileInputRef.current?.click()}
+                          className={`w-full p-6 rounded-lg border-2 border-dashed transition-all cursor-pointer flex flex-col items-center gap-2 ${
+                            dragOverBottom
+                              ? "border-[#c05746] bg-[#c05746]/5"
+                              : "border-border/50 bg-background hover:border-[#c05746]/50 hover:bg-accent/30"
+                          }`}
+                        >
+                          {isUploadingBottom ? (
+                            <>
+                              <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+                              <span className="text-base text-muted-foreground">{t("Laddar upp...", "Uploading...")}</span>
+                            </>
+                          ) : (
+                            <>
+                              <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                              <span className="text-base text-muted-foreground text-center">
+                                {t("Klicka eller dra en bild hit", "Click or drag an image here")}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      <input
+                        ref={bottomFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleBottomImageFile(file);
                           e.target.value = "";
                         }}
                       />

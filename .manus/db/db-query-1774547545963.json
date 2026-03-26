@@ -1,0 +1,130 @@
+{
+  "query": "SELECT id, title, language, pairId FROM articles WHERE pairId IS NOT NULL ORDER BY pairId LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, language, pairId FROM articles WHERE pairId IS NOT NULL ORDER BY pairId LIMIT 20;",
+  "rows": [
+    {
+      "id": "1",
+      "title": "Min behandlingsplan",
+      "language": "sv",
+      "pairId": "1"
+    },
+    {
+      "id": "8",
+      "title": "My Treatment Plan",
+      "language": "en",
+      "pairId": "1"
+    },
+    {
+      "id": "9",
+      "title": "AI and the Meaning of Life",
+      "language": "en",
+      "pairId": "2"
+    },
+    {
+      "id": "2",
+      "title": "AI och meningen med livet",
+      "language": "sv",
+      "pairId": "2"
+    },
+    {
+      "id": "11",
+      "title": "AI for those of us with Alzheimer's",
+      "language": "en",
+      "pairId": "4"
+    },
+    {
+      "id": "4",
+      "title": "Ai för oss med Alzheimer",
+      "language": "sv",
+      "pairId": "4"
+    },
+    {
+      "id": "5",
+      "title": "Regionens riktlinjer vid Alzheimer",
+      "language": "sv",
+      "pairId": "5"
+    },
+    {
+      "id": "12",
+      "title": "Regional Guidelines for Alzheimer's",
+      "language": "en",
+      "pairId": "5"
+    },
+    {
+      "id": "7",
+      "title": "Läkemedel avsedda för andra diagnoser – och som potentiellt kan påverka Alzheimers",
+      "language": "sv",
+      "pairId": "7"
+    },
+    {
+      "id": "14",
+      "title": "Medications Intended for Other Diagnoses – and Which Can Potentially Affect Alzheimer's",
+      "language": "en",
+      "pairId": "7"
+    },
+    {
+      "id": "30002",
+      "title": "Drive Makes the Disease Smaller",
+      "language": "en",
+      "pairId": "30001"
+    },
+    {
+      "id": "30001",
+      "title": "Drivet gör sjukdomen mindre",
+      "language": "sv",
+      "pairId": "30001"
+    },
+    {
+      "id": "60002",
+      "title": "Alzheimer's: What do we know about the causes?",
+      "language": "en",
+      "pairId": "60001"
+    },
+    {
+      "id": "60001",
+      "title": "Alzheimer: Vad vet vi om orsakerna?",
+      "language": "sv",
+      "pairId": "60001"
+    },
+    {
+      "id": "390002",
+      "title": "Alzheimer's, Diet, Blood Sugar, and Insulin",
+      "language": "en",
+      "pairId": "390001"
+    },
+    {
+      "id": "390001",
+      "title": "Alzheimer, kost, blodsocker och insulin",
+      "language": "sv",
+      "pairId": "390001"
+    },
+    {
+      "id": "510001",
+      "title": "Litium och Alzheimers – vad har hänt sedan Nature-studien?",
+      "language": "sv",
+      "pairId": "510001"
+    },
+    {
+      "id": "510002",
+      "title": "Lithium and Alzheimer's – what has happened since the Nature study?",
+      "language": "en",
+      "pairId": "510001"
+    },
+    {
+      "id": "570001",
+      "title": "Dagens Nyheter: Supergamlingar - människor över 80 med minne som 50 åringar",
+      "language": "sv",
+      "pairId": "570001"
+    },
+    {
+      "id": "570002",
+      "title": "Dagens Nyheter: SuperAgers - People Over 80 with the Memory of 50-Year-Olds",
+      "language": "en",
+      "pairId": "570001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tpairId\n1\tMin behandlingsplan\tsv\t1\n8\tMy Treatment Plan\ten\t1\n9\tAI and the Meaning of Life\ten\t2\n2\tAI och meningen med livet\tsv\t2\n11\tAI for those of us with Alzheimer's\ten\t4\n4\tAi för oss med Alzheimer\tsv\t4\n5\tRegionens riktlinjer vid Alzheimer\tsv\t5\n12\tRegional Guidelines for Alzheimer's\ten\t5\n7\tLäkemedel avsedda för andra diagnoser – och som potentiellt kan påverka Alzheimers\tsv\t7\n14\tMedications Intended for Other Diagnoses – and Which Can Potentially Affect Alzheimer's\ten\t7\n30002\tDrive Makes the Disease Smaller\ten\t30001\n30001\tDrivet gör sjukdomen mindre\tsv\t30001\n60002\tAlzheimer's: What do we know about the causes?\ten\t60001\n60001\tAlzheimer: Vad vet vi om orsakerna?\tsv\t60001\n390002\tAlzheimer's, Diet, Blood Sugar, and Insulin\ten\t390001\n390001\tAlzheimer, kost, blodsocker och insulin\tsv\t390001\n510001\tLitium och Alzheimers – vad har hänt sedan Nature-studien?\tsv\t510001\n510002\tLithium and Alzheimer's – what has happened since the Nature study?\ten\t510001\n570001\tDagens Nyheter: Supergamlingar - människor över 80 med minne som 50 åringar\tsv\t570001\n570002\tDagens Nyheter: SuperAgers - People Over 80 with the Memory of 50-Year-Olds\ten\t570001\n",
+  "stderr": "",
+  "execution_time_ms": 68
+}

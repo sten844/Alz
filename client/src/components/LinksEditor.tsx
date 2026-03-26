@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  FileText,
 } from "lucide-react";
 
 type LinkForm = {
@@ -35,12 +36,38 @@ export default function LinksEditor() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<LinkForm>({ ...emptyLinkForm });
+  const [showIntroEditor, setShowIntroEditor] = useState(false);
+  const [introSv, setIntroSv] = useState("");
+  const [introEn, setIntroEn] = useState("");
 
   const { data: links, isLoading } = trpc.resourceLinks.listAll.useQuery();
+  const { data: pageData, isLoading: pageLoading } = trpc.pages.get.useQuery({ slug: "links" });
   const createMutation = trpc.resourceLinks.create.useMutation();
   const updateMutation = trpc.resourceLinks.update.useMutation();
   const deleteMutation = trpc.resourceLinks.delete.useMutation();
+  const updatePageMutation = trpc.pages.update.useMutation();
   const utils = trpc.useUtils();
+
+  const handleEditIntro = () => {
+    setIntroSv(pageData?.contentSv || "Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alzheimers sjukdom.");
+    setIntroEn(pageData?.contentEn || "Here I have gathered some of the most reliable sources for information, research and support regarding Alzheimer's disease.");
+    setShowIntroEditor(true);
+  };
+
+  const handleSaveIntro = async () => {
+    try {
+      await updatePageMutation.mutateAsync({
+        slug: "links",
+        contentSv: introSv,
+        contentEn: introEn,
+      });
+      utils.pages.get.invalidate({ slug: "links" });
+      setShowIntroEditor(false);
+      toast.success(t("Ingresstext uppdaterad!", "Intro text updated!"));
+    } catch (error) {
+      toast.error(t("Kunde inte spara", "Failed to save"));
+    }
+  };
 
   const handleEdit = (link: any) => {
     setForm({
@@ -55,7 +82,6 @@ export default function LinksEditor() {
   };
 
   const handleNew = () => {
-    // Set sortOrder to max + 1
     const maxSort = links?.reduce((max: number, l: any) => Math.max(max, l.sortOrder), 0) ?? 0;
     setForm({ ...emptyLinkForm, sortOrder: maxSort + 1 });
     setEditingId(null);
@@ -127,7 +153,7 @@ export default function LinksEditor() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || pageLoading) {
     return <div className="flex justify-center py-16"><Loader2 className="w-10 h-10 animate-spin text-[#c05746]" /></div>;
   }
 
@@ -185,6 +211,77 @@ export default function LinksEditor() {
 
   return (
     <div className="space-y-8">
+      {/* Intro text editor section */}
+      <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+            <FileText className="w-5 h-5 text-[#c05746]" />
+            {t("Ingresstext", "Intro text")}
+          </h3>
+          {!showIntroEditor && (
+            <button
+              onClick={handleEditIntro}
+              className="inline-flex items-center gap-2 px-5 py-2 bg-accent text-foreground rounded-full text-base font-medium hover:bg-accent/80 transition-colors"
+            >
+              <Pencil className="w-4 h-4" />
+              {t("Redigera", "Edit")}
+            </button>
+          )}
+        </div>
+
+        {showIntroEditor ? (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-base font-medium text-foreground mb-1">
+                {t("Svenska", "Swedish")}
+              </label>
+              <textarea
+                value={introSv}
+                onChange={(e) => setIntroSv(e.target.value)}
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg resize-y"
+              />
+            </div>
+            <div>
+              <label className="block text-base font-medium text-foreground mb-1">
+                {t("Engelska", "English")}
+              </label>
+              <textarea
+                value={introEn}
+                onChange={(e) => setIntroEn(e.target.value)}
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-lg resize-y"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleSaveIntro}
+                disabled={updatePageMutation.isPending}
+                className="inline-flex items-center gap-2 px-6 py-2 bg-[#c05746] text-white rounded-full text-base font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50"
+              >
+                {updatePageMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {t("Spara", "Save")}
+              </button>
+              <button
+                onClick={() => setShowIntroEditor(false)}
+                className="inline-flex items-center gap-2 px-6 py-2 bg-card text-foreground rounded-full text-base font-medium border border-border/50 hover:bg-accent transition-colors"
+              >
+                <X className="w-4 h-4" />
+                {t("Avbryt", "Cancel")}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-base text-muted-foreground leading-relaxed">
+            {pageData?.contentSv || t(
+              "Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alzheimers sjukdom.",
+              "Here I have gathered some of the most reliable sources for information, research and support regarding Alzheimer's disease."
+            )}
+          </p>
+        )}
+      </div>
+
+      {/* Links header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-foreground">
           {t("Redigera Länkar", "Edit Links")}

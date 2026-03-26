@@ -58,11 +58,11 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
 
         {/* Photo + Title: always on same row */}
         <div className="flex flex-row items-center gap-3 sm:gap-5 md:gap-6">
-          <Link href="/" className="shrink-0">
+          <Link href="/" className="shrink-0 cursor-pointer group">
             <img
               src={IMAGES.profile}
               alt="Sten Dellby"
-              className="w-14 h-14 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full object-cover border-2 sm:border-3 md:border-4 border-white/80 shadow-lg"
+              className="w-14 h-14 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full object-cover border-2 sm:border-3 md:border-4 border-white/80 shadow-lg group-hover:shadow-xl group-hover:border-[#c05746]/40 transition-all duration-200"
             />
           </Link>
 

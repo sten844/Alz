@@ -31,6 +31,7 @@ export const articles = mysqlTable("articles", {
   language: varchar("language", { length: 5 }).notNull().default("sv"),
   pairId: int("pairId"),
   imageUrl: varchar("imageUrl", { length: 2000 }),
+  bottomImageUrl: varchar("bottomImageUrl", { length: 2000 }),
   publishedAt: timestamp("publishedAt").defaultNow().notNull(),
   published: boolean("published").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
