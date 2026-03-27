@@ -28,6 +28,7 @@ import {
   UploadCloud,
   Database,
   ExternalLink,
+  Send,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -148,6 +149,18 @@ export default function AdminPage() {
     },
     onError: (err) => toast.error(err.message),
   });
+
+  const notifySubscribersMutation = trpc.subscribers.notifyNewArticle.useMutation({
+    onSuccess: (data) => {
+      if (data.notified > 0) {
+        toast.success(t(`Notifikation skickad till ${data.notified} prenumeranter!`, `Notification sent to ${data.notified} subscribers!`));
+      } else {
+        toast.info(t("Inga aktiva prenumeranter att notifiera.", "No active subscribers to notify."));
+      }
+    },
+    onError: (err) => toast.error(err.message),
+  });
+  const [notifyConfirmArticleId, setNotifyConfirmArticleId] = useState<number | null>(null);
 
 
 
@@ -810,13 +823,54 @@ export default function AdminPage() {
                           className="w-5 h-5 rounded accent-[#c05746]" />
                         <span className="text-lg text-foreground">{t("Publicerad", "Published")}</span>
                       </label>
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-wrap items-center gap-4">
                         <button onClick={handleSaveArticle} disabled={isArticleSaving}
                           className="inline-flex items-center gap-2 px-10 py-3 bg-[#c05746] text-white rounded-full text-lg font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50">
                           {isArticleSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                           {t("Spara", "Save")}
                         </button>
+                        {editingArticleId && articleForm.published && (
+                          <button
+                            onClick={() => setNotifyConfirmArticleId(editingArticleId)}
+                            disabled={notifySubscribersMutation.isPending}
+                            className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-full text-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md disabled:opacity-50"
+                          >
+                            {notifySubscribersMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                            {t("Skicka till prenumeranter", "Send to subscribers")}
+                          </button>
+                        )}
                       </div>
+                      {/* Confirm dialog for sending to subscribers */}
+                      {notifyConfirmArticleId && (
+                        <div className="mt-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                          <p className="text-base text-emerald-800 mb-3">
+                            {t(
+                              "Vill du skicka en notifikation till alla prenumeranter om denna artikel?",
+                              "Do you want to send a notification to all subscribers about this article?"
+                            )}
+                          </p>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => {
+                                notifySubscribersMutation.mutate({
+                                  articleId: notifyConfirmArticleId,
+                                  articleTitle: articleForm.title,
+                                });
+                                setNotifyConfirmArticleId(null);
+                              }}
+                              className="px-6 py-2 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors"
+                            >
+                              {t("Ja, skicka", "Yes, send")}
+                            </button>
+                            <button
+                              onClick={() => setNotifyConfirmArticleId(null)}
+                              className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                            >
+                              {t("Avbryt", "Cancel")}
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

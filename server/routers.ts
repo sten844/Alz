@@ -184,25 +184,6 @@ export const appRouter = router({
           })();
         }
 
-        // Auto-notify owner with subscriber list when a published article is created
-        if (input.published && !input.pairId) {
-          (async () => {
-            try {
-              const subs = await listSubscribers({ activeOnly: true });
-              if (subs.length > 0) {
-                const emailList = subs.map(s => s.email).join(", ");
-                await notifyOwner({
-                  title: `Ny artikel publicerad: ${input.title}`,
-                  content: `Artikeln "${input.title}" har publicerats.\n\n${subs.length} prenumeranter bör notifieras:\n${emailList}`,
-                });
-                console.log(`[Subscribers] Notified owner about ${subs.length} subscribers for article: ${input.title}`);
-              }
-            } catch (error) {
-              console.error("[Subscribers] Failed to notify owner:", error);
-            }
-          })();
-        }
-
         return svResult;
       }),
 

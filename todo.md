@@ -203,3 +203,6 @@
 - [x] Make links page intro/ingress text editable from admin (uses sitePages system)
 - [x] Add optional bottom image field to articles (upload in admin, display at end of article)
 - [x] Make profile photo in header clickable to navigate to homepage (was already linked, added hover effect)
+- [x] Add "Skicka till prenumeranter" button next to Save in article editor
+- [x] Ensure newsletter is NOT sent automatically on publish — only on manual button click
+- [x] Backend endpoint for sending article notification already existed (subscribers.notifyNewArticle)
