@@ -20,6 +20,7 @@ import {
   FileText,
   Clock,
   Check,
+  FileEdit,
   Upload,
   ImageIcon,
   Mail,
@@ -57,7 +58,7 @@ const emptyArticleForm: ArticleForm = {
   language: "sv",
   imageUrl: "",
   bottomImageUrl: "",
-  published: true,
+  published: false,
   publishedAt: new Date().toISOString().slice(0, 16),
 };
 
@@ -434,11 +435,12 @@ export default function AdminPage() {
     setArticleContentHtml("");
   };
 
-  const handleSaveArticle = () => {
+  const handleSaveArticle = (forcePublished?: boolean) => {
     if (!articleForm.title || !articleForm.excerpt || !articleForm.content) {
       toast.error("Titel, sammanfattning och innehåll krävs");
       return;
     }
+    const published = forcePublished !== undefined ? forcePublished : articleForm.published;
     const data = {
       title: articleForm.title,
       excerpt: articleForm.excerpt,
@@ -447,7 +449,7 @@ export default function AdminPage() {
       language: articleForm.language,
       imageUrl: articleForm.imageUrl || null,
       bottomImageUrl: articleForm.bottomImageUrl || null,
-      published: articleForm.published,
+      published,
       publishedAt: new Date(articleForm.publishedAt),
     };
     if (editingArticleId) {
@@ -817,18 +819,42 @@ export default function AdminPage() {
                         }}
                       />
                     </div>
-                    <div className="flex items-center justify-between pt-3">
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" checked={articleForm.published} onChange={(e) => setArticleForm({ ...articleForm, published: e.target.checked })}
-                          className="w-5 h-5 rounded accent-[#c05746]" />
-                        <span className="text-lg text-foreground">{t("Publicerad", "Published")}</span>
-                      </label>
-                      <div className="flex flex-wrap items-center gap-4">
-                        <button onClick={handleSaveArticle} disabled={isArticleSaving}
-                          className="inline-flex items-center gap-2 px-10 py-3 bg-[#c05746] text-white rounded-full text-lg font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50">
-                          {isArticleSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                          {t("Spara", "Save")}
+                    <div className="pt-4 space-y-3">
+                      {/* Status indicator */}
+                      <div className="flex items-center gap-2 text-base">
+                        {articleForm.published ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium">
+                            <Check className="w-4 h-4" />{t("Publicerad", "Published")}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-700 font-medium">
+                            <FileEdit className="w-4 h-4" />{t("Utkast", "Draft")}
+                          </span>
+                        )}
+                      </div>
+                      {/* Action buttons */}
+                      <div className="flex flex-wrap items-center gap-3">
+                        {/* Save as Draft button */}
+                        <button
+                          onClick={() => handleSaveArticle(false)}
+                          disabled={isArticleSaving}
+                          className="inline-flex items-center gap-2 px-8 py-3 bg-amber-500 text-white rounded-full text-lg font-semibold hover:bg-amber-600 transition-colors shadow-md disabled:opacity-50"
+                        >
+                          {isArticleSaving && !articleForm.published ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileEdit className="w-5 h-5" />}
+                          {t("Spara som utkast", "Save as draft")}
                         </button>
+                        {/* Publish / Save Published button */}
+                        <button
+                          onClick={() => handleSaveArticle(true)}
+                          disabled={isArticleSaving}
+                          className="inline-flex items-center gap-2 px-8 py-3 bg-[#c05746] text-white rounded-full text-lg font-semibold hover:bg-[#a8483b] transition-colors shadow-md disabled:opacity-50"
+                        >
+                          {isArticleSaving && articleForm.published ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+                          {editingArticleId && articleForm.published
+                            ? t("Spara & publicera", "Save & publish")
+                            : t("Publicera", "Publish")}
+                        </button>
+                        {/* Send to subscribers button - only for published articles */}
                         {editingArticleId && articleForm.published && (
                           <button
                             onClick={() => setNotifyConfirmArticleId(editingArticleId)}

@@ -206,3 +206,6 @@
 - [x] Add "Skicka till prenumeranter" button next to Save in article editor
 - [x] Ensure newsletter is NOT sent automatically on publish — only on manual button click
 - [x] Backend endpoint for sending article notification already existed (subscribers.notifyNewArticle)
+- [x] Add "Spara som utkast" button to article editor (saves with published=false)
+- [x] Show draft articles clearly in admin article list (with draft badge, already existed)
+- [x] Add "Publicera" button on draft articles to publish them later
