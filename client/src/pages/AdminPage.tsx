@@ -760,7 +760,7 @@ export default function AdminPage() {
                       <label className="block text-lg font-medium text-foreground mb-2">{t("Bild l\u00e4ngst ned i artikeln (valfritt)", "Bottom image (optional)")}</label>
                       {articleForm.bottomImageUrl ? (
                         <div className="relative rounded-lg overflow-hidden border border-border/50 bg-background">
-                          <img src={articleForm.bottomImageUrl} alt="" className="w-full max-h-64 object-cover" />
+                          <img src={articleForm.bottomImageUrl} alt="" className="w-full object-contain" />
                           <div className="absolute top-3 right-3 flex gap-2">
                             <button
                               type="button"
