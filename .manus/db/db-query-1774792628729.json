@@ -1,0 +1,220 @@
+{
+  "query": "SELECT id, title, language, published, publishedAt FROM articles ORDER BY publishedAt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, language, published, publishedAt FROM articles ORDER BY publishedAt DESC;",
+  "rows": [
+    {
+      "id": "930002",
+      "title": "Exposing the Shortcomings of Swedish Dementia Care",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-27 16:06:00"
+    },
+    {
+      "id": "930001",
+      "title": "Avslöjar bristerna i svensk demensvård",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-27 14:06:00"
+    },
+    {
+      "id": "840002",
+      "title": "A Swedish Vaccine Against Alzheimer's",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-23 13:28:00"
+    },
+    {
+      "id": "840001",
+      "title": "Ett svenskt vaccin mot Alzheimer",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-23 11:28:00"
+    },
+    {
+      "id": "780002",
+      "title": "How little exercise is needed to boost your ability to think (Dagens Nyheter, March 2026)",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-19 11:51:00"
+    },
+    {
+      "id": "720002",
+      "title": "Alzheimer's: Medicine, Money, and Politics",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-19 08:32:00"
+    },
+    {
+      "id": "780001",
+      "title": "Hur lite träning som krävs för att boosta din tankeförmåga (Dagens Nyheter, mars 2026)",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-19 07:51:00"
+    },
+    {
+      "id": "720001",
+      "title": "Alzheimer: Medicin, pengar och politik",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-19 06:32:00"
+    },
+    {
+      "id": "600002",
+      "title": "When Bureaucracy Slows Medical Breakthroughs",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-17 06:43:00"
+    },
+    {
+      "id": "600001",
+      "title": "När byråkratin bromsar medicinska genombrott",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-17 01:43:00"
+    },
+    {
+      "id": "570002",
+      "title": "Dagens Nyheter: SuperAgers - People Over 80 with the Memory of 50-Year-Olds",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-15 13:54:00"
+    },
+    {
+      "id": "570001",
+      "title": "Dagens Nyheter: Supergamlingar - människor över 80 med minne som 50 åringar",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-15 11:54:00"
+    },
+    {
+      "id": "510002",
+      "title": "Lithium and Alzheimer's – what has happened since the Nature study?",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-11 12:51:00"
+    },
+    {
+      "id": "510001",
+      "title": "Litium och Alzheimers – vad har hänt sedan Nature-studien?",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-11 10:51:00"
+    },
+    {
+      "id": "390001",
+      "title": "Alzheimer, kost, blodsocker och insulin",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-09 08:54:00"
+    },
+    {
+      "id": "390002",
+      "title": "Alzheimer's, Diet, Blood Sugar, and Insulin",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-09 08:54:00"
+    },
+    {
+      "id": "60002",
+      "title": "Alzheimer's: What do we know about the causes?",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-03 09:35:00"
+    },
+    {
+      "id": "60001",
+      "title": "Alzheimer: Vad vet vi om orsakerna?",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-03 08:35:00"
+    },
+    {
+      "id": "30002",
+      "title": "Drive Makes the Disease Smaller",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-03-02 12:16:00"
+    },
+    {
+      "id": "30001",
+      "title": "Drivet gör sjukdomen mindre",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-03-02 09:16:00"
+    },
+    {
+      "id": "8",
+      "title": "My Treatment Plan",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-02-14 23:00:00"
+    },
+    {
+      "id": "1",
+      "title": "Min behandlingsplan",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-02-14 18:00:00"
+    },
+    {
+      "id": "11",
+      "title": "AI for those of us with Alzheimer's",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-02-03 21:00:00"
+    },
+    {
+      "id": "4",
+      "title": "Ai för oss med Alzheimer",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-02-03 16:00:00"
+    },
+    {
+      "id": "9",
+      "title": "AI and the Meaning of Life",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2026-01-14 22:00:00"
+    },
+    {
+      "id": "2",
+      "title": "AI och meningen med livet",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2026-01-14 20:00:00"
+    },
+    {
+      "id": "12",
+      "title": "Regional Guidelines for Alzheimer's",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2025-11-10 00:00:00"
+    },
+    {
+      "id": "5",
+      "title": "Regionens riktlinjer vid Alzheimer",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2025-11-09 21:00:00"
+    },
+    {
+      "id": "7",
+      "title": "Läkemedel avsedda för andra diagnoser – och som potentiellt kan påverka Alzheimers",
+      "language": "sv",
+      "published": "1",
+      "publishedAt": "2025-09-14 20:00:00"
+    },
+    {
+      "id": "14",
+      "title": "Medications Intended for Other Diagnoses – and Which Can Potentially Affect Alzheimer's",
+      "language": "en",
+      "published": "1",
+      "publishedAt": "2025-09-14 20:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tlanguage\tpublished\tpublishedAt\n930002\tExposing the Shortcomings of Swedish Dementia Care\ten\t1\t2026-03-27 16:06:00\n930001\tAvslöjar bristerna i svensk demensvård\tsv\t1\t2026-03-27 14:06:00\n840002\tA Swedish Vaccine Against Alzheimer's\ten\t1\t2026-03-23 13:28:00\n840001\tEtt svenskt vaccin mot Alzheimer\tsv\t1\t2026-03-23 11:28:00\n780002\tHow little exercise is needed to boost your ability to think (Dagens Nyheter, March 2026)\ten\t1\t2026-03-19 11:51:00\n720002\tAlzheimer's: Medicine, Money, and Politics\ten\t1\t2026-03-19 08:32:00\n780001\tHur lite träning som krävs för att boosta din tankeförmåga (Dagens Nyheter, mars 2026)\tsv\t1\t2026-03-19 07:51:00\n720001\tAlzheimer: Medicin, pengar och politik\tsv\t1\t2026-03-19 06:32:00\n600002\tWhen Bureaucracy Slows Medical Breakthroughs\ten\t1\t2026-03-17 06:43:00\n600001\tNär byråkratin bromsar medicinska genombrott\tsv\t1\t2026-03-17 01:43:00\n570002\tDagens Nyheter: SuperAgers - People Over 80 with the Memory of 50-Year-Olds\ten\t1\t2026-03-15 13:54:00\n570001\tDagens Nyheter: Supergamlingar - människor över 80 med minne som 50 åringar\tsv\t1\t2026-03-15 11:54:00\n510002\tLithium and Alzheimer's – what has happened since the Nature study?\ten\t1\t2026-03-11 12:51:00\n510001\tLitium och Alzheimers – vad har hänt sedan Nature-studien?\tsv\t1\t2026-03-11 10:51:00\n390001\tAlzheimer, kost, blodsocker och insulin\tsv\t1\t2026-03-09 08:54:00\n390002\tAlzheimer's, Diet, Blood Sugar, and Insulin\ten\t1\t2026-03-09 08:54:00\n60002\tAlzheimer's: What do we know about the causes?\ten\t1\t2026-03-03 09:35:00\n60001\tAlzheimer: Vad vet vi om orsakerna?\tsv\t1\t2026-03-03 08:35:00\n30002\tDrive Makes the Disease Smaller\ten\t1\t2026-03-02 12:16:00\n30001\tDrivet gör sjukdomen mindre\tsv\t1\t2026-03-02 09:16:00\n8\tMy Treatment Plan\ten\t1\t2026-02-14 23:00:00\n1\tMin behandlingsplan\tsv\t1\t2026-02-14 18:00:00\n11\tAI for those of us with Alzheimer's\ten\t1\t2026-02-03 21:00:00\n4\tAi för oss med Alzheimer\tsv\t1\t2026-02-03 16:00:00\n9\tAI and the Meaning of Life\ten\t1\t2026-01-14 22:00:00\n2\tAI och meningen med livet\tsv\t1\t2026-01-14 20:00:00\n12\tRegional Guidelines for Alzheimer's\ten\t1\t2025-11-10 00:00:00\n5\tRegionens riktlinjer vid Alzheimer\tsv\t1\t2025-11-09 21:00:00\n7\tLäkemedel avsedda för andra diagnoser – och som potentiellt kan påverka Alzheimers\tsv\t1\t2025-09-14 20:00:00\n14\tMedications Intended for Other Diagnoses – and Which Can Potentially Affect Alzheimer's\ten\t1\t2025-09-14 20:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
