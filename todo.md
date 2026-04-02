@@ -209,3 +209,6 @@
 - [x] Add "Spara som utkast" button to article editor (saves with published=false)
 - [x] Show draft articles clearly in admin article list (with draft badge, already existed)
 - [x] Add "Publicera" button on draft articles to publish them later
+- [x] Add unsaved changes warning when closing article editor form
+- [x] Verify draft workflow (create draft, edit, publish later)
+- [x] Set a good default intro text for the links page via sitePages

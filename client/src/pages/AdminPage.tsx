@@ -88,6 +88,8 @@ export default function AdminPage() {
   const [showArticleForm, setShowArticleForm] = useState(false);
   const [articleForm, setArticleForm] = useState<ArticleForm>(emptyArticleForm);
   const [deleteArticleConfirm, setDeleteArticleConfirm] = useState<number | null>(null);
+  const initialArticleFormRef = useRef<ArticleForm>(emptyArticleForm);
+  const initialArticleContentHtmlRef = useRef<string>("");
 
 
 
@@ -404,9 +406,7 @@ export default function AdminPage() {
 
   // ---- Article handlers ----
   const handleEditArticle = (article: NonNullable<typeof allArticles>[0]) => {
-    setEditingArticleId(article.id);
-    setShowArticleForm(true);
-    setArticleForm({
+    const formData: ArticleForm = {
       title: article.title,
       excerpt: article.excerpt,
       content: article.content,
@@ -416,19 +416,44 @@ export default function AdminPage() {
       bottomImageUrl: (article as any).bottomImageUrl || "",
       published: article.published,
       publishedAt: new Date(article.publishedAt).toISOString().slice(0, 16),
-    });
+    };
+    setEditingArticleId(article.id);
+    setShowArticleForm(true);
+    setArticleForm(formData);
+    initialArticleFormRef.current = { ...formData };
     // Convert markdown to HTML for the rich text editor
-    setArticleContentHtml(markdownToHtml(article.content));
+    const html = markdownToHtml(article.content);
+    setArticleContentHtml(html);
+    initialArticleContentHtmlRef.current = html;
   };
 
   const handleNewArticle = () => {
     setEditingArticleId(null);
     setShowArticleForm(true);
     setArticleForm(emptyArticleForm);
+    initialArticleFormRef.current = { ...emptyArticleForm };
     setArticleContentHtml("");
+    initialArticleContentHtmlRef.current = "";
+  };
+
+  const hasUnsavedArticleChanges = () => {
+    const initial = initialArticleFormRef.current;
+    return (
+      articleForm.title !== initial.title ||
+      articleForm.excerpt !== initial.excerpt ||
+      articleForm.category !== initial.category ||
+      articleForm.imageUrl !== initial.imageUrl ||
+      articleForm.bottomImageUrl !== initial.bottomImageUrl ||
+      articleContentHtml !== initialArticleContentHtmlRef.current
+    );
   };
 
   const handleCloseArticleForm = () => {
+    if (hasUnsavedArticleChanges()) {
+      if (!window.confirm("Du har osparade ändringar. Vill du verkligen stänga utan att spara?")) {
+        return;
+      }
+    }
     setShowArticleForm(false);
     setEditingArticleId(null);
     setArticleForm(emptyArticleForm);

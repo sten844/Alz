@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO site_pages (slug, content_sv, content_en) VALUES ('links-intro', 'Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alzheimers sjukdom – både i Sverige och internationellt.', 'Here I have gathered some of the most reliable sources for information, research and support regarding Alzheimer''s disease – both in Sweden and internationally.');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute INSERT INTO site_pages (slug, content_sv, content_en) VALUES ('links-intro', 'Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alzheimers sjukdom – både i Sverige och internationellt.', 'Here I have gathered some of the most reliable sources for information, research and support regarding Alzheimer''s disease – both in Sweden and internationally.');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 71
+}

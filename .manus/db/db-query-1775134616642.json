@@ -1,0 +1,18 @@
+{
+  "query": "SELECT slug, LEFT(content_sv, 100) as sv_preview FROM site_pages;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT slug, LEFT(content_sv, 100) as sv_preview FROM site_pages;",
+  "rows": [
+    {
+      "slug": "about",
+      "sv_preview": "Jag heter Sten Dellby och har fått diagnosen Alzheimers sjukdom. Denna webbplats är mitt försök att "
+    },
+    {
+      "slug": "links",
+      "sv_preview": "Här har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alz"
+    }
+  ],
+  "messages": [],
+  "stdout": "slug\tsv_preview\nabout\tJag heter Sten Dellby och har fått diagnosen Alzheimers sjukdom. Denna webbplats är mitt försök att \nlinks\tHär har jag samlat några av de mest pålitliga källorna för information, forskning och stöd kring Alz\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}
