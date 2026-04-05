@@ -126,3 +126,78 @@ describe("articles.listAll (admin)", () => {
     expect(result.length).toBeGreaterThanOrEqual(14);
   });
 });
+
+describe("articles.update - unpublish", () => {
+  it("allows admin to unpublish a published article (set published=false)", async () => {
+    const caller = appRouter.createCaller(createAdminContext());
+
+    // Create a published article
+    const created = await caller.articles.create({
+      title: "Test Unpublish Article",
+      excerpt: "This article will be unpublished",
+      content: "Some content for unpublish test",
+      category: "Vardagsliv",
+      language: "sv",
+      imageUrl: null,
+      bottomImageUrl: null,
+      published: true,
+      publishedAt: new Date(),
+    });
+    expect(created).toBeDefined();
+    expect(created.id).toBeDefined();
+
+    // Verify it's published
+    const beforeUpdate = await caller.articles.getById({ id: created.id });
+    expect(beforeUpdate).toBeDefined();
+    expect(beforeUpdate!.published).toBe(true);
+
+    // Unpublish it
+    await caller.articles.update({
+      id: created.id,
+      published: false,
+    });
+
+    // Verify it's now a draft
+    const afterUpdate = await caller.articles.getById({ id: created.id });
+    expect(afterUpdate).toBeDefined();
+    expect(afterUpdate!.published).toBe(false);
+
+    // Clean up
+    await caller.articles.delete({ id: created.id });
+  });
+
+  it("unpublishing a Swedish article also unpublishes its English pair", async () => {
+    const caller = appRouter.createCaller(createAdminContext());
+
+    // Create a published Swedish article (auto-creates English pair)
+    const created = await caller.articles.create({
+      title: "Test Avpublicera Artikel",
+      excerpt: "Denna artikel ska avpubliceras",
+      content: "Innehåll för avpubliceringstest",
+      category: "Vardagsliv",
+      language: "sv",
+      imageUrl: null,
+      bottomImageUrl: null,
+      published: true,
+      publishedAt: new Date(),
+    });
+    expect(created).toBeDefined();
+
+    // Wait a bit for auto-translation to potentially start
+    await new Promise((r) => setTimeout(r, 1000));
+
+    // Unpublish the Swedish article
+    await caller.articles.update({
+      id: created.id,
+      published: false,
+    });
+
+    // Verify the Swedish article is now a draft
+    const svArticle = await caller.articles.getById({ id: created.id });
+    expect(svArticle).toBeDefined();
+    expect(svArticle!.published).toBe(false);
+
+    // Clean up
+    await caller.articles.delete({ id: created.id });
+  });
+});

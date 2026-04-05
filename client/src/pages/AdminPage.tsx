@@ -30,6 +30,7 @@ import {
   Database,
   ExternalLink,
   Send,
+  EyeOff,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -164,6 +165,22 @@ export default function AdminPage() {
     onError: (err) => toast.error(err.message),
   });
   const [notifyConfirmArticleId, setNotifyConfirmArticleId] = useState<number | null>(null);
+  const [unpublishConfirmArticleId, setUnpublishConfirmArticleId] = useState<number | null>(null);
+
+  // Unpublish mutation - reuses the update mutation to set published=false
+  const unpublishArticleMutation = trpc.articles.update.useMutation({
+    onSuccess: () => {
+      utils.articles.listAll.invalidate();
+      utils.articles.list.invalidate();
+      setUnpublishConfirmArticleId(null);
+      toast.success(t("Artikeln har avpublicerats och är nu ett utkast.", "Article unpublished and reverted to draft."));
+      // If we're in the editor, update the form state
+      if (showArticleForm) {
+        setArticleForm(prev => ({ ...prev, published: false }));
+      }
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
 
 
@@ -890,6 +907,17 @@ export default function AdminPage() {
                             {t("Skicka till prenumeranter", "Send to subscribers")}
                           </button>
                         )}
+                        {/* Unpublish button - only for published articles being edited */}
+                        {editingArticleId && articleForm.published && (
+                          <button
+                            onClick={() => setUnpublishConfirmArticleId(editingArticleId)}
+                            disabled={unpublishArticleMutation.isPending}
+                            className="inline-flex items-center gap-2 px-8 py-3 bg-slate-500 text-white rounded-full text-lg font-semibold hover:bg-slate-600 transition-colors shadow-md disabled:opacity-50"
+                          >
+                            {unpublishArticleMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <EyeOff className="w-5 h-5" />}
+                            {t("Avpublicera", "Unpublish")}
+                          </button>
+                        )}
                       </div>
                       {/* Confirm dialog for sending to subscribers */}
                       {notifyConfirmArticleId && (
@@ -915,6 +943,36 @@ export default function AdminPage() {
                             </button>
                             <button
                               onClick={() => setNotifyConfirmArticleId(null)}
+                              className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                            >
+                              {t("Avbryt", "Cancel")}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      {/* Confirm dialog for unpublishing */}
+                      {unpublishConfirmArticleId && (
+                        <div className="mt-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                          <p className="text-base text-slate-800 mb-3">
+                            {t(
+                              "Vill du avpublicera denna artikel? Den kommer att bli ett utkast och inte längre vara synlig för besökare.",
+                              "Do you want to unpublish this article? It will become a draft and no longer be visible to visitors."
+                            )}
+                          </p>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => {
+                                unpublishArticleMutation.mutate({
+                                  id: unpublishConfirmArticleId,
+                                  published: false,
+                                });
+                              }}
+                              className="px-6 py-2 bg-slate-600 text-white rounded-full font-semibold hover:bg-slate-700 transition-colors"
+                            >
+                              {t("Ja, avpublicera", "Yes, unpublish")}
+                            </button>
+                            <button
+                              onClick={() => setUnpublishConfirmArticleId(null)}
                               className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
                             >
                               {t("Avbryt", "Cancel")}
@@ -954,6 +1012,16 @@ export default function AdminPage() {
                               title={t("Skicka till prenumeranter", "Send to subscribers")}
                             >
                               <Send className="w-5 h-5 text-emerald-600" />
+                            </button>
+                          )}
+                          {article.published && (
+                            <button
+                              onClick={() => setUnpublishConfirmArticleId(article.id)}
+                              disabled={unpublishArticleMutation.isPending}
+                              className="p-3 rounded-full hover:bg-slate-100 transition-colors"
+                              title={t("Avpublicera", "Unpublish")}
+                            >
+                              <EyeOff className="w-5 h-5 text-slate-500" />
                             </button>
                           )}
                           <button onClick={() => handleEditArticle(article)} className="p-3 rounded-full hover:bg-accent transition-colors" title={t("Redigera", "Edit")}>
@@ -1013,6 +1081,38 @@ export default function AdminPage() {
                     </button>
                     <button
                       onClick={() => setNotifyConfirmArticleId(null)}
+                      className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                    >
+                      {t("Avbryt", "Cancel")}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Confirm dialog for unpublishing from article list */}
+              {unpublishConfirmArticleId && !showArticleForm && allArticles?.find(a => a.id === unpublishConfirmArticleId) && (
+                <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                  <p className="text-base text-slate-800 mb-1 font-semibold">{allArticles.find(a => a.id === unpublishConfirmArticleId)!.title}</p>
+                  <p className="text-base text-slate-800 mb-3">
+                    {t(
+                      "Vill du avpublicera denna artikel? Den kommer att bli ett utkast och inte längre vara synlig för besökare.",
+                      "Do you want to unpublish this article? It will become a draft and no longer be visible to visitors."
+                    )}
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        unpublishArticleMutation.mutate({
+                          id: unpublishConfirmArticleId,
+                          published: false,
+                        });
+                      }}
+                      className="px-6 py-2 bg-slate-600 text-white rounded-full font-semibold hover:bg-slate-700 transition-colors"
+                    >
+                      {t("Ja, avpublicera", "Yes, unpublish")}
+                    </button>
+                    <button
+                      onClick={() => setUnpublishConfirmArticleId(null)}
                       className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
                     >
                       {t("Avbryt", "Cancel")}

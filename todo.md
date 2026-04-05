@@ -213,3 +213,4 @@
 - [x] Verify draft workflow (create draft, edit, publish later)
 - [x] Set a good default intro text for the links page via sitePages
 - [x] Bug: "Skicka till prenumeranter" button now shows in article list (green Send icon) + in editor for published articles
+- [x] Add "Avpublicera" (unpublish) button to revert published articles back to draft status
