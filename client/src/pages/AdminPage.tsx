@@ -946,6 +946,16 @@ export default function AdminPage() {
                           <p className="text-base text-muted-foreground">{new Date(article.publishedAt).toLocaleDateString("sv-SE")}</p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
+                          {article.published && (
+                            <button
+                              onClick={() => setNotifyConfirmArticleId(article.id)}
+                              disabled={notifySubscribersMutation.isPending}
+                              className="p-3 rounded-full hover:bg-emerald-50 transition-colors"
+                              title={t("Skicka till prenumeranter", "Send to subscribers")}
+                            >
+                              <Send className="w-5 h-5 text-emerald-600" />
+                            </button>
+                          )}
                           <button onClick={() => handleEditArticle(article)} className="p-3 rounded-full hover:bg-accent transition-colors" title={t("Redigera", "Edit")}>
                             <Pencil className="w-5 h-5 text-muted-foreground" />
                           </button>
@@ -972,6 +982,42 @@ export default function AdminPage() {
                       </button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Confirm dialog for sending to subscribers from article list */}
+              {notifyConfirmArticleId && !showArticleForm && allArticles?.find(a => a.id === notifyConfirmArticleId) && (
+                <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                  <p className="text-base text-emerald-800 mb-1 font-semibold">{allArticles.find(a => a.id === notifyConfirmArticleId)!.title}</p>
+                  <p className="text-base text-emerald-800 mb-3">
+                    {t(
+                      "Vill du skicka en notifikation till alla prenumeranter om denna artikel?",
+                      "Do you want to send a notification to all subscribers about this article?"
+                    )}
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                        const target = allArticles?.find(a => a.id === notifyConfirmArticleId);
+                        if (target) {
+                          notifySubscribersMutation.mutate({
+                            articleId: notifyConfirmArticleId,
+                            articleTitle: target.title,
+                          });
+                        }
+                        setNotifyConfirmArticleId(null);
+                      }}
+                      className="px-6 py-2 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors"
+                    >
+                      {t("Ja, skicka", "Yes, send")}
+                    </button>
+                    <button
+                      onClick={() => setNotifyConfirmArticleId(null)}
+                      className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                    >
+                      {t("Avbryt", "Cancel")}
+                    </button>
+                  </div>
                 </div>
               )}
             </>
