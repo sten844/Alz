@@ -76,8 +76,8 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
 
             <p className="hidden sm:block mt-2 md:mt-3 text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
               {t(
-                "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
-                "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
+                "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
+                "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
               )}
             </p>
 
@@ -120,8 +120,8 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
         <div className="sm:hidden mt-2">
           <p className="text-base text-slate-600 leading-snug">
             {t(
-              "Jag har fått en Alzheimers diagnos. Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
-              "I have been diagnosed with Alzheimer's. Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
+              "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
+              "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
             )}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">

@@ -214,3 +214,4 @@
 - [x] Set a good default intro text for the links page via sitePages
 - [x] Bug: "Skicka till prenumeranter" button now shows in article list (green Send icon) + in editor for published articles
 - [x] Add "Avpublicera" (unpublish) button to revert published articles back to draft status
+- [x] Add "(Kod F002/F018)" after the subtitle "Jag har fått en Alzheimers diagnos" in the site header
