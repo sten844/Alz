@@ -219,4 +219,22 @@
     height: 0;
     pointer-events: none;
   }
+
+  /* Select-mode: visual cue that tapping selects words */
+  .rich-text-editor.select-mode-active .tiptap {
+    cursor: pointer;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(59, 130, 246, 0.03) 10px,
+      rgba(59, 130, 246, 0.03) 20px
+    );
+  }
+
+  /* Pulse animation for select-mode button */
+  @keyframes select-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0); }
+  }
 }

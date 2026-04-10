@@ -1,4 +1,5 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
@@ -14,7 +15,87 @@ interface RichTextEditorProps {
   minHeight?: string;
 }
 
-function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
+/* ------------------------------------------------------------------ */
+/*  Touch-friendly word selection helper                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Given a mouse/touch event inside the ProseMirror editor,
+ * resolve the position under the pointer and expand the selection
+ * to cover the whole word at that position.
+ *
+ * If `extend` is true the existing selection is extended to include
+ * the new word (shift-tap behaviour).
+ */
+function selectWordAtEvent(
+  editor: NonNullable<ReturnType<typeof useEditor>>,
+  event: MouseEvent | Touch,
+  extend = false,
+) {
+  const view = editor.view;
+  const coords = { left: event.clientX, top: event.clientY };
+  const pos = view.posAtCoords(coords);
+  if (!pos) return;
+
+  const $pos = view.state.doc.resolve(pos.pos);
+  const parent = $pos.parent;
+  if (!parent.isTextblock) return;
+
+  // Walk backwards/forwards to find word boundaries
+  const textOffset = $pos.parentOffset;
+  const text = parent.textContent;
+
+  // Find word boundaries using a regex-friendly approach
+  let wordStart = textOffset;
+  let wordEnd = textOffset;
+
+  // Walk backwards to find start of word
+  while (wordStart > 0 && /\S/.test(text[wordStart - 1])) {
+    wordStart--;
+  }
+  // Walk forwards to find end of word
+  while (wordEnd < text.length && /\S/.test(text[wordEnd])) {
+    wordEnd++;
+  }
+
+  if (wordStart === wordEnd) return; // clicked on whitespace
+
+  // Convert parent-relative offsets to absolute document positions
+  const startOfParent = $pos.start(); // absolute pos of first char in parent
+  const from = startOfParent + wordStart;
+  const to = startOfParent + wordEnd;
+
+  if (extend) {
+    // Extend existing selection to include the new word
+    const { from: oldFrom, to: oldTo } = view.state.selection;
+    const newFrom = Math.min(oldFrom, from);
+    const newTo = Math.max(oldTo, to);
+    editor.chain().setTextSelection({ from: newFrom, to: newTo }).run();
+  } else {
+    editor.chain().setTextSelection({ from, to }).run();
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Detect touch device                                                */
+/* ------------------------------------------------------------------ */
+function isTouchDevice() {
+  return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Toolbar                                                            */
+/* ------------------------------------------------------------------ */
+
+function Toolbar({
+  editor,
+  selectMode,
+  onToggleSelectMode,
+}: {
+  editor: ReturnType<typeof useEditor>;
+  selectMode: boolean;
+  onToggleSelectMode: () => void;
+}) {
   const { t } = useLanguage();
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
@@ -27,6 +108,8 @@ function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   const btnActive = "bg-[#c05746] text-white shadow-sm";
   const btnInactive =
     "bg-white border border-border/40 text-slate-700 hover:bg-slate-50 active:bg-slate-100 active:scale-95";
+  const btnSelectMode =
+    "bg-blue-600 text-white shadow-sm ring-2 ring-blue-300 animate-pulse";
 
   const separator = <div className="w-px h-6 bg-border/40 mx-0.5" />;
 
@@ -62,6 +145,24 @@ function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
     <div className="bg-accent/30 border-b-2 border-border/40 rounded-t-lg">
       {/* Main toolbar */}
       <div className="flex items-center gap-1 p-2 flex-wrap">
+        {/* Tap-to-select word button (shown on touch devices, always available) */}
+        <button
+          type="button"
+          onClick={onToggleSelectMode}
+          className={`${btnBase} ${selectMode ? btnSelectMode : btnInactive}`}
+          title={t("Tryck-markera ord", "Tap to select word")}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M7 4h10M7 8h6" />
+            <rect x="3" y="3" width="18" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" fill={selectMode ? "rgba(255,255,255,0.3)" : "none"} />
+            <path d="M12 14v-1a1 1 0 0 1 2 0v3.5" />
+            <path d="M14 16v-1a1 1 0 0 1 2 0v1" />
+            <path d="M16 16v-.5a1 1 0 0 1 2 0v2.5a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4v-3a1 1 0 0 1 2 0v1" />
+          </svg>
+        </button>
+
+        {separator}
+
         {/* Text formatting */}
         <button
           type="button"
@@ -232,6 +333,25 @@ function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
         </button>
       </div>
 
+      {/* Select mode hint bar */}
+      {selectMode && (
+        <div className="px-3 pb-2">
+          <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-sm text-blue-800">
+            <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span>
+              {t(
+                "Tryck på ett ord för att markera det. Tryck på fler ord för att utöka markeringen.",
+                "Tap a word to select it. Tap more words to extend the selection."
+              )}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Link input bar */}
       {showLinkInput && (
         <div className="px-3 pb-3">
@@ -274,12 +394,100 @@ function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Bubble Menu (appears near selected text)                           */
+/* ------------------------------------------------------------------ */
+
+function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof useEditor>> }) {
+  const { t } = useLanguage();
+
+  const bubbleBtnBase =
+    "rounded-md p-1.5 min-w-[36px] h-[36px] flex items-center justify-center text-sm font-medium transition-all touch-manipulation select-none";
+  const bubbleBtnActive = "bg-white/30 text-white";
+  const bubbleBtnInactive = "text-white/80 hover:bg-white/20 active:bg-white/30";
+
+  return (
+    <BubbleMenu
+      editor={editor}
+      options={{
+        placement: "top",
+        offset: 8,
+      }}
+    >
+      <div className="flex items-center gap-0.5 bg-slate-800 rounded-xl shadow-xl px-1.5 py-1 border border-slate-600">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`${bubbleBtnBase} ${editor.isActive("bold") ? bubbleBtnActive : bubbleBtnInactive}`}
+          title={t("Fet", "Bold")}
+        >
+          <span className="font-black">B</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`${bubbleBtnBase} ${editor.isActive("italic") ? bubbleBtnActive : bubbleBtnInactive}`}
+          title={t("Kursiv", "Italic")}
+        >
+          <span className="italic" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`${bubbleBtnBase} ${editor.isActive("underline") ? bubbleBtnActive : bubbleBtnInactive}`}
+          title={t("Understrykning", "Underline")}
+        >
+          <span className="underline">U</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          className={`${bubbleBtnBase} ${editor.isActive("strike") ? bubbleBtnActive : bubbleBtnInactive}`}
+          title={t("Genomstruken", "Strikethrough")}
+        >
+          <span className="line-through">S</span>
+        </button>
+        <div className="w-px h-5 bg-white/20 mx-0.5" />
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={`${bubbleBtnBase} ${editor.isActive("heading", { level: 2 }) ? bubbleBtnActive : bubbleBtnInactive}`}
+          title={t("Rubrik", "Heading")}
+        >
+          <span className="font-bold text-xs">H2</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={`${bubbleBtnBase} ${editor.isActive("heading", { level: 3 }) ? bubbleBtnActive : bubbleBtnInactive}`}
+          title={t("Underrubrik", "Subheading")}
+        >
+          <span className="font-bold text-xs">H3</span>
+        </button>
+      </div>
+    </BubbleMenu>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main Editor Component                                              */
+/* ------------------------------------------------------------------ */
+
 export default function RichTextEditor({
   content,
   onChange,
   placeholder,
   minHeight = "300px",
 }: RichTextEditorProps) {
+  const [selectMode, setSelectMode] = useState(false);
+  const selectModeRef = useRef(false);
+  const hasExtendedRef = useRef(false);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    selectModeRef.current = selectMode;
+  }, [selectMode]);
+
   const handleUpdate = useCallback(
     ({ editor }: { editor: any }) => {
       const html = editor.getHTML();
@@ -332,12 +540,88 @@ export default function RichTextEditor({
     }
   }, [content, editor]);
 
+  // Handle tap-to-select in select mode
+  useEffect(() => {
+    if (!editor) return;
+
+    const editorDom = editor.view.dom;
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!selectModeRef.current) return;
+
+      // Only handle single-finger taps
+      if (e.changedTouches.length !== 1) return;
+
+      const touch = e.changedTouches[0];
+
+      // Determine if we should extend or start fresh
+      // First tap = fresh select, subsequent taps = extend
+      const hasSelection = !editor.state.selection.empty;
+      const extend = hasSelection && hasExtendedRef.current;
+
+      selectWordAtEvent(editor, touch, extend);
+      hasExtendedRef.current = true;
+
+      // Prevent default to avoid iOS/iPad selection handles interfering
+      e.preventDefault();
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (!selectModeRef.current) return;
+
+      // On desktop, also support click-to-select-word in select mode
+      const hasSelection = !editor.state.selection.empty;
+      const extend = hasSelection && hasExtendedRef.current;
+
+      selectWordAtEvent(editor, e, extend);
+      hasExtendedRef.current = true;
+
+      e.preventDefault();
+    };
+
+    editorDom.addEventListener("touchend", handleTouchEnd, { passive: false });
+    editorDom.addEventListener("mousedown", handleMouseDown);
+
+    return () => {
+      editorDom.removeEventListener("touchend", handleTouchEnd);
+      editorDom.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [editor]);
+
+  const handleToggleSelectMode = useCallback(() => {
+    setSelectMode((prev) => {
+      const next = !prev;
+      if (next) {
+        // Entering select mode: reset extension tracking
+        hasExtendedRef.current = false;
+      } else {
+        // Leaving select mode: keep the selection so user can format it
+        hasExtendedRef.current = false;
+      }
+      return next;
+    });
+  }, []);
+
   if (!editor) return null;
 
   return (
-    <div className="border-2 border-border/50 rounded-lg overflow-hidden bg-background">
-      <Toolbar editor={editor} />
-      <EditorContent editor={editor} className="rich-text-editor" />
+    <div
+      className={`border-2 rounded-lg overflow-hidden bg-background transition-colors ${
+        selectMode
+          ? "border-blue-400 ring-2 ring-blue-200"
+          : "border-border/50"
+      }`}
+    >
+      <Toolbar
+        editor={editor}
+        selectMode={selectMode}
+        onToggleSelectMode={handleToggleSelectMode}
+      />
+      <SelectionBubbleMenu editor={editor} />
+      <EditorContent
+        editor={editor}
+        className={`rich-text-editor ${selectMode ? "select-mode-active" : ""}`}
+      />
     </div>
   );
 }
