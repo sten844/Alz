@@ -31,6 +31,7 @@ import {
   ExternalLink,
   Send,
   EyeOff,
+  MailCheck,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -999,6 +1000,11 @@ export default function AdminPage() {
                             <span className="text-base px-3 py-1 rounded-full bg-accent text-muted-foreground">{article.category}</span>
                             <span className="text-base text-muted-foreground">{article.language.toUpperCase()}</span>
                             {!article.published && <span className="text-base px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">{t("Utkast", "Draft")}</span>}
+                            {article.published && (article as any).notifiedAt && (
+                              <span className="inline-flex items-center gap-1 text-sm px-3 py-1 rounded-full bg-emerald-50 text-emerald-600" title={t("Skickad till prenumeranter", "Sent to subscribers") + " " + new Date((article as any).notifiedAt).toLocaleDateString("sv-SE")}>
+                                <MailCheck className="w-3.5 h-3.5" />{t("Skickad", "Sent")}
+                              </span>
+                            )}
                           </div>
                           <h3 className="font-semibold text-xl text-foreground truncate">{article.title}</h3>
                           <p className="text-base text-muted-foreground">{new Date(article.publishedAt).toLocaleDateString("sv-SE")}</p>

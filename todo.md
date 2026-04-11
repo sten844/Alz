@@ -215,3 +215,4 @@
 - [x] Bug: "Skicka till prenumeranter" button now shows in article list (green Send icon) + in editor for published articles
 - [x] Add "Avpublicera" (unpublish) button to revert published articles back to draft status
 - [x] Add "(Kod F002/F018)" after the subtitle "Jag har fått en Alzheimers diagnos" in the site header
+- [x] Add visual indicator showing if an article has been sent to subscribers

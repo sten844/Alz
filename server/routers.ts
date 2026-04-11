@@ -578,6 +578,9 @@ export const appRouter = router({
           content: `Artikeln "${input.articleTitle}" har publicerats. ${subs.length} prenumeranter bör notifieras.\n\nPrenumeranter: ${emailList}`,
         });
 
+        // Mark the article as notified
+        await updateArticle(input.articleId, { notifiedAt: new Date() });
+
         return { success: true, notified: subs.length };
       }),
   }),
