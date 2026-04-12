@@ -217,3 +217,4 @@
 - [x] Add "(Kod F002/F018)" after the subtitle "Jag har fått en Alzheimers diagnos" in the site header
 - [x] Add visual indicator showing if an article has been sent to subscribers
 - [x] Set up Resend email service to send actual emails to subscribers about new articles
+- [x] Update subscriber email template with custom text: "Sten har på sin sajt Jag och min Alzheimer lagt upp en ny artikel med rubriken xxx. Besök dellby.info"

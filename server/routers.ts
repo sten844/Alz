@@ -584,16 +584,16 @@ export const appRouter = router({
         for (const sub of subs) {
           try {
             await resend.emails.send({
-              from: "Jag och min Alzheimer <noreply@jagochminalzheimer.manus.space>",
+              from: "Jag och min Alzheimer <onboarding@resend.dev>",
               to: sub.email,
               subject: `Ny artikel: ${input.articleTitle}`,
               html: `
                 <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                   <h2 style="color: #c05746; margin-bottom: 8px;">Jag och min Alzheimer</h2>
                   <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 16px 0;" />
-                  <h3 style="color: #333; margin-bottom: 8px;">Ny artikel publicerad</h3>
-                  <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 12px;">${input.articleTitle}</h1>
-                  ${input.articleExcerpt ? `<p style="color: #555; font-size: 16px; line-height: 1.6;">${input.articleExcerpt}</p>` : ""}
+                  <p style="color: #333; font-size: 18px; line-height: 1.6;">Sten har på sin sajt <strong>"Jag och min Alzheimer"</strong> lagt upp en ny artikel med rubriken:</p>
+                  <h1 style="color: #1a1a1a; font-size: 24px; margin: 16px 0;">${input.articleTitle}</h1>
+                  <p style="color: #333; font-size: 18px; line-height: 1.6;">Besök <a href="https://dellby.info" style="color: #c05746; text-decoration: underline;">dellby.info</a></p>
                   <a href="${articleUrl}" style="display: inline-block; margin-top: 16px; padding: 12px 24px; background-color: #c05746; color: white; text-decoration: none; border-radius: 6px; font-size: 16px;">Läs artikeln</a>
                   <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0 12px;" />
                   <p style="color: #999; font-size: 12px;">Du får detta mail för att du prenumererar på Jag och min Alzheimer.</p>
