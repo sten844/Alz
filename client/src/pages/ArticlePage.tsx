@@ -27,6 +27,9 @@ function renderMarkdown(content: string): string {
   // Italic
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
 
+  // Links: [text](url) → clickable anchor
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-[#c05746] underline hover:text-[#a04636] transition-colors">$1</a>');
+
   // Critical notes ("Kritisk synpunkt:" or "Critical note:")
   html = html.replace(/^((?:Kritisk synpunkt|Critical note|Critical view|Critical observation):.+)$/gm, '<p class="text-base leading-relaxed mb-4 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 p-3 rounded-lg border-l-4 border-amber-400 italic">⚠️ $1</p>');
 

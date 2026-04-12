@@ -123,8 +123,10 @@ export function markdownToHtml(markdown: string): string {
   return result.join("") || "<p></p>";
 }
 
-// Process inline markdown: bold, italic
+// Process inline markdown: bold, italic, links
 function processInline(text: string): string {
+  // Links: [text](url)
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   // Bold: **text** or __text__
   text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   text = text.replace(/__(.+?)__/g, "<strong>$1</strong>");
