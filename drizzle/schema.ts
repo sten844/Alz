@@ -34,6 +34,7 @@ export const articles = mysqlTable("articles", {
   bottomImageUrl: varchar("bottomImageUrl", { length: 2000 }),
   publishedAt: timestamp("publishedAt").defaultNow().notNull(),
   published: boolean("published").default(true).notNull(),
+  references: text("references"), // JSON array of {title, url} objects
   notifiedAt: timestamp("notifiedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

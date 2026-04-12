@@ -40,6 +40,11 @@ import AIPageEditor from "@/components/AIPageEditor";
 import LinksEditor from "@/components/LinksEditor";
 
 // ---- Article form types ----
+type Reference = {
+  title: string;
+  url: string;
+};
+
 type ArticleForm = {
   title: string;
   excerpt: string;
@@ -50,6 +55,7 @@ type ArticleForm = {
   bottomImageUrl: string;
   published: boolean;
   publishedAt: string;
+  references: Reference[];
 };
 
 const emptyArticleForm: ArticleForm = {
@@ -62,6 +68,7 @@ const emptyArticleForm: ArticleForm = {
   bottomImageUrl: "",
   published: false,
   publishedAt: new Date().toISOString().slice(0, 16),
+  references: [],
 };
 
 // ---- Diary form types ----
@@ -424,6 +431,12 @@ export default function AdminPage() {
 
   // ---- Article handlers ----
   const handleEditArticle = (article: NonNullable<typeof allArticles>[0]) => {
+    let refs: Reference[] = [];
+    try {
+      if ((article as any).references) {
+        refs = JSON.parse((article as any).references);
+      }
+    } catch {}
     const formData: ArticleForm = {
       title: article.title,
       excerpt: article.excerpt,
@@ -434,6 +447,7 @@ export default function AdminPage() {
       bottomImageUrl: (article as any).bottomImageUrl || "",
       published: article.published,
       publishedAt: new Date(article.publishedAt).toISOString().slice(0, 16),
+      references: refs,
     };
     setEditingArticleId(article.id);
     setShowArticleForm(true);
@@ -484,6 +498,7 @@ export default function AdminPage() {
       return;
     }
     const published = forcePublished !== undefined ? forcePublished : articleForm.published;
+    const refsJson = articleForm.references.length > 0 ? JSON.stringify(articleForm.references) : null;
     const data = {
       title: articleForm.title,
       excerpt: articleForm.excerpt,
@@ -494,6 +509,7 @@ export default function AdminPage() {
       bottomImageUrl: articleForm.bottomImageUrl || null,
       published,
       publishedAt: new Date(articleForm.publishedAt),
+      references: refsJson,
     };
     if (editingArticleId) {
       updateArticleMutation.mutate({ id: editingArticleId, ...data });
@@ -862,6 +878,64 @@ export default function AdminPage() {
                         }}
                       />
                     </div>
+
+                    {/* References / Sources section */}
+                    <div>
+                      <label className="block text-lg font-medium text-foreground mb-2">{t("Källor / Referenser", "Sources / References")}</label>
+                      <div className="space-y-2">
+                        {articleForm.references.map((ref, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              placeholder={t("Titel", "Title")}
+                              value={ref.title}
+                              onChange={(e) => {
+                                const updated = [...articleForm.references];
+                                updated[idx] = { ...updated[idx], title: e.target.value };
+                                setArticleForm({ ...articleForm, references: updated });
+                              }}
+                              className="flex-1 px-3 py-2 rounded-lg border border-border/50 bg-background text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+                            />
+                            <input
+                              type="url"
+                              placeholder="https://..."
+                              value={ref.url}
+                              onChange={(e) => {
+                                const updated = [...articleForm.references];
+                                updated[idx] = { ...updated[idx], url: e.target.value };
+                                setArticleForm({ ...articleForm, references: updated });
+                              }}
+                              className="flex-1 px-3 py-2 rounded-lg border border-border/50 bg-background text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = articleForm.references.filter((_, i) => i !== idx);
+                                setArticleForm({ ...articleForm, references: updated });
+                              }}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              title={t("Ta bort", "Remove")}
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setArticleForm({
+                              ...articleForm,
+                              references: [...articleForm.references, { title: "", url: "" }],
+                            });
+                          }}
+                          className="inline-flex items-center gap-2 px-4 py-2 text-base text-[#c05746] border border-[#c05746]/30 rounded-lg hover:bg-[#c05746]/5 transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                          {t("Lägg till källa", "Add source")}
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="pt-4 space-y-3">
                       {/* Status indicator */}
                       <div className="flex items-center gap-2 text-base">

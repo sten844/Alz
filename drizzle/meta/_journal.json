@@ -92,6 +92,13 @@
       "when": 1775931331575,
       "tag": "0012_low_caretaker",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1776010054171,
+      "tag": "0013_lethal_moonstone",
+      "breakpoints": true
     }
   ]
 }

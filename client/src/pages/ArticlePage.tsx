@@ -212,6 +212,46 @@ export default function ArticlePage() {
             </div>
           )}
 
+          {/* References / Sources */}
+          {(() => {
+            let refs: { title: string; url: string }[] = [];
+            try {
+              if ((article as any).references) {
+                refs = JSON.parse((article as any).references);
+              }
+            } catch {}
+            if (refs.length === 0) return null;
+            return (
+              <div className="bg-card rounded-xl shadow-lg p-6 md:p-8 mb-8 border border-border/30">
+                <h2
+                  className="text-xl font-bold text-foreground mb-4 flex items-center gap-2"
+                  style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
+                >
+                  {t("Källor", "Sources")}
+                </h2>
+                <ul className="space-y-2">
+                  {refs.map((ref, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-base">
+                      <span className="text-[#c05746] font-semibold mt-0.5">{idx + 1}.</span>
+                      {ref.url ? (
+                        <a
+                          href={ref.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#c05746] underline hover:text-[#a04636] transition-colors"
+                        >
+                          {ref.title || ref.url}
+                        </a>
+                      ) : (
+                        <span className="text-foreground">{ref.title}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
+
           {/* Back to articles */}
           <div className="text-center pb-12">
             <Link

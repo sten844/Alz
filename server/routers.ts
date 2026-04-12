@@ -143,6 +143,7 @@ export const appRouter = router({
         bottomImageUrl: z.string().nullable().optional(),
         publishedAt: z.date().optional(),
         published: z.boolean().default(true),
+        references: z.string().nullable().optional(), // JSON string of [{title, url}]
       }))
       .mutation(async ({ input }) => {
         const publishedAt = input.publishedAt ?? new Date();
@@ -152,6 +153,7 @@ export const appRouter = router({
           imageUrl: input.imageUrl ?? null,
           bottomImageUrl: input.bottomImageUrl ?? null,
           pairId: input.pairId ?? null,
+          references: input.references ?? null,
         });
 
         // Auto-translate articles to the other language (in background)
@@ -173,6 +175,7 @@ export const appRouter = router({
                   language: targetLang,
                   pairId: svResult.id,
                   imageUrl: input.imageUrl ?? null,
+                  references: input.references ?? null,
                   publishedAt,
                   published: input.published,
                 });
@@ -202,6 +205,7 @@ export const appRouter = router({
         bottomImageUrl: z.string().nullable().optional(),
         publishedAt: z.date().optional(),
         published: z.boolean().optional(),
+        references: z.string().nullable().optional(), // JSON string of [{title, url}]
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -230,6 +234,9 @@ export const appRouter = router({
             }
             if (data.published !== undefined) {
               immediateUpdates.published = data.published;
+            }
+            if (data.references !== undefined) {
+              immediateUpdates.references = data.references;
             }
             if (Object.keys(immediateUpdates).length > 0) {
               await updateArticle(pairedArticle.id, immediateUpdates);
