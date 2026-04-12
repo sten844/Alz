@@ -935,6 +935,8 @@ export default function AdminPage() {
                                 notifySubscribersMutation.mutate({
                                   articleId: notifyConfirmArticleId,
                                   articleTitle: articleForm.title,
+                                  articleExcerpt: articleForm.excerpt || undefined,
+                                  siteUrl: window.location.origin,
                                 });
                                 setNotifyConfirmArticleId(null);
                               }}
@@ -1077,6 +1079,8 @@ export default function AdminPage() {
                           notifySubscribersMutation.mutate({
                             articleId: notifyConfirmArticleId,
                             articleTitle: target.title,
+                            articleExcerpt: target.excerpt || undefined,
+                            siteUrl: window.location.origin,
                           });
                         }
                         setNotifyConfirmArticleId(null);

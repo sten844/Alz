@@ -6,6 +6,8 @@ import { listArticles, getArticleById, createArticle, updateArticle, deleteArtic
 import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
+import { Resend } from "resend";
+import { ENV } from "./_core/env";
 import { z } from "zod";
 
 // Swedish → English category mapping
@@ -564,24 +566,57 @@ export const appRouter = router({
       .input(z.object({
         articleId: z.number(),
         articleTitle: z.string(),
+        articleExcerpt: z.string().optional(),
+        siteUrl: z.string(),
       }))
       .mutation(async ({ input }) => {
         const subs = await listSubscribers({ activeOnly: true });
         if (subs.length === 0) {
-          return { success: true, notified: 0 };
+          return { success: true, notified: 0, errors: [] };
         }
 
-        // Notify the site owner about the new subscribers notification
-        const emailList = subs.map(s => s.email).join(", ");
+        const resend = new Resend(ENV.resendApiKey);
+        const articleUrl = `${input.siteUrl}/article/${input.articleId}`;
+        const errors: string[] = [];
+        let sentCount = 0;
+
+        // Send email to each subscriber
+        for (const sub of subs) {
+          try {
+            await resend.emails.send({
+              from: "Jag och min Alzheimer <noreply@jagochminalzheimer.manus.space>",
+              to: sub.email,
+              subject: `Ny artikel: ${input.articleTitle}`,
+              html: `
+                <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <h2 style="color: #c05746; margin-bottom: 8px;">Jag och min Alzheimer</h2>
+                  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 16px 0;" />
+                  <h3 style="color: #333; margin-bottom: 8px;">Ny artikel publicerad</h3>
+                  <h1 style="color: #1a1a1a; font-size: 24px; margin-bottom: 12px;">${input.articleTitle}</h1>
+                  ${input.articleExcerpt ? `<p style="color: #555; font-size: 16px; line-height: 1.6;">${input.articleExcerpt}</p>` : ""}
+                  <a href="${articleUrl}" style="display: inline-block; margin-top: 16px; padding: 12px 24px; background-color: #c05746; color: white; text-decoration: none; border-radius: 6px; font-size: 16px;">Läs artikeln</a>
+                  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0 12px;" />
+                  <p style="color: #999; font-size: 12px;">Du får detta mail för att du prenumererar på Jag och min Alzheimer.</p>
+                </div>
+              `,
+            });
+            sentCount++;
+          } catch (err: any) {
+            console.error(`[Email] Failed to send to ${sub.email}:`, err);
+            errors.push(sub.email);
+          }
+        }
+
+        // Notify the site owner about the result
         await notifyOwner({
-          title: `Ny artikel publicerad: ${input.articleTitle}`,
-          content: `Artikeln "${input.articleTitle}" har publicerats. ${subs.length} prenumeranter bör notifieras.\n\nPrenumeranter: ${emailList}`,
+          title: `Artikelutskick: ${input.articleTitle}`,
+          content: `E-post skickad till ${sentCount} av ${subs.length} prenumeranter.${errors.length > 0 ? `\n\nMisslyckades: ${errors.join(", ")}` : ""}`,
         });
 
         // Mark the article as notified
         await updateArticle(input.articleId, { notifiedAt: new Date() });
 
-        return { success: true, notified: subs.length };
+        return { success: true, notified: sentCount, errors };
       }),
   }),
 
