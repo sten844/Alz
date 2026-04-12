@@ -218,3 +218,4 @@
 - [x] Add visual indicator showing if an article has been sent to subscribers
 - [x] Set up Resend email service to send actual emails to subscribers about new articles
 - [x] Update subscriber email template with custom text: "Sten har på sin sajt Jag och min Alzheimer lagt upp en ny artikel med rubriken xxx. Besök dellby.info"
+- [x] Remove "Läs artikeln" button from email template, keep only article title and linked dellby.info

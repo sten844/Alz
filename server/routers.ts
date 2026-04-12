@@ -594,7 +594,6 @@ export const appRouter = router({
                   <p style="color: #333; font-size: 18px; line-height: 1.6;">Sten har på sin sajt <strong>"Jag och min Alzheimer"</strong> lagt upp en ny artikel med rubriken:</p>
                   <h1 style="color: #1a1a1a; font-size: 24px; margin: 16px 0;">${input.articleTitle}</h1>
                   <p style="color: #333; font-size: 18px; line-height: 1.6;">Besök <a href="https://dellby.info" style="color: #c05746; text-decoration: underline;">dellby.info</a></p>
-                  <a href="${articleUrl}" style="display: inline-block; margin-top: 16px; padding: 12px 24px; background-color: #c05746; color: white; text-decoration: none; border-radius: 6px; font-size: 16px;">Läs artikeln</a>
                   <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0 12px;" />
                   <p style="color: #999; font-size: 12px;">Du får detta mail för att du prenumererar på Jag och min Alzheimer.</p>
                 </div>
