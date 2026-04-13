@@ -99,6 +99,13 @@
       "when": 1776010054171,
       "tag": "0013_lethal_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1776073136391,
+      "tag": "0014_giant_marauders",
+      "breakpoints": true
     }
   ]
 }

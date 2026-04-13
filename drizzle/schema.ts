@@ -35,6 +35,8 @@ export const articles = mysqlTable("articles", {
   publishedAt: timestamp("publishedAt").defaultNow().notNull(),
   published: boolean("published").default(true).notNull(),
   references: text("references"), // JSON array of {title, url} objects
+  attachmentUrl: varchar("attachmentUrl", { length: 2000 }),
+  attachmentName: varchar("attachmentName", { length: 500 }),
   notifiedAt: timestamp("notifiedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

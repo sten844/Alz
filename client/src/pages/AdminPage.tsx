@@ -32,6 +32,7 @@ import {
   Send,
   EyeOff,
   MailCheck,
+  Paperclip,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -56,6 +57,8 @@ type ArticleForm = {
   published: boolean;
   publishedAt: string;
   references: Reference[];
+  attachmentUrl: string;
+  attachmentName: string;
 };
 
 const emptyArticleForm: ArticleForm = {
@@ -69,6 +72,8 @@ const emptyArticleForm: ArticleForm = {
   published: false,
   publishedAt: new Date().toISOString().slice(0, 16),
   references: [],
+  attachmentUrl: "",
+  attachmentName: "",
 };
 
 // ---- Diary form types ----
@@ -109,6 +114,8 @@ export default function AdminPage() {
   const [isUploadingBottom, setIsUploadingBottom] = useState(false);
   const [dragOverBottom, setDragOverBottom] = useState(false);
   const bottomFileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const attachmentFileInputRef = useRef<HTMLInputElement>(null);
 
   // ---- Rich text editor HTML state ----
   const [articleContentHtml, setArticleContentHtml] = useState("");
@@ -308,6 +315,42 @@ export default function AdminPage() {
     setDragOverBottom(false);
   };
 
+  // ---- Attachment upload mutation ----
+  const uploadAttachmentMutation = trpc.upload.file.useMutation({
+    onSuccess: (data) => {
+      setArticleForm((prev) => ({ ...prev, attachmentUrl: data.url }));
+      setIsUploadingAttachment(false);
+      toast.success(t("Bilaga uppladdad!", "Attachment uploaded!"));
+    },
+    onError: (err) => {
+      setIsUploadingAttachment(false);
+      toast.error(t("Kunde inte ladda upp bilaga: ", "Failed to upload attachment: ") + err.message);
+    },
+  });
+
+  const handleAttachmentFile = (file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(t("Filen är för stor (max 10 MB)", "File is too large (max 10 MB)"));
+      return;
+    }
+    setIsUploadingAttachment(true);
+    setArticleForm((prev) => ({ ...prev, attachmentName: file.name }));
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadAttachmentMutation.mutate({
+        fileName: file.name,
+        fileData: base64,
+        contentType: file.type,
+      });
+    };
+    reader.onerror = () => {
+      setIsUploadingAttachment(false);
+      toast.error(t("Kunde inte läsa filen", "Could not read file"));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
@@ -448,6 +491,8 @@ export default function AdminPage() {
       published: article.published,
       publishedAt: new Date(article.publishedAt).toISOString().slice(0, 16),
       references: refs,
+      attachmentUrl: (article as any).attachmentUrl || "",
+      attachmentName: (article as any).attachmentName || "",
     };
     setEditingArticleId(article.id);
     setShowArticleForm(true);
@@ -510,6 +555,8 @@ export default function AdminPage() {
       published,
       publishedAt: new Date(articleForm.publishedAt),
       references: refsJson,
+      attachmentUrl: articleForm.attachmentUrl || null,
+      attachmentName: articleForm.attachmentName || null,
     };
     if (editingArticleId) {
       updateArticleMutation.mutate({ id: editingArticleId, ...data });
@@ -934,6 +981,54 @@ export default function AdminPage() {
                           {t("Lägg till källa", "Add source")}
                         </button>
                       </div>
+                    </div>
+
+                    {/* Attachment section */}
+                    <div>
+                      <label className="block text-lg font-medium text-foreground mb-2">{t("Bilaga (valfritt)", "Attachment (optional)")}</label>
+                      {articleForm.attachmentUrl ? (
+                        <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30">
+                          <Paperclip className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                          <a href={articleForm.attachmentUrl} target="_blank" rel="noopener noreferrer" className="text-[#c05746] hover:underline truncate flex-1">
+                            {articleForm.attachmentName || t("Bilaga", "Attachment")}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setArticleForm({ ...articleForm, attachmentUrl: "", attachmentName: "" })}
+                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title={t("Ta bort bilaga", "Remove attachment")}
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => attachmentFileInputRef.current?.click()}
+                            disabled={isUploadingAttachment}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 bg-background text-base hover:bg-muted/50 transition-colors disabled:opacity-50"
+                          >
+                            {isUploadingAttachment ? (
+                              <><Loader2 className="w-4 h-4 animate-spin" />{t("Laddar upp...", "Uploading...")}</>
+                            ) : (
+                              <><Paperclip className="w-4 h-4" />{t("Välj fil", "Choose file")}</>
+                            )}
+                          </button>
+                          <input
+                            ref={attachmentFileInputRef}
+                            type="file"
+                            className="hidden"
+                            accept=".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.csv"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleAttachmentFile(file);
+                              e.target.value = "";
+                            }}
+                          />
+                          <p className="text-sm text-muted-foreground mt-1">{t("PDF, Word, Excel, text (max 10 MB)", "PDF, Word, Excel, text (max 10 MB)")}</p>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-4 space-y-3">

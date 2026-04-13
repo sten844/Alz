@@ -144,6 +144,8 @@ export const appRouter = router({
         publishedAt: z.date().optional(),
         published: z.boolean().default(true),
         references: z.string().nullable().optional(), // JSON string of [{title, url}]
+        attachmentUrl: z.string().nullable().optional(),
+        attachmentName: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const publishedAt = input.publishedAt ?? new Date();
@@ -152,6 +154,8 @@ export const appRouter = router({
           publishedAt,
           imageUrl: input.imageUrl ?? null,
           bottomImageUrl: input.bottomImageUrl ?? null,
+          attachmentUrl: input.attachmentUrl ?? null,
+          attachmentName: input.attachmentName ?? null,
           pairId: input.pairId ?? null,
           references: input.references ?? null,
         });
@@ -176,6 +180,8 @@ export const appRouter = router({
                   pairId: svResult.id,
                   imageUrl: input.imageUrl ?? null,
                   references: input.references ?? null,
+                  attachmentUrl: input.attachmentUrl ?? null,
+                  attachmentName: input.attachmentName ?? null,
                   publishedAt,
                   published: input.published,
                 });
@@ -206,6 +212,8 @@ export const appRouter = router({
         publishedAt: z.date().optional(),
         published: z.boolean().optional(),
         references: z.string().nullable().optional(), // JSON string of [{title, url}]
+        attachmentUrl: z.string().nullable().optional(),
+        attachmentName: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -237,6 +245,12 @@ export const appRouter = router({
             }
             if (data.references !== undefined) {
               immediateUpdates.references = data.references;
+            }
+            if (data.attachmentUrl !== undefined) {
+              immediateUpdates.attachmentUrl = data.attachmentUrl;
+            }
+            if (data.attachmentName !== undefined) {
+              immediateUpdates.attachmentName = data.attachmentName;
             }
             if (Object.keys(immediateUpdates).length > 0) {
               await updateArticle(pairedArticle.id, immediateUpdates);
@@ -370,6 +384,20 @@ export const appRouter = router({
         const randomSuffix = Math.random().toString(36).substring(2, 10);
         const sanitizedName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
         const fileKey = `article-images/${randomSuffix}-${sanitizedName}`;
+        const { url } = await storagePut(fileKey, buffer, input.contentType);
+        return { url };
+      }),
+    file: adminProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(), // base64 encoded
+        contentType: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const buffer = Buffer.from(input.fileData, "base64");
+        const randomSuffix = Math.random().toString(36).substring(2, 10);
+        const sanitizedName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const fileKey = `article-attachments/${randomSuffix}-${sanitizedName}`;
         const { url } = await storagePut(fileKey, buffer, input.contentType);
         return { url };
       }),

@@ -221,3 +221,5 @@
 - [x] Remove "Läs artikeln" button from email template, keep only article title and linked dellby.info
 - [x] Add clickable link support in article rich text editor (for sources/references)
 - [x] Add separate references/sources field to article editor with title + URL per source, displayed at end of article
+- [x] Bug: References field not visible in article editor - was visible, user needed to publish checkpoint and clear cache
+- [x] Add file attachment (e.g. PDF) upload support to articles
