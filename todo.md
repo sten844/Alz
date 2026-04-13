@@ -223,3 +223,4 @@
 - [x] Add separate references/sources field to article editor with title + URL per source, displayed at end of article
 - [x] Bug: References field not visible in article editor - was visible, user needed to publish checkpoint and clear cache
 - [x] Add file attachment (e.g. PDF) upload support to articles
+- [x] Improve iPad touch responsiveness for text selection and formatting in rich text editor (added Search & Format panel)

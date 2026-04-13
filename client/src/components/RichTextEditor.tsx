@@ -16,71 +16,238 @@ interface RichTextEditorProps {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Touch-friendly word selection helper                               */
+/*  Search-and-format helper: find text in the editor and select it    */
 /* ------------------------------------------------------------------ */
 
-/**
- * Given a mouse/touch event inside the ProseMirror editor,
- * resolve the position under the pointer and expand the selection
- * to cover the whole word at that position.
- *
- * If `extend` is true the existing selection is extended to include
- * the new word (shift-tap behaviour).
- */
-function selectWordAtEvent(
+function findAndSelectText(
   editor: NonNullable<ReturnType<typeof useEditor>>,
-  event: MouseEvent | Touch,
-  extend = false,
-) {
-  const view = editor.view;
-  const coords = { left: event.clientX, top: event.clientY };
-  const pos = view.posAtCoords(coords);
-  if (!pos) return;
+  searchText: string,
+): boolean {
+  if (!searchText.trim()) return false;
 
-  const $pos = view.state.doc.resolve(pos.pos);
-  const parent = $pos.parent;
-  if (!parent.isTextblock) return;
+  const doc = editor.state.doc;
+  const needle = searchText.toLowerCase();
+  let found = false;
 
-  // Walk backwards/forwards to find word boundaries
-  const textOffset = $pos.parentOffset;
-  const text = parent.textContent;
+  doc.descendants((node, pos) => {
+    if (found) return false; // stop after first match
+    if (!node.isText) return;
 
-  // Find word boundaries using a regex-friendly approach
-  let wordStart = textOffset;
-  let wordEnd = textOffset;
+    const text = node.text || "";
+    const idx = text.toLowerCase().indexOf(needle);
+    if (idx !== -1) {
+      const from = pos + idx;
+      const to = from + searchText.length;
+      editor.chain().setTextSelection({ from, to }).run();
+      found = true;
+      return false;
+    }
+  });
 
-  // Walk backwards to find start of word
-  while (wordStart > 0 && /\S/.test(text[wordStart - 1])) {
-    wordStart--;
+  return found;
+}
+
+/**
+ * Find ALL occurrences and apply formatting to each one
+ */
+function findAndFormatAll(
+  editor: NonNullable<ReturnType<typeof useEditor>>,
+  searchText: string,
+  format: "bold" | "italic" | "underline",
+): number {
+  if (!searchText.trim()) return 0;
+
+  const doc = editor.state.doc;
+  const needle = searchText.toLowerCase();
+  const matches: { from: number; to: number }[] = [];
+
+  doc.descendants((node, pos) => {
+    if (!node.isText) return;
+    const text = node.text || "";
+    let startIdx = 0;
+    while (startIdx < text.length) {
+      const idx = text.toLowerCase().indexOf(needle, startIdx);
+      if (idx === -1) break;
+      matches.push({ from: pos + idx, to: pos + idx + searchText.length });
+      startIdx = idx + 1;
+    }
+  });
+
+  if (matches.length === 0) return 0;
+
+  // Apply formatting to all matches (reverse order to preserve positions)
+  const chain = editor.chain();
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const { from, to } = matches[i];
+    chain.setTextSelection({ from, to });
+    if (format === "bold") chain.toggleBold();
+    else if (format === "italic") chain.toggleItalic();
+    else if (format === "underline") chain.toggleUnderline();
   }
-  // Walk forwards to find end of word
-  while (wordEnd < text.length && /\S/.test(text[wordEnd])) {
-    wordEnd++;
-  }
+  chain.run();
 
-  if (wordStart === wordEnd) return; // clicked on whitespace
-
-  // Convert parent-relative offsets to absolute document positions
-  const startOfParent = $pos.start(); // absolute pos of first char in parent
-  const from = startOfParent + wordStart;
-  const to = startOfParent + wordEnd;
-
-  if (extend) {
-    // Extend existing selection to include the new word
-    const { from: oldFrom, to: oldTo } = view.state.selection;
-    const newFrom = Math.min(oldFrom, from);
-    const newTo = Math.max(oldTo, to);
-    editor.chain().setTextSelection({ from: newFrom, to: newTo }).run();
-  } else {
-    editor.chain().setTextSelection({ from, to }).run();
-  }
+  return matches.length;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Detect touch device                                                */
+/*  Search & Format Panel                                              */
 /* ------------------------------------------------------------------ */
-function isTouchDevice() {
-  return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+function SearchFormatPanel({
+  editor,
+  onClose,
+}: {
+  editor: NonNullable<ReturnType<typeof useEditor>>;
+  onClose: () => void;
+}) {
+  const { t } = useLanguage();
+  const [searchText, setSearchText] = useState("");
+  const [status, setStatus] = useState<string>("");
+  const [isFound, setIsFound] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Auto-focus the search input
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, []);
+
+  const handleSearch = () => {
+    if (!searchText.trim()) return;
+    const found = findAndSelectText(editor, searchText);
+    if (found) {
+      setIsFound(true);
+      setStatus(t(`"${searchText}" markerad`, `"${searchText}" selected`));
+    } else {
+      setIsFound(false);
+      setStatus(t(`"${searchText}" hittades inte`, `"${searchText}" not found`));
+    }
+  };
+
+  const handleFormat = (format: "bold" | "italic" | "underline") => {
+    if (!searchText.trim()) return;
+    const count = findAndFormatAll(editor, searchText, format);
+    if (count > 0) {
+      const formatName =
+        format === "bold"
+          ? t("fetstil", "bold")
+          : format === "italic"
+          ? t("kursiv", "italic")
+          : t("understruken", "underlined");
+      setStatus(
+        count === 1
+          ? t(`Formaterade "${searchText}" som ${formatName}`, `Formatted "${searchText}" as ${formatName}`)
+          : t(
+              `Formaterade ${count} träffar av "${searchText}" som ${formatName}`,
+              `Formatted ${count} occurrences of "${searchText}" as ${formatName}`
+            )
+      );
+      setSearchText("");
+      setIsFound(false);
+    } else {
+      setStatus(t(`"${searchText}" hittades inte`, `"${searchText}" not found`));
+      setIsFound(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
+    if (e.key === "Escape") {
+      onClose();
+    }
+  };
+
+  const actionBtn =
+    "rounded-lg px-3 py-2.5 min-w-[48px] h-[48px] flex items-center justify-center text-base font-bold transition-all touch-manipulation select-none active:scale-95";
+
+  return (
+    <div className="bg-blue-50 border-b-2 border-blue-200 px-3 py-3">
+      {/* Search input row */}
+      <div className="flex items-center gap-2 mb-2">
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setIsFound(false);
+            setStatus("");
+          }}
+          onKeyDown={handleKeyDown}
+          className="flex-1 px-4 py-3 text-lg bg-white rounded-lg border-2 border-blue-300 focus:border-blue-500 focus:outline-none"
+          placeholder={t("Skriv ord/fras att formatera...", "Type word/phrase to format...")}
+        />
+        <button
+          type="button"
+          onClick={handleSearch}
+          disabled={!searchText.trim()}
+          className={`${actionBtn} bg-blue-600 text-white disabled:opacity-30 whitespace-nowrap`}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Format buttons row */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-sm font-semibold text-blue-700 mr-1">
+          {t("Formatera alla träffar:", "Format all matches:")}
+        </span>
+        <button
+          type="button"
+          onClick={() => handleFormat("bold")}
+          disabled={!searchText.trim()}
+          className={`${actionBtn} bg-white border-2 border-blue-300 text-slate-800 disabled:opacity-30`}
+          title={t("Gör alla träffar feta", "Bold all matches")}
+        >
+          <span className="font-black text-xl">B</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleFormat("italic")}
+          disabled={!searchText.trim()}
+          className={`${actionBtn} bg-white border-2 border-blue-300 text-slate-800 disabled:opacity-30`}
+          title={t("Gör alla träffar kursiva", "Italicize all matches")}
+        >
+          <span className="italic text-xl" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleFormat("underline")}
+          disabled={!searchText.trim()}
+          className={`${actionBtn} bg-white border-2 border-blue-300 text-slate-800 disabled:opacity-30`}
+          title={t("Stryk under alla träffar", "Underline all matches")}
+        >
+          <span className="underline text-xl">U</span>
+        </button>
+
+        <div className="flex-1" />
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 touch-manipulation active:scale-95"
+        >
+          {t("Stäng", "Close")}
+        </button>
+      </div>
+
+      {/* Status message */}
+      {status && (
+        <div
+          className={`text-sm font-medium px-2 py-1 rounded ${
+            isFound ? "text-green-700 bg-green-50" : status.includes(t("hittades inte", "not found")) ? "text-red-600 bg-red-50" : "text-blue-700 bg-blue-100"
+          }`}
+        >
+          {status}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -91,10 +258,14 @@ function Toolbar({
   editor,
   selectMode,
   onToggleSelectMode,
+  showSearchFormat,
+  onToggleSearchFormat,
 }: {
   editor: ReturnType<typeof useEditor>;
   selectMode: boolean;
   onToggleSelectMode: () => void;
+  showSearchFormat: boolean;
+  onToggleSearchFormat: () => void;
 }) {
   const { t } = useLanguage();
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -104,10 +275,12 @@ function Toolbar({
   if (!editor) return null;
 
   const btnBase =
-    "rounded-lg p-2 min-w-[40px] h-[40px] flex items-center justify-center text-base font-medium transition-all touch-manipulation select-none";
+    "rounded-lg p-2 min-w-[44px] h-[44px] flex items-center justify-center text-base font-medium transition-all touch-manipulation select-none";
   const btnActive = "bg-[#c05746] text-white shadow-sm";
   const btnInactive =
     "bg-white border border-border/40 text-slate-700 hover:bg-slate-50 active:bg-slate-100 active:scale-95";
+  const btnSearchActive =
+    "bg-blue-600 text-white shadow-sm ring-2 ring-blue-300";
   const btnSelectMode =
     "bg-blue-600 text-white shadow-sm ring-2 ring-blue-300 animate-pulse";
 
@@ -145,7 +318,21 @@ function Toolbar({
     <div className="bg-accent/30 border-b-2 border-border/40 rounded-t-lg">
       {/* Main toolbar */}
       <div className="flex items-center gap-1 p-2 flex-wrap">
-        {/* Tap-to-select word button (shown on touch devices, always available) */}
+        {/* Search & Format button — primary iPad tool */}
+        <button
+          type="button"
+          onClick={onToggleSearchFormat}
+          className={`${btnBase} ${showSearchFormat ? btnSearchActive : btnInactive}`}
+          title={t("Sök och formatera", "Search and format")}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <text x="8" y="14" fontSize="9" fill="currentColor" stroke="none" fontWeight="bold">B</text>
+          </svg>
+        </button>
+
+        {/* Tap-to-select word button */}
         <button
           type="button"
           onClick={onToggleSelectMode}
@@ -480,6 +667,7 @@ export default function RichTextEditor({
   minHeight = "300px",
 }: RichTextEditorProps) {
   const [selectMode, setSelectMode] = useState(false);
+  const [showSearchFormat, setShowSearchFormat] = useState(false);
   const selectModeRef = useRef(false);
   const hasExtendedRef = useRef(false);
 
@@ -555,27 +743,95 @@ export default function RichTextEditor({
       const touch = e.changedTouches[0];
 
       // Determine if we should extend or start fresh
-      // First tap = fresh select, subsequent taps = extend
       const hasSelection = !editor.state.selection.empty;
       const extend = hasSelection && hasExtendedRef.current;
 
-      selectWordAtEvent(editor, touch, extend);
-      hasExtendedRef.current = true;
+      // Use the helper function from the old code
+      const view = editor.view;
+      const coords = { left: touch.clientX, top: touch.clientY };
+      const pos = view.posAtCoords(coords);
+      if (!pos) return;
 
-      // Prevent default to avoid iOS/iPad selection handles interfering
+      const $pos = view.state.doc.resolve(pos.pos);
+      const parent = $pos.parent;
+      if (!parent.isTextblock) return;
+
+      const textOffset = $pos.parentOffset;
+      const text = parent.textContent;
+
+      let wordStart = textOffset;
+      let wordEnd = textOffset;
+
+      while (wordStart > 0 && /\S/.test(text[wordStart - 1])) {
+        wordStart--;
+      }
+      while (wordEnd < text.length && /\S/.test(text[wordEnd])) {
+        wordEnd++;
+      }
+
+      if (wordStart === wordEnd) return;
+
+      const startOfParent = $pos.start();
+      const from = startOfParent + wordStart;
+      const to = startOfParent + wordEnd;
+
+      if (extend) {
+        const { from: oldFrom, to: oldTo } = view.state.selection;
+        const newFrom = Math.min(oldFrom, from);
+        const newTo = Math.max(oldTo, to);
+        editor.chain().setTextSelection({ from: newFrom, to: newTo }).run();
+      } else {
+        editor.chain().setTextSelection({ from, to }).run();
+      }
+
+      hasExtendedRef.current = true;
       e.preventDefault();
     };
 
     const handleMouseDown = (e: MouseEvent) => {
       if (!selectModeRef.current) return;
 
-      // On desktop, also support click-to-select-word in select mode
+      const view = editor.view;
+      const coords = { left: e.clientX, top: e.clientY };
+      const pos = view.posAtCoords(coords);
+      if (!pos) return;
+
+      const $pos = view.state.doc.resolve(pos.pos);
+      const parent = $pos.parent;
+      if (!parent.isTextblock) return;
+
+      const textOffset = $pos.parentOffset;
+      const text = parent.textContent;
+
+      let wordStart = textOffset;
+      let wordEnd = textOffset;
+
+      while (wordStart > 0 && /\S/.test(text[wordStart - 1])) {
+        wordStart--;
+      }
+      while (wordEnd < text.length && /\S/.test(text[wordEnd])) {
+        wordEnd++;
+      }
+
+      if (wordStart === wordEnd) return;
+
+      const startOfParent = $pos.start();
+      const from = startOfParent + wordStart;
+      const to = startOfParent + wordEnd;
+
       const hasSelection = !editor.state.selection.empty;
       const extend = hasSelection && hasExtendedRef.current;
 
-      selectWordAtEvent(editor, e, extend);
-      hasExtendedRef.current = true;
+      if (extend) {
+        const { from: oldFrom, to: oldTo } = view.state.selection;
+        const newFrom = Math.min(oldFrom, from);
+        const newTo = Math.max(oldTo, to);
+        editor.chain().setTextSelection({ from: newFrom, to: newTo }).run();
+      } else {
+        editor.chain().setTextSelection({ from, to }).run();
+      }
 
+      hasExtendedRef.current = true;
       e.preventDefault();
     };
 
@@ -592,11 +848,21 @@ export default function RichTextEditor({
     setSelectMode((prev) => {
       const next = !prev;
       if (next) {
-        // Entering select mode: reset extension tracking
         hasExtendedRef.current = false;
+        setShowSearchFormat(false); // close search panel when entering select mode
       } else {
-        // Leaving select mode: keep the selection so user can format it
         hasExtendedRef.current = false;
+      }
+      return next;
+    });
+  }, []);
+
+  const handleToggleSearchFormat = useCallback(() => {
+    setShowSearchFormat((prev) => {
+      const next = !prev;
+      if (next) {
+        setSelectMode(false); // close select mode when opening search
+        selectModeRef.current = false;
       }
       return next;
     });
@@ -609,6 +875,8 @@ export default function RichTextEditor({
       className={`border-2 rounded-lg overflow-hidden bg-background transition-colors ${
         selectMode
           ? "border-blue-400 ring-2 ring-blue-200"
+          : showSearchFormat
+          ? "border-blue-400 ring-2 ring-blue-100"
           : "border-border/50"
       }`}
     >
@@ -616,7 +884,15 @@ export default function RichTextEditor({
         editor={editor}
         selectMode={selectMode}
         onToggleSelectMode={handleToggleSelectMode}
+        showSearchFormat={showSearchFormat}
+        onToggleSearchFormat={handleToggleSearchFormat}
       />
+      {showSearchFormat && (
+        <SearchFormatPanel
+          editor={editor}
+          onClose={() => setShowSearchFormat(false)}
+        />
+      )}
       <SelectionBubbleMenu editor={editor} />
       <EditorContent
         editor={editor}
