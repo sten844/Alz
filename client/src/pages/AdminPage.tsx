@@ -149,13 +149,19 @@ export default function AdminPage() {
     onError: (err) => toast.error(err.message),
   });
   const updateArticleMutation = trpc.articles.update.useMutation({
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       utils.articles.listAll.invalidate();
       utils.articles.list.invalidate();
-      setEditingArticleId(null);
-      setShowArticleForm(false);
-      setArticleForm(emptyArticleForm);
-      toast.success("Artikel uppdaterad! Engelsk version uppdateras automatiskt...");
+      if (variables.published) {
+        // Close editor when publishing
+        setEditingArticleId(null);
+        setShowArticleForm(false);
+        setArticleForm(emptyArticleForm);
+        toast.success("Artikel publicerad! Engelsk version uppdateras automatiskt...");
+      } else {
+        // Keep editor open when saving as draft
+        toast.success("Utkast sparat! Du kan fortsätta redigera.");
+      }
     },
     onError: (err) => toast.error(err.message),
   });
