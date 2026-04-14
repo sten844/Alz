@@ -5,6 +5,7 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
+import { TextSelection } from "@tiptap/pm/state";
 import { useEffect, useCallback, useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -38,7 +39,10 @@ function findAndSelectText(
     if (idx !== -1) {
       const from = pos + idx;
       const to = from + searchText.length;
-      editor.chain().setTextSelection({ from, to }).run();
+      // Dispatch raw transaction WITHOUT scrollIntoView to prevent page jumping
+      const sel = TextSelection.create(editor.state.doc, from, to);
+      const tr = editor.state.tr.setSelection(sel);
+      editor.view.dispatch(tr);
       found = true;
       return false;
     }
@@ -76,15 +80,28 @@ function findAndFormatAll(
   if (matches.length === 0) return 0;
 
   // Apply formatting to all matches (reverse order to preserve positions)
-  const chain = editor.chain();
+  // Use raw transactions to prevent page scrolling/jumping
+  let { tr } = editor.view.state;
   for (let i = matches.length - 1; i >= 0; i--) {
     const { from, to } = matches[i];
-    chain.setTextSelection({ from, to });
-    if (format === "bold") chain.toggleBold();
-    else if (format === "italic") chain.toggleItalic();
-    else if (format === "underline") chain.toggleUnderline();
+    const sel = TextSelection.create(tr.doc, from, to);
+    tr = tr.setSelection(sel);
+    const markType =
+      format === "bold" ? editor.schema.marks.bold
+      : format === "italic" ? editor.schema.marks.italic
+      : editor.schema.marks.underline;
+    if (markType) {
+      // Check if mark is already active at this range
+      const isActive = editor.state.doc.rangeHasMark(from, to, markType);
+      if (isActive) {
+        tr = tr.removeMark(from, to, markType);
+      } else {
+        tr = tr.addMark(from, to, markType.create());
+      }
+    }
   }
-  chain.run();
+  // Dispatch without scrollIntoView
+  editor.view.dispatch(tr);
 
   return matches.length;
 }
@@ -290,7 +307,7 @@ function Toolbar({
     if (linkUrl.trim()) {
       let url = linkUrl.trim();
       if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-      editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+      editor.chain().extendMarkRange("link").setLink({ href: url }).run();
       setLinkUrl("");
       setShowLinkInput(false);
     }
@@ -353,7 +370,7 @@ function Toolbar({
         {/* Text formatting */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
+          onClick={() => editor.chain().toggleBold().run()}
           className={`${btnBase} ${editor.isActive("bold") ? btnActive : btnInactive}`}
           title={t("Fet", "Bold")}
         >
@@ -361,7 +378,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
+          onClick={() => editor.chain().toggleItalic().run()}
           className={`${btnBase} ${editor.isActive("italic") ? btnActive : btnInactive}`}
           title={t("Kursiv", "Italic")}
         >
@@ -371,7 +388,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          onClick={() => editor.chain().toggleUnderline().run()}
           className={`${btnBase} ${editor.isActive("underline") ? btnActive : btnInactive}`}
           title={t("Understrykning", "Underline")}
         >
@@ -379,7 +396,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
+          onClick={() => editor.chain().toggleStrike().run()}
           className={`${btnBase} ${editor.isActive("strike") ? btnActive : btnInactive}`}
           title={t("Genomstruken", "Strikethrough")}
         >
@@ -391,7 +408,7 @@ function Toolbar({
         {/* Headings */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() => editor.chain().toggleHeading({ level: 2 }).run()}
           className={`${btnBase} ${editor.isActive("heading", { level: 2 }) ? btnActive : btnInactive}`}
           title={t("Rubrik", "Heading")}
         >
@@ -399,7 +416,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() => editor.chain().toggleHeading({ level: 3 }).run()}
           className={`${btnBase} ${editor.isActive("heading", { level: 3 }) ? btnActive : btnInactive}`}
           title={t("Underrubrik", "Subheading")}
         >
@@ -411,7 +428,7 @@ function Toolbar({
         {/* Lists */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          onClick={() => editor.chain().toggleBulletList().run()}
           className={`${btnBase} ${editor.isActive("bulletList") ? btnActive : btnInactive}`}
           title={t("Punktlista", "Bullet list")}
         >
@@ -426,7 +443,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          onClick={() => editor.chain().toggleOrderedList().run()}
           className={`${btnBase} ${editor.isActive("orderedList") ? btnActive : btnInactive}`}
           title={t("Numrerad lista", "Numbered list")}
         >
@@ -451,7 +468,7 @@ function Toolbar({
         {/* Block elements */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          onClick={() => editor.chain().toggleBlockquote().run()}
           className={`${btnBase} ${editor.isActive("blockquote") ? btnActive : btnInactive}`}
           title={t("Citat", "Quote")}
         >
@@ -461,7 +478,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          onClick={() => editor.chain().setHorizontalRule().run()}
           className={`${btnBase} ${btnInactive}`}
           title={t("Horisontell linje", "Horizontal rule")}
         >
@@ -477,7 +494,7 @@ function Toolbar({
           type="button"
           onClick={() => {
             if (editor.isActive("link")) {
-              editor.chain().focus().unsetLink().run();
+              editor.chain().unsetLink().run();
             } else {
               openLinkInput();
             }
@@ -496,7 +513,7 @@ function Toolbar({
         {/* Undo/Redo */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().undo().run()}
+          onClick={() => editor.chain().undo().run()}
           disabled={!editor.can().undo()}
           className={`${btnBase} ${btnInactive} disabled:opacity-30`}
           title={t("Ångra", "Undo")}
@@ -508,7 +525,7 @@ function Toolbar({
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().redo().run()}
+          onClick={() => editor.chain().redo().run()}
           disabled={!editor.can().redo()}
           className={`${btnBase} ${btnInactive} disabled:opacity-30`}
           title={t("Gör om", "Redo")}
@@ -604,7 +621,7 @@ function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof
       <div className="flex items-center gap-0.5 bg-slate-800 rounded-xl shadow-xl px-1.5 py-1 border border-slate-600">
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
+          onClick={() => editor.chain().toggleBold().run()}
           className={`${bubbleBtnBase} ${editor.isActive("bold") ? bubbleBtnActive : bubbleBtnInactive}`}
           title={t("Fet", "Bold")}
         >
@@ -612,7 +629,7 @@ function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
+          onClick={() => editor.chain().toggleItalic().run()}
           className={`${bubbleBtnBase} ${editor.isActive("italic") ? bubbleBtnActive : bubbleBtnInactive}`}
           title={t("Kursiv", "Italic")}
         >
@@ -620,7 +637,7 @@ function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          onClick={() => editor.chain().toggleUnderline().run()}
           className={`${bubbleBtnBase} ${editor.isActive("underline") ? bubbleBtnActive : bubbleBtnInactive}`}
           title={t("Understrykning", "Underline")}
         >
@@ -628,7 +645,7 @@ function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
+          onClick={() => editor.chain().toggleStrike().run()}
           className={`${bubbleBtnBase} ${editor.isActive("strike") ? bubbleBtnActive : bubbleBtnInactive}`}
           title={t("Genomstruken", "Strikethrough")}
         >
@@ -637,7 +654,7 @@ function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof
         <div className="w-px h-5 bg-white/20 mx-0.5" />
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() => editor.chain().toggleHeading({ level: 2 }).run()}
           className={`${bubbleBtnBase} ${editor.isActive("heading", { level: 2 }) ? bubbleBtnActive : bubbleBtnInactive}`}
           title={t("Rubrik", "Heading")}
         >
@@ -645,7 +662,7 @@ function SelectionBubbleMenu({ editor }: { editor: NonNullable<ReturnType<typeof
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() => editor.chain().toggleHeading({ level: 3 }).run()}
           className={`${bubbleBtnBase} ${editor.isActive("heading", { level: 3 }) ? bubbleBtnActive : bubbleBtnInactive}`}
           title={t("Underrubrik", "Subheading")}
         >

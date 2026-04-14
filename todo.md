@@ -225,3 +225,4 @@
 - [x] Add file attachment (e.g. PDF) upload support to articles
 - [x] Improve iPad touch responsiveness for text selection and formatting in rich text editor (added Search & Format panel)
 - [x] Bug: Article drafts can only be updated once - editor now stays open after saving as draft, closes on publish
+- [x] Bug: Page scrolls/jumps when using Search & Format tool in article editor - fixed by removing .focus() and using raw ProseMirror transactions without scrollIntoView
