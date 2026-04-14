@@ -227,3 +227,4 @@
 - [x] Bug: Article drafts can only be updated once - editor now stays open after saving as draft, closes on publish
 - [x] Bug: Page scrolls/jumps when using Search & Format tool in article editor - fixed by removing .focus() and using raw ProseMirror transactions without scrollIntoView
 - [x] Bug: Removing .focus() from toolbar buttons broke editor - fixed with focus(undefined, { scrollIntoView: false }) to keep focus without page jumping
+- [x] Add arrow navigation buttons (← →) to editor toolbar for precise cursor positioning on iPad

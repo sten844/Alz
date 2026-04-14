@@ -535,6 +535,46 @@ function Toolbar({
             <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
           </svg>
         </button>
+
+        {separator}
+
+        {/* Cursor navigation arrows */}
+        <button
+          type="button"
+          onClick={() => {
+            const { from } = editor.state.selection;
+            if (from > 0) {
+              const tr = editor.state.tr.setSelection(
+                TextSelection.create(editor.state.doc, from - 1)
+              );
+              editor.view.dispatch(tr);
+            }
+          }}
+          className={`${btnBase} ${btnInactive}`}
+          title={t("Flytta markör vänster", "Move cursor left")}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const { from } = editor.state.selection;
+            if (from < editor.state.doc.content.size) {
+              const tr = editor.state.tr.setSelection(
+                TextSelection.create(editor.state.doc, from + 1)
+              );
+              editor.view.dispatch(tr);
+            }
+          }}
+          className={`${btnBase} ${btnInactive}`}
+          title={t("Flytta markör höger", "Move cursor right")}
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
 
       {/* Select mode hint bar */}
