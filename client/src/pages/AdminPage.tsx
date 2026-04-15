@@ -1095,66 +1095,70 @@ export default function AdminPage() {
                           </button>
                         )}
                       </div>
-                      {/* Confirm dialog for sending to subscribers */}
+                      {/* Modal confirm dialog for sending to subscribers */}
                       {notifyConfirmArticleId && (
-                        <div className="mt-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-                          <p className="text-base text-emerald-800 mb-3">
-                            {t(
-                              "Vill du skicka en notifikation till alla prenumeranter om denna artikel?",
-                              "Do you want to send a notification to all subscribers about this article?"
-                            )}
-                          </p>
-                          <div className="flex gap-3">
-                            <button
-                              onClick={() => {
-                                notifySubscribersMutation.mutate({
-                                  articleId: notifyConfirmArticleId,
-                                  articleTitle: articleForm.title,
-                                  articleExcerpt: articleForm.excerpt || undefined,
-                                  siteUrl: window.location.origin,
-                                });
-                                setNotifyConfirmArticleId(null);
-                              }}
-                              className="px-6 py-2 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors"
-                            >
-                              {t("Ja, skicka", "Yes, send")}
-                            </button>
-                            <button
-                              onClick={() => setNotifyConfirmArticleId(null)}
-                              className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
-                            >
-                              {t("Avbryt", "Cancel")}
-                            </button>
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setNotifyConfirmArticleId(null)}>
+                          <div className="bg-white rounded-2xl shadow-xl p-6 mx-4 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                            <p className="text-lg text-emerald-800 mb-3">
+                              {t(
+                                "Vill du skicka en notifikation till alla prenumeranter om denna artikel?",
+                                "Do you want to send a notification to all subscribers about this article?"
+                              )}
+                            </p>
+                            <div className="flex gap-3">
+                              <button
+                                onClick={() => {
+                                  notifySubscribersMutation.mutate({
+                                    articleId: notifyConfirmArticleId,
+                                    articleTitle: articleForm.title,
+                                    articleExcerpt: articleForm.excerpt || undefined,
+                                    siteUrl: window.location.origin,
+                                  });
+                                  setNotifyConfirmArticleId(null);
+                                }}
+                                className="px-6 py-2 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors"
+                              >
+                                {t("Ja, skicka", "Yes, send")}
+                              </button>
+                              <button
+                                onClick={() => setNotifyConfirmArticleId(null)}
+                                className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                              >
+                                {t("Avbryt", "Cancel")}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}
-                      {/* Confirm dialog for unpublishing */}
+                      {/* Modal confirm dialog for unpublishing */}
                       {unpublishConfirmArticleId && (
-                        <div className="mt-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                          <p className="text-base text-slate-800 mb-3">
-                            {t(
-                              "Vill du avpublicera denna artikel? Den kommer att bli ett utkast och inte längre vara synlig för besökare.",
-                              "Do you want to unpublish this article? It will become a draft and no longer be visible to visitors."
-                            )}
-                          </p>
-                          <div className="flex gap-3">
-                            <button
-                              onClick={() => {
-                                unpublishArticleMutation.mutate({
-                                  id: unpublishConfirmArticleId,
-                                  published: false,
-                                });
-                              }}
-                              className="px-6 py-2 bg-slate-600 text-white rounded-full font-semibold hover:bg-slate-700 transition-colors"
-                            >
-                              {t("Ja, avpublicera", "Yes, unpublish")}
-                            </button>
-                            <button
-                              onClick={() => setUnpublishConfirmArticleId(null)}
-                              className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
-                            >
-                              {t("Avbryt", "Cancel")}
-                            </button>
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setUnpublishConfirmArticleId(null)}>
+                          <div className="bg-white rounded-2xl shadow-xl p-6 mx-4 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                            <p className="text-lg text-slate-800 mb-3">
+                              {t(
+                                "Vill du avpublicera denna artikel? Den kommer att bli ett utkast och inte längre vara synlig för besökare.",
+                                "Do you want to unpublish this article? It will become a draft and no longer be visible to visitors."
+                              )}
+                            </p>
+                            <div className="flex gap-3">
+                              <button
+                                onClick={() => {
+                                  unpublishArticleMutation.mutate({
+                                    id: unpublishConfirmArticleId,
+                                    published: false,
+                                  });
+                                }}
+                                className="px-6 py-2 bg-slate-600 text-white rounded-full font-semibold hover:bg-slate-700 transition-colors"
+                              >
+                                {t("Ja, avpublicera", "Yes, unpublish")}
+                              </button>
+                              <button
+                                onClick={() => setUnpublishConfirmArticleId(null)}
+                                className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                              >
+                                {t("Avbryt", "Cancel")}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1236,72 +1240,76 @@ export default function AdminPage() {
                 </div>
               )}
 
-              {/* Confirm dialog for sending to subscribers from article list */}
+              {/* Modal confirm dialog for sending to subscribers from article list */}
               {notifyConfirmArticleId && !showArticleForm && allArticles?.find(a => a.id === notifyConfirmArticleId) && (
-                <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-                  <p className="text-base text-emerald-800 mb-1 font-semibold">{allArticles.find(a => a.id === notifyConfirmArticleId)!.title}</p>
-                  <p className="text-base text-emerald-800 mb-3">
-                    {t(
-                      "Vill du skicka en notifikation till alla prenumeranter om denna artikel?",
-                      "Do you want to send a notification to all subscribers about this article?"
-                    )}
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        const target = allArticles?.find(a => a.id === notifyConfirmArticleId);
-                        if (target) {
-                          notifySubscribersMutation.mutate({
-                            articleId: notifyConfirmArticleId,
-                            articleTitle: target.title,
-                            articleExcerpt: target.excerpt || undefined,
-                            siteUrl: window.location.origin,
-                          });
-                        }
-                        setNotifyConfirmArticleId(null);
-                      }}
-                      className="px-6 py-2 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors"
-                    >
-                      {t("Ja, skicka", "Yes, send")}
-                    </button>
-                    <button
-                      onClick={() => setNotifyConfirmArticleId(null)}
-                      className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
-                    >
-                      {t("Avbryt", "Cancel")}
-                    </button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setNotifyConfirmArticleId(null)}>
+                  <div className="bg-white rounded-2xl shadow-xl p-6 mx-4 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                    <p className="text-lg text-emerald-800 mb-1 font-semibold">{allArticles.find(a => a.id === notifyConfirmArticleId)!.title}</p>
+                    <p className="text-base text-emerald-800 mb-4">
+                      {t(
+                        "Vill du skicka en notifikation till alla prenumeranter om denna artikel?",
+                        "Do you want to send a notification to all subscribers about this article?"
+                      )}
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          const target = allArticles?.find(a => a.id === notifyConfirmArticleId);
+                          if (target) {
+                            notifySubscribersMutation.mutate({
+                              articleId: notifyConfirmArticleId,
+                              articleTitle: target.title,
+                              articleExcerpt: target.excerpt || undefined,
+                              siteUrl: window.location.origin,
+                            });
+                          }
+                          setNotifyConfirmArticleId(null);
+                        }}
+                        className="px-6 py-2 bg-emerald-600 text-white rounded-full font-semibold hover:bg-emerald-700 transition-colors"
+                      >
+                        {t("Ja, skicka", "Yes, send")}
+                      </button>
+                      <button
+                        onClick={() => setNotifyConfirmArticleId(null)}
+                        className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                      >
+                        {t("Avbryt", "Cancel")}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Confirm dialog for unpublishing from article list */}
+              {/* Modal confirm dialog for unpublishing from article list */}
               {unpublishConfirmArticleId && !showArticleForm && allArticles?.find(a => a.id === unpublishConfirmArticleId) && (
-                <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                  <p className="text-base text-slate-800 mb-1 font-semibold">{allArticles.find(a => a.id === unpublishConfirmArticleId)!.title}</p>
-                  <p className="text-base text-slate-800 mb-3">
-                    {t(
-                      "Vill du avpublicera denna artikel? Den kommer att bli ett utkast och inte längre vara synlig för besökare.",
-                      "Do you want to unpublish this article? It will become a draft and no longer be visible to visitors."
-                    )}
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        unpublishArticleMutation.mutate({
-                          id: unpublishConfirmArticleId,
-                          published: false,
-                        });
-                      }}
-                      className="px-6 py-2 bg-slate-600 text-white rounded-full font-semibold hover:bg-slate-700 transition-colors"
-                    >
-                      {t("Ja, avpublicera", "Yes, unpublish")}
-                    </button>
-                    <button
-                      onClick={() => setUnpublishConfirmArticleId(null)}
-                      className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
-                    >
-                      {t("Avbryt", "Cancel")}
-                    </button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setUnpublishConfirmArticleId(null)}>
+                  <div className="bg-white rounded-2xl shadow-xl p-6 mx-4 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+                    <p className="text-lg text-slate-800 mb-1 font-semibold">{allArticles.find(a => a.id === unpublishConfirmArticleId)!.title}</p>
+                    <p className="text-base text-slate-800 mb-4">
+                      {t(
+                        "Vill du avpublicera denna artikel? Den kommer att bli ett utkast och inte längre vara synlig för besökare.",
+                        "Do you want to unpublish this article? It will become a draft and no longer be visible to visitors."
+                      )}
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          unpublishArticleMutation.mutate({
+                            id: unpublishConfirmArticleId,
+                            published: false,
+                          });
+                        }}
+                        className="px-6 py-2 bg-slate-600 text-white rounded-full font-semibold hover:bg-slate-700 transition-colors"
+                      >
+                        {t("Ja, avpublicera", "Yes, unpublish")}
+                      </button>
+                      <button
+                        onClick={() => setUnpublishConfirmArticleId(null)}
+                        className="px-6 py-2 bg-white text-slate-700 border border-slate-300 rounded-full font-semibold hover:bg-slate-50 transition-colors"
+                      >
+                        {t("Avbryt", "Cancel")}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
