@@ -344,7 +344,7 @@ export default function Home() {
           )}
 
           {/* Min behandlingsplan Band */}
-          <Link href="/article/1">
+          <Link href="/article/1" className="mt-3 md:mt-4 block">
             <div className="bg-amber-800 rounded-2xl shadow-lg p-4 md:p-6 hover:bg-amber-700 transition-colors cursor-pointer">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
