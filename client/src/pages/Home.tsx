@@ -343,6 +343,29 @@ export default function Home() {
           </div>
           )}
 
+          {/* Min behandlingsplan Band */}
+          <Link href="/article/1">
+            <div className="bg-amber-800 rounded-2xl shadow-lg p-4 md:p-6 hover:bg-amber-700 transition-colors cursor-pointer">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+                  <h2 className="text-2xl md:text-3xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                    {t("Min behandlingsplan", "My treatment plan")}
+                  </h2>
+                  <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center md:text-left">
+                    {t(
+                      "Medicin, kost och livsstil som ett integrerat system – baserad på femfingermodellen.",
+                      "Medicine, diet and lifestyle as an integrated system – based on the five-finger model."
+                    )}
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-2 px-6 py-3 bg-white text-amber-900 rounded-full text-lg font-semibold shadow-lg shrink-0">
+                  {t("Läs mer", "Read more")}
+                  <ChevronRight className="w-4 h-4" />
+                </span>
+              </div>
+            </div>
+          </Link>
+
           {/* Follow on X Band */}
           <div className="bg-slate-900 rounded-2xl shadow-lg p-4 md:p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
