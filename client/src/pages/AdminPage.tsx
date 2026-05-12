@@ -100,6 +100,7 @@ export default function AdminPage() {
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
   const [showArticleForm, setShowArticleForm] = useState(false);
+  const articleFormContainerRef = useRef<HTMLDivElement>(null);
   const [articleForm, setArticleForm] = useState<ArticleForm>(emptyArticleForm);
   const [deleteArticleConfirm, setDeleteArticleConfirm] = useState<number | null>(null);
   const initialArticleFormRef = useRef<ArticleForm>(emptyArticleForm);
@@ -508,6 +509,10 @@ export default function AdminPage() {
     const html = markdownToHtml(article.content);
     setArticleContentHtml(html);
     initialArticleContentHtmlRef.current = html;
+    // Scroll to the form after it renders
+    setTimeout(() => {
+      articleFormContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   const handleNewArticle = () => {
@@ -746,7 +751,7 @@ export default function AdminPage() {
 
               {/* Article form */}
               {showArticleForm && (
-                <div className="bg-card rounded-2xl border border-border/50 p-8 mb-8 shadow-sm">
+                <div ref={articleFormContainerRef} className="bg-card rounded-2xl border border-border/50 p-8 mb-8 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-semibold text-foreground">
                       {editingArticleId ? t("Redigera artikel", "Edit article") : t("Ny artikel", "New article")}

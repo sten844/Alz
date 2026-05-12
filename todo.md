@@ -231,3 +231,4 @@
 - [x] Bug: Avpublicera (unpublish) feature is not working - confirmation dialog was hidden at bottom of page, now shows as centered modal overlay
 - [ ] Bug: Diary editor bold toggle not working - cannot switch from bold back to normal text, toolbar feels chaotic
 - [x] Add "Min behandlingsplan" tile between "Nya artiklar" and "Följ mig på X" on homepage
+- [x] Bug: Cannot edit articles in admin panel - fixed duplicate tiptap extensions + added auto-scroll to form
