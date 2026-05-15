@@ -13,6 +13,30 @@ import { Link } from "wouter";
 
 const ENTRIES_PER_PAGE = 10;
 
+function renderDiaryContent(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/);
+  return parts.map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (match) {
+      const [, name, url] = match;
+      return (
+        <span key={i}>
+          <strong>{name}</strong>{" "}
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-[#c05746] hover:text-[#a8483b]"
+          >
+            {url}
+          </a>
+        </span>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export default function DiaryArchivePage() {
   const { language, t } = useLanguage();
   const [page, setPage] = useState(0);
@@ -92,7 +116,7 @@ export default function DiaryArchivePage() {
                       {formatDateLong(entry.entryDate)}
                     </div>
                     <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap">
-                      {displayContent}
+                      {renderDiaryContent(displayContent)}
                     </p>
                   </article>
                 );

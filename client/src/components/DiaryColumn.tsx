@@ -13,6 +13,35 @@ import { Link } from "wouter";
 
 const ENTRIES_PER_PAGE = 5;
 
+/**
+ * Renders diary text with markdown links [name](url) converted to:
+ * name in bold + url underlined and clickable
+ */
+function renderDiaryContent(text: string) {
+  // Split by markdown link pattern [text](url)
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/);
+  return parts.map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (match) {
+      const [, name, url] = match;
+      return (
+        <span key={i}>
+          <strong>{name}</strong>{" "}
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-[#c05746] hover:text-[#a8483b]"
+          >
+            {url}
+          </a>
+        </span>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 function DiaryEntry({
   entry,
   compact,
@@ -56,7 +85,7 @@ function DiaryEntry({
               {formatDate(entry.entryDate)}
             </span>
             <span className="text-[#c05746] mx-1.5">·</span>
-            <span className="whitespace-pre-wrap">{displayContent}</span>
+            <span className="whitespace-pre-wrap">{renderDiaryContent(displayContent)}</span>
           </div>
         ) : (
           <div className="text-lg text-foreground/85 leading-relaxed">
@@ -64,7 +93,7 @@ function DiaryEntry({
               {formatDate(entry.entryDate)}
             </span>
             <span className="text-[#c05746] mx-1.5">·</span>
-            <span className="whitespace-pre-wrap">{displayContent}</span>
+            <span className="whitespace-pre-wrap">{renderDiaryContent(displayContent)}</span>
           </div>
         )}
         {!expanded && displayContent.length > 100 && (
@@ -95,7 +124,7 @@ function DiaryEntry({
         {formatDateLong(entry.entryDate)}
       </div>
       <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap">
-        {displayContent}
+        {renderDiaryContent(displayContent)}
       </p>
       <div className="mt-3 border-b border-border/30" />
     </div>
