@@ -3,7 +3,6 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
 import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink } from "./db";
-import { notifyOwner } from "./_core/notification";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { Resend } from "resend";
@@ -641,11 +640,6 @@ export const appRouter = router({
           }
         }
 
-        // Notify the site owner about the result
-        await notifyOwner({
-          title: `Artikelutskick: ${input.articleTitle}`,
-          content: `E-post skickad till ${sentCount} av ${subs.length} prenumeranter.${errors.length > 0 ? `\n\nMisslyckades: ${errors.join(", ")}` : ""}`,
-        });
 
         // Mark the article as notified
         await updateArticle(input.articleId, { notifiedAt: new Date() });
