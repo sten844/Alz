@@ -259,12 +259,12 @@ export default function Home() {
 
           {/* Newsletter Band */}
           <div className="bg-[#c05746] rounded-2xl shadow-lg p-4 md:p-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
-                <h2 className="text-2xl md:text-3xl text-white whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6">
+              <div className="flex flex-col lg:flex-row items-center gap-3 lg:gap-6 min-w-0 text-center lg:text-left">
+                <h2 className="text-2xl md:text-3xl text-white lg:whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
                   {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
                 </h2>
-                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center md:text-left">
+                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center lg:text-left max-w-prose">
                   {t(
                     "Prenumerera för att få notiser när nya artiklar publiceras.",
                     "Subscribe to get notifications when new articles are published."
@@ -291,7 +291,7 @@ export default function Home() {
                       subscribeMutation.mutate({ email: subscribeEmail.trim() });
                     }
                   }}
-                  className="flex gap-3 shrink-0"
+                  className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto lg:shrink-0"
                 >
                   <input
                     type="email"
@@ -299,12 +299,12 @@ export default function Home() {
                     value={subscribeEmail}
                     onChange={(e) => setSubscribeEmail(e.target.value)}
                     placeholder={t("Din email-adress", "Your email address")}
-                    className="px-4 py-3 rounded-full bg-white/90 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 w-56 md:w-72"
+                    className="px-4 py-3 rounded-full bg-white/90 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 w-full sm:w-72"
                   />
                   <button
                     type="submit"
                     disabled={subscribeMutation.isPending}
-                    className="px-6 py-3 bg-slate-900 text-white rounded-full text-lg font-semibold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-60"
+                    className="px-6 py-3 bg-slate-900 text-white rounded-full text-lg font-semibold hover:bg-slate-800 transition-colors shadow-lg disabled:opacity-60 whitespace-nowrap"
                   >
                     {subscribeMutation.isPending
                       ? t("Sparar...", "Saving...")
