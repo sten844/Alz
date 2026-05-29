@@ -90,9 +90,9 @@ const emptyDiaryForm: DiaryForm = {
 };
 
 function renderDiaryPreviewContent(text: string) {
-  const parts = text.split(/(\*\*.+?\*\*)/);
+  const parts = text.split(/(\\\*\\\*.+?\\\*\\\*|\*\*.+?\*\*)/);
   return parts.map((part, i) => {
-    const boldMatch = part.match(/^\*\*(.+?)\*\*$/);
+    const boldMatch = part.match(/^(?:\\\*\\\*|\*\*)(.+?)(?:\\\*\\\*|\*\*)$/);
     if (boldMatch) {
       return <strong key={i}>{boldMatch[1]}</strong>;
     }

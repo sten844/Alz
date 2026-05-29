@@ -14,7 +14,7 @@ import { Link } from "wouter";
 const ENTRIES_PER_PAGE = 10;
 
 function renderDiaryContent(text: string) {
-  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*.+?\*\*)/);
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\\\*\\\*.+?\\\*\\\*|\*\*.+?\*\*)/);
   return parts.map((part, i) => {
     const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (linkMatch) {
@@ -34,7 +34,7 @@ function renderDiaryContent(text: string) {
       );
     }
 
-    const boldMatch = part.match(/^\*\*(.+?)\*\*$/);
+    const boldMatch = part.match(/^(?:\\\*\\\*|\*\*)(.+?)(?:\\\*\\\*|\*\*)$/);
     if (boldMatch) {
       return <strong key={i}>{boldMatch[1]}</strong>;
     }
