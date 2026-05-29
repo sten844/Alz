@@ -89,6 +89,17 @@ const emptyDiaryForm: DiaryForm = {
   entryDate: new Date().toISOString().slice(0, 16),
 };
 
+function renderDiaryPreviewContent(text: string) {
+  const parts = text.split(/(\*\*.+?\*\*)/);
+  return parts.map((part, i) => {
+    const boldMatch = part.match(/^\*\*(.+?)\*\*$/);
+    if (boldMatch) {
+      return <strong key={i}>{boldMatch[1]}</strong>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 const CATEGORIES = ["Behandling", "Forskning", "Vardagsliv", "Läkemedel", "Åsikt"];
 
 
@@ -1417,7 +1428,7 @@ export default function AdminPage() {
                               )}
                             </div>
                             <p className="text-foreground text-lg leading-relaxed whitespace-pre-wrap">
-                              {entry.content.length > 200 ? entry.content.slice(0, 200) + "..." : entry.content}
+                              {renderDiaryPreviewContent(entry.content.length > 200 ? entry.content.slice(0, 200) + "..." : entry.content)}
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">

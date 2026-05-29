@@ -14,11 +14,11 @@ import { Link } from "wouter";
 const ENTRIES_PER_PAGE = 10;
 
 function renderDiaryContent(text: string) {
-  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/);
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*.+?\*\*)/);
   return parts.map((part, i) => {
-    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
-    if (match) {
-      const [, name, url] = match;
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      const [, name, url] = linkMatch;
       return (
         <span key={i}>
           <strong>{name}</strong>{" "}
@@ -33,6 +33,12 @@ function renderDiaryContent(text: string) {
         </span>
       );
     }
+
+    const boldMatch = part.match(/^\*\*(.+?)\*\*$/);
+    if (boldMatch) {
+      return <strong key={i}>{boldMatch[1]}</strong>;
+    }
+
     return <span key={i}>{part}</span>;
   });
 }
