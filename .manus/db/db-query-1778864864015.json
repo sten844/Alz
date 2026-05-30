@@ -1,0 +1,14 @@
+{
+  "query": "SELECT id, LEFT(content, 300) as preview FROM diary_entries WHERE content LIKE '%lzheimer%life%' LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, LEFT(content, 300) as preview FROM diary_entries WHERE content LIKE '%lzheimer%life%' LIMIT 3;",
+  "rows": [
+    {
+      "id": "1650001",
+      "preview": "Idag publicerar [Alzheimerlife.se](http://Alzheimerlife.se) min blogg om min sjukdomsresa. Sajten är den största i sitt slag med 25.000 prenumeranter. Jag lägger om några dagar även ut texten här på dellby.info."
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tpreview\n1650001\tIdag publicerar [Alzheimerlife.se](http://Alzheimerlife.se) min blogg om min sjukdomsresa. Sajten är den största i sitt slag med 25.000 prenumeranter. Jag lägger om några dagar även ut texten här på dellby.info.\n",
+  "stderr": "",
+  "execution_time_ms": 291
+}
