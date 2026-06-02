@@ -259,12 +259,12 @@ export default function Home() {
 
           {/* Newsletter Band */}
           <div className="bg-[#c05746] rounded-2xl shadow-lg p-4 md:p-6">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6">
-              <div className="flex flex-col lg:flex-row items-center gap-3 lg:gap-6 min-w-0 text-center lg:text-left">
-                <h2 className="text-2xl md:text-3xl text-white lg:whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            <div className="flex flex-col xl:flex-row items-center justify-between gap-4 xl:gap-6">
+              <div className="flex flex-col xl:flex-row items-center gap-3 xl:gap-6 min-w-0 text-center xl:text-left">
+                <h2 className="text-2xl md:text-3xl text-white xl:whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
                   {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
                 </h2>
-                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center lg:text-left max-w-prose">
+                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center xl:text-left max-w-prose">
                   {t(
                     "Prenumerera för att få notiser när nya artiklar publiceras.",
                     "Subscribe to get notifications when new articles are published."
@@ -291,7 +291,7 @@ export default function Home() {
                       subscribeMutation.mutate({ email: subscribeEmail.trim() });
                     }
                   }}
-                  className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto lg:shrink-0"
+                  className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto xl:shrink-0"
                 >
                   <input
                     type="email"
