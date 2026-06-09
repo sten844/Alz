@@ -1198,8 +1198,13 @@ export default function AdminPage() {
                             <span className="text-base text-muted-foreground">{article.language.toUpperCase()}</span>
                             {!article.published && <span className="text-base px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">{t("Utkast", "Draft")}</span>}
                             {article.published && (article as any).notifiedAt && (
-                              <span className="inline-flex items-center gap-1 text-sm px-3 py-1 rounded-full bg-emerald-50 text-emerald-600" title={t("Skickad till prenumeranter", "Sent to subscribers") + " " + new Date((article as any).notifiedAt).toLocaleDateString("sv-SE")}>
-                                <MailCheck className="w-3.5 h-3.5" />{t("Skickad", "Sent")}
+                              <span className="inline-flex items-center gap-1.5 text-base font-medium px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                <MailCheck className="w-5 h-5" />{t("Utskickad", "Sent")} {new Date((article as any).notifiedAt).toLocaleDateString("sv-SE")}
+                              </span>
+                            )}
+                            {article.published && !(article as any).notifiedAt && (
+                              <span className="inline-flex items-center gap-1.5 text-base font-medium px-4 py-1.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+                                {t("Ej utskickad", "Not sent")}
                               </span>
                             )}
                           </div>
@@ -1650,19 +1655,6 @@ function SubscribersEditor() {
           "Here you can see everyone who subscribes to new articles. You will receive a notification with the subscriber list when you publish a new article."
         )}
       </p>
-
-      {subscribersList && subscribersList.length > 0 && (
-        <button
-          onClick={() => {
-            const emails = subscribersList.filter((s: any) => s.active).map((s: any) => s.email).join(", ");
-            navigator.clipboard.writeText(emails);
-            toast.success(t("E-postadresser kopierade!", "Email addresses copied!"));
-          }}
-          className="px-4 py-2 bg-[#c05746] text-white rounded-lg text-base font-medium hover:bg-[#a8483b] transition-colors"
-        >
-          {t("Kopiera alla e-postadresser", "Copy all email addresses")}
-        </button>
-      )}
 
       {(!subscribersList || subscribersList.length === 0) ? (
         <div className="bg-card rounded-2xl border border-border/50 p-12 text-center shadow-sm">
