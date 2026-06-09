@@ -630,7 +630,6 @@ export const appRouter = router({
                   <p style="color: #333; font-size: 18px; line-height: 1.6;">Besök <a href="https://dellby.info" style="color: #c05746; text-decoration: underline;">dellby.info</a></p>
                   <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0 12px;" />
                   <p style="color: #999; font-size: 12px;">Du får detta mail för att du prenumererar på Jag och min Alzheimer.</p>
-                  <p style="color: #999; font-size: 12px; margin-top: 8px;"><a href="${input.siteUrl}/avprenumerera?email=${encodeURIComponent(sub.email)}" style="color: #999; text-decoration: underline;">Avprenumerera / Unsubscribe</a></p>
                 </div>
               `,
             });
