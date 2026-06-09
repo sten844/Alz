@@ -259,12 +259,12 @@ export default function Home() {
 
           {/* Newsletter Band */}
           <div className="bg-[#c05746] rounded-2xl shadow-lg p-4 md:p-6">
-            <div className="flex flex-col xl:flex-row items-center justify-between gap-4 xl:gap-6">
-              <div className="flex flex-col xl:flex-row items-center gap-3 xl:gap-6 min-w-0 text-center xl:text-left">
-                <h2 className="text-2xl md:text-3xl text-white xl:whitespace-nowrap" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            <div className="flex flex-col xl:flex-row items-center justify-between gap-5 xl:gap-8">
+              <div className="flex-1 min-w-0 text-center xl:text-left">
+                <h2 className="text-2xl md:text-3xl text-white leading-tight" style={{ fontFamily: "'DM Serif Display', serif" }}>
                   {t("Få nya artiklar i din inkorg", "Get new articles in your inbox")}
                 </h2>
-                <p className="text-white/90 text-lg md:text-xl leading-relaxed text-center xl:text-left max-w-prose">
+                <p className="mt-2 text-white/90 text-lg md:text-xl leading-relaxed text-center xl:text-left max-w-2xl mx-auto xl:mx-0">
                   {t(
                     "Prenumerera för att få notiser när nya artiklar publiceras.",
                     "Subscribe to get notifications when new articles are published."
@@ -291,7 +291,7 @@ export default function Home() {
                       subscribeMutation.mutate({ email: subscribeEmail.trim() });
                     }
                   }}
-                  className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto xl:shrink-0"
+                  className="flex flex-col sm:flex-row gap-3 w-full max-w-lg xl:w-auto xl:max-w-none xl:shrink-0"
                 >
                   <input
                     type="email"
@@ -299,7 +299,7 @@ export default function Home() {
                     value={subscribeEmail}
                     onChange={(e) => setSubscribeEmail(e.target.value)}
                     placeholder={t("Din email-adress", "Your email address")}
-                    className="px-4 py-3 rounded-full bg-white/90 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400 w-full sm:w-72"
+                    className="w-full sm:flex-1 xl:w-80 px-4 py-3 rounded-full bg-white/90 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
                   />
                   <button
                     type="submit"
