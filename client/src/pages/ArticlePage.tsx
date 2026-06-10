@@ -9,8 +9,7 @@ import SiteFooter from "@/components/SiteFooter";
 import { getArticleImage, categoryColors } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Calendar, Loader2, Share2, Mail, Link as LinkIcon, Check } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Calendar, Loader2 } from "lucide-react";
 
 function renderMarkdown(content: string): string {
   let html = content;
@@ -86,58 +85,6 @@ function renderMarkdown(content: string): string {
   if (inList) result += '</ul>';
 
   return result;
-}
-
-function ShareButtons({ article }: { article: { id: number; title: string; excerpt: string } }) {
-  const [copied, setCopied] = useState(false);
-  const articleUrl = `https://dellby.info/article/${article.id}`;
-  const shareText = article.title;
-
-  const shareOnX = () => {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(articleUrl)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const shareByEmail = () => {
-    const subject = encodeURIComponent(article.title);
-    const body = encodeURIComponent(`${article.excerpt || article.title}\n\n${articleUrl}`);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-  };
-
-  const copyLink = async () => {
-    await navigator.clipboard.writeText(articleUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={shareOnX}
-        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
-        title="Dela på X"
-      >
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        X
-      </button>
-      <button
-        onClick={shareByEmail}
-        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#c05746] text-white text-sm font-medium hover:bg-[#a8483b] transition-colors"
-        title="Dela via e-post"
-      >
-        <Mail className="w-4 h-4" />
-        E-post
-      </button>
-      <button
-        onClick={copyLink}
-        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-accent text-foreground text-sm font-medium hover:bg-accent/80 transition-colors border border-border/50"
-        title="Kopiera länk"
-      >
-        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <LinkIcon className="w-4 h-4" />}
-        {copied ? "Kopierad!" : "Kopiera länk"}
-      </button>
-    </div>
-  );
 }
 
 export default function ArticlePage() {
@@ -325,17 +272,6 @@ export default function ArticlePage() {
               </a>
             </div>
           )}
-
-          {/* Share buttons */}
-          <div className="bg-card rounded-xl shadow-lg p-6 mb-8 border border-border/30">
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-base font-semibold text-foreground flex items-center gap-2">
-                <Share2 className="w-5 h-5" />
-                {t("Dela artikeln", "Share article")}
-              </span>
-              <ShareButtons article={article} />
-            </div>
-          </div>
 
           {/* Back to articles */}
           <div className="text-center pb-12">
