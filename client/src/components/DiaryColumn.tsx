@@ -24,10 +24,6 @@ function renderDiaryContent(text: string) {
     const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (linkMatch) {
       const [, name, url] = linkMatch;
-      // For mailto: links, just show the email as plain bold text (no clickable link)
-      if (url.startsWith("mailto:")) {
-        return <strong key={i}>{name}</strong>;
-      }
       return (
         <span key={i}>
           <strong>{name}</strong>{" "}

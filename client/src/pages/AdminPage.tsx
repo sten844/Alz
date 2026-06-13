@@ -1198,8 +1198,13 @@ export default function AdminPage() {
                             <span className="text-base text-muted-foreground">{article.language.toUpperCase()}</span>
                             {!article.published && <span className="text-base px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">{t("Utkast", "Draft")}</span>}
                             {article.published && (article as any).notifiedAt && (
-                              <span className="inline-flex items-center gap-1 text-sm px-3 py-1 rounded-full bg-emerald-50 text-emerald-600" title={t("Skickad till prenumeranter", "Sent to subscribers") + " " + new Date((article as any).notifiedAt).toLocaleDateString("sv-SE")}>
-                                <MailCheck className="w-3.5 h-3.5" />{t("Skickad", "Sent")}
+                              <span className="inline-flex items-center gap-1.5 text-base font-medium px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                <MailCheck className="w-4 h-4" />{t("Utskickad", "Sent")} {new Date((article as any).notifiedAt).toLocaleDateString("sv-SE")}
+                              </span>
+                            )}
+                            {article.published && !(article as any).notifiedAt && (
+                              <span className="inline-flex items-center gap-1.5 text-base font-medium px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+                                {t("Ej utskickad", "Not sent")}
                               </span>
                             )}
                           </div>
