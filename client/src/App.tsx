@@ -12,6 +12,7 @@ import AdminPage from "./pages/AdminPage";
 import AIPage from "./pages/AIPage";
 import DiaryArchivePage from "./pages/DiaryArchivePage";
 import LinksPage from "./pages/LinksPage";
+import PreviewHome from "./pages/PreviewHome";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/ai" component={AIPage} />
       <Route path="/diary" component={DiaryArchivePage} />
       <Route path="/lankar" component={LinksPage} />
+      <Route path="/preview-home" component={PreviewHome} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
