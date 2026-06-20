@@ -235,3 +235,5 @@
 - [x] PreviewHome: Shorten diary column (reduce maxEntries to 5, keep compact with "mer →")
 - [x] PreviewHome: Add search bar + category filter buttons above articles
 - [x] PreviewHome: Move profile photo to left side of header
+- [x] PreviewHome: Change tiles to 2x2 grid (Prenumerera, Behandlingsplan, X, "Vad jag vill med denna sajt")
+- [x] PreviewHome: Ensure English links and automatic article translation work

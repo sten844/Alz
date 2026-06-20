@@ -19,6 +19,7 @@ import { getArticleImage, IMAGES, categories, categoriesEn, type Article } from 
 import DiaryColumn from "@/components/DiaryColumn";
 import { Link } from "wouter";
 import { ExternalLink, ChevronRight, Loader2, Mail, Search } from "lucide-react";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function PreviewHome() {
   const { language, t } = useLanguage();
@@ -102,73 +103,9 @@ export default function PreviewHome() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      {/* === HEADER: Tabloid/Helvetica style === */}
-      <header className="border-b-4 border-slate-900 bg-white">
-        <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
-          <div className="flex items-center justify-between">
-            {/* Left: Profile photo */}
-            <Link href="/" className="shrink-0 mr-4">
-              <img
-                src={IMAGES.profile}
-                alt="Sten Dellby"
-                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover border-3 border-slate-200 shadow-md"
-              />
-            </Link>
-
-            {/* Right: Title */}
-            <div className="flex-1">
-              <h1
-                className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-none uppercase"
-                style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
-              >
-                Jag och min Alzheimer
-              </h1>
-              <p className="mt-1 text-base md:text-lg text-slate-500 font-medium tracking-wide uppercase"
-                style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
-              >
-                av Sten Dellby
-              </p>
-            </div>
-          </div>
-
-          {/* Navigation bar */}
-          <nav className="mt-3 pt-3 border-t border-slate-200 flex items-center gap-6">
-            <Link href="/" className="text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-              {t("Hem", "Home")}
-            </Link>
-            <Link href="/about" className="text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-              {t("Om mig", "About")}
-            </Link>
-            <Link href="/lankar" className="text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-              {t("Länkar", "Links")}
-            </Link>
-            <Link href="/diary" className="text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-              {t("Dagbok", "Diary")}
-            </Link>
-            <a
-              href="https://x.com/stendellby"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors ml-auto"
-              style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
-            >
-              X
-            </a>
-            <a
-              href="mailto:sten@dellby.info"
-              className="text-base font-semibold text-slate-700 hover:text-slate-900 transition-colors"
-              style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
-            >
-              <Mail className="w-5 h-5" />
-            </a>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* === HEADER: Same as active site === */}
+      <SiteHeader />
 
       {/* === MAIN CONTENT: Two columns === */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-6 md:py-8 w-full">
@@ -311,23 +248,23 @@ export default function PreviewHome() {
               </div>
             )}
 
-            {/* TILES within article column */}
-            <div className="space-y-4 mb-8">
-              {/* Newsletter */}
+            {/* TILES: 2x2 grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              {/* 1. Newsletter */}
               <div className="bg-[#c05746] rounded-xl p-4 md:p-5">
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2"
+                <h3 className="text-lg md:text-xl font-bold text-white mb-2"
                   style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
                   {t("Prenumerera", "Subscribe")}
                 </h3>
-                <p className="text-white/90 text-base mb-3">
+                <p className="text-white/90 text-sm mb-3">
                   {t("Få nya artiklar direkt i din inkorg.", "Get new articles directly in your inbox.")}
                 </p>
                 {subscribeStatus === "success" ? (
-                  <p className="text-white font-semibold">{t("Tack! Du prenumererar nu.", "Thanks! You're subscribed.")}</p>
+                  <p className="text-white font-semibold text-sm">{t("Tack! Du prenumererar nu.", "Thanks! You're subscribed.")}</p>
                 ) : subscribeStatus === "exists" ? (
-                  <p className="text-white font-semibold">{t("Du prenumererar redan!", "Already subscribed!")}</p>
+                  <p className="text-white font-semibold text-sm">{t("Du prenumererar redan!", "Already subscribed!")}</p>
                 ) : subscribeStatus === "error" ? (
-                  <p className="text-white font-semibold">{t("Något gick fel.", "Something went wrong.")}</p>
+                  <p className="text-white font-semibold text-sm">{t("Något gick fel.", "Something went wrong.")}</p>
                 ) : (
                   <form
                     onSubmit={(e) => {
@@ -336,7 +273,7 @@ export default function PreviewHome() {
                         subscribeMutation.mutate({ email: subscribeEmail.trim() });
                       }
                     }}
-                    className="flex gap-2"
+                    className="flex flex-col gap-2"
                   >
                     <input
                       type="email"
@@ -344,12 +281,12 @@ export default function PreviewHome() {
                       value={subscribeEmail}
                       onChange={(e) => setSubscribeEmail(e.target.value)}
                       placeholder={t("Din email", "Your email")}
-                      className="flex-1 px-4 py-2.5 rounded-lg bg-white/90 text-slate-800 text-base focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
+                      className="w-full px-3 py-2 rounded-lg bg-white/90 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 placeholder:text-slate-400"
                     />
                     <button
                       type="submit"
                       disabled={subscribeMutation.isPending}
-                      className="px-5 py-2.5 bg-slate-900 text-white rounded-lg text-base font-semibold hover:bg-slate-800 transition-colors disabled:opacity-60"
+                      className="w-full px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors disabled:opacity-60"
                     >
                       {subscribeMutation.isPending ? "..." : t("Skicka", "Send")}
                     </button>
@@ -357,14 +294,14 @@ export default function PreviewHome() {
                 )}
               </div>
 
-              {/* Min behandlingsplan */}
+              {/* 2. Min behandlingsplan */}
               <Link href="/article/1" className="block">
-                <div className="bg-amber-800 rounded-xl p-4 md:p-5 hover:bg-amber-700 transition-colors cursor-pointer">
-                  <h3 className="text-xl md:text-2xl font-bold text-white mb-1"
+                <div className="bg-amber-800 rounded-xl p-4 md:p-5 hover:bg-amber-700 transition-colors cursor-pointer h-full flex flex-col justify-center">
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-1"
                     style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
                     {t("Min behandlingsplan", "My treatment plan")}
                   </h3>
-                  <p className="text-white/90 text-base">
+                  <p className="text-white/90 text-sm">
                     {t(
                       "Medicin, kost och livsstil som ett integrerat system.",
                       "Medicine, diet and lifestyle as an integrated system."
@@ -373,28 +310,40 @@ export default function PreviewHome() {
                 </div>
               </Link>
 
-              {/* Följ på X */}
-              <div className="bg-slate-900 rounded-xl p-4 md:p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-white"
-                      style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-                      {t("Följ mig på X", "Follow me on X")}
-                    </h3>
-                    <p className="text-slate-300 text-base mt-1">
-                      {t("Jag skriver om mitt liv med Alzheimers.", "I write about my life with Alzheimer's.")}
-                    </p>
-                  </div>
-                  <a
-                    href="https://x.com/stendellby"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 rounded-lg text-base font-semibold hover:bg-slate-100 transition-colors shrink-0"
-                  >
-                    X <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
+              {/* 3. Följ på X */}
+              <div className="bg-slate-900 rounded-xl p-4 md:p-5 flex flex-col justify-center">
+                <h3 className="text-lg font-bold text-white mb-1"
+                  style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+                  {t("Följ mig på X", "Follow me on X")}
+                </h3>
+                <p className="text-slate-300 text-sm mb-3">
+                  {t("Jag skriver om mitt liv med Alzheimers.", "I write about my life with Alzheimer's.")}
+                </p>
+                <a
+                  href="https://x.com/stendellby"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors self-start"
+                >
+                  X <ExternalLink className="w-4 h-4" />
+                </a>
               </div>
+
+              {/* 4. Vad jag vill med denna sajt */}
+              <Link href="/article/1920001" className="block">
+                <div className="bg-teal-800 rounded-xl p-4 md:p-5 hover:bg-teal-700 transition-colors cursor-pointer h-full flex flex-col justify-center">
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-1"
+                    style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+                    {t("Vad jag vill med denna sajt", "What I want with this site")}
+                  </h3>
+                  <p className="text-white/90 text-sm">
+                    {t(
+                      "Mitt statement och mina mål med bloggen.",
+                      "My statement and goals for this blog."
+                    )}
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
 
