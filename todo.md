@@ -237,3 +237,6 @@
 - [x] PreviewHome: Move profile photo to left side of header
 - [x] PreviewHome: Change tiles to 2x2 grid (Prenumerera, Behandlingsplan, X, "Vad jag vill med denna sajt")
 - [x] PreviewHome: Ensure English links and automatic article translation work
+- [x] Add admin-editable header settings (title, description, ledord, X-link, email) stored in DB
+- [x] Build admin page for editing header fields
+- [x] Wire PreviewHome SiteHeader to read settings from DB

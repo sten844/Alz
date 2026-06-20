@@ -1802,9 +1802,163 @@ function SiteSettingsEditor() {
               : "bg-slate-100 text-slate-500"
           }`}>
             <span className={`w-2 h-2 rounded-full ${isCommentsOn ? "bg-emerald-500" : "bg-slate-400"}`} />
-            {isCommentsOn ? t("Påslagen", "Enabled") : t("Avstängd", "Disabled")}
+            {isCommentsOn ? t("P\u00e5slagen", "Enabled") : t("Avst\u00e4ngd", "Disabled")}
           </span>
         </div>
+      </div>
+
+      {/* ---- Header Settings ---- */}
+      <HeaderSettingsEditor />
+    </div>
+  );
+}
+
+// ---- Header Settings Editor ----
+function HeaderSettingsEditor() {
+  const { t } = useLanguage();
+  const utils = trpc.useUtils();
+  const [isSaving, setIsSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const headerKeys = ["header_description_sv", "header_description_en", "header_ledord", "header_x_link", "header_email"];
+
+  const { data: settings, isLoading } = trpc.settings.getMany.useQuery({ keys: headerKeys });
+
+  const [form, setForm] = useState({
+    descriptionSv: "",
+    descriptionEn: "",
+    ledord: "",
+    xLink: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    if (settings && !loaded) {
+      setForm({
+        descriptionSv: settings.header_description_sv || "Jag har f\u00e5tt en Alzheimers diagnos (Kod F002/F018). H\u00e4r publicerar jag texter i ett f\u00f6rs\u00f6k att bygga en liten faktasamling anpassad f\u00f6r oss sjuka.",
+        descriptionEn: settings.header_description_en || "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill.",
+        ledord: settings.header_ledord || "Vetenskap, Behandlingsstrategi, Samh\u00e4llskritik, Patientperspektiv",
+        xLink: settings.header_x_link || "https://x.com/stendellby",
+        email: settings.header_email || "sten@dellby.info",
+      });
+      setLoaded(true);
+    }
+  }, [settings, loaded]);
+
+  const updateManyMutation = trpc.settings.updateMany.useMutation({
+    onSuccess: () => {
+      utils.settings.getMany.invalidate();
+      toast.success(t("Header sparad!", "Header saved!"));
+      setIsSaving(false);
+    },
+    onError: () => {
+      toast.error(t("Kunde inte spara", "Could not save"));
+      setIsSaving(false);
+    },
+  });
+
+  const handleSave = () => {
+    setIsSaving(true);
+    updateManyMutation.mutate({
+      settings: [
+        { key: "header_description_sv", value: form.descriptionSv },
+        { key: "header_description_en", value: form.descriptionEn },
+        { key: "header_ledord", value: form.ledord },
+        { key: "header_x_link", value: form.xLink },
+        { key: "header_email", value: form.email },
+      ],
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm mt-8">
+      <h3 className="text-xl font-semibold text-foreground mb-4">
+        {t("Redigera header", "Edit header")}
+      </h3>
+      <p className="text-base text-muted-foreground mb-6">
+        {t(
+          "\u00c4ndra texterna som visas i sajtens header (beskrivning, ledord, l\u00e4nkar).",
+          "Change the texts displayed in the site header (description, keywords, links)."
+        )}
+      </p>
+
+      <div className="space-y-5">
+        <div>
+          <label className="block text-base font-medium text-foreground mb-1">
+            {t("Beskrivning (svenska)", "Description (Swedish)")}
+          </label>
+          <textarea
+            value={form.descriptionSv}
+            onChange={(e) => setForm({ ...form, descriptionSv: e.target.value })}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-base font-medium text-foreground mb-1">
+            {t("Beskrivning (engelska)", "Description (English)")}
+          </label>
+          <textarea
+            value={form.descriptionEn}
+            onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-base font-medium text-foreground mb-1">
+            {t("Ledord (kommaseparerade)", "Keywords (comma-separated)")}
+          </label>
+          <input
+            type="text"
+            value={form.ledord}
+            onChange={(e) => setForm({ ...form, ledord: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-base font-medium text-foreground mb-1">
+              {t("X (Twitter) l\u00e4nk", "X (Twitter) link")}
+            </label>
+            <input
+              type="url"
+              value={form.xLink}
+              onChange={(e) => setForm({ ...form, xLink: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+            />
+          </div>
+          <div>
+            <label className="block text-base font-medium text-foreground mb-1">
+              {t("E-post", "Email")}
+            </label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-6 py-3 bg-[#c05746] text-white rounded-xl text-base font-semibold hover:bg-[#a84a3d] transition-colors disabled:opacity-50"
+        >
+          {isSaving ? t("Sparar...", "Saving...") : t("Spara header", "Save header")}
+        </button>
       </div>
     </div>
   );

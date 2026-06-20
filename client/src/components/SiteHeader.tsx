@@ -6,15 +6,36 @@
  * - Mobile: compact layout, language buttons with links row
  * - Admin button for admin users
  * - Large font sizes for accessibility
+ * - Reads description, ledord, X link, email from database settings
  */
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IMAGES } from "@/data/articles";
 import { Link } from "wouter";
 import { Mail } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+
+const HEADER_KEYS = ["header_description_sv", "header_description_en", "header_ledord", "header_x_link", "header_email"];
+
+const DEFAULTS = {
+  header_description_sv: "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
+  header_description_en: "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill.",
+  header_ledord: "Vetenskap, Behandlingsstrategi, Samhällskritik, Patientperspektiv",
+  header_x_link: "https://x.com/stendellby",
+  header_email: "sten@dellby.info",
+};
 
 export default function SiteHeader({ showLanguage = true }: { showLanguage?: boolean }) {
   const { language, setLanguage, t } = useLanguage();
 
+  const { data: settings } = trpc.settings.getMany.useQuery({ keys: HEADER_KEYS });
+
+  const descSv = settings?.header_description_sv || DEFAULTS.header_description_sv;
+  const descEn = settings?.header_description_en || DEFAULTS.header_description_en;
+  const ledord = settings?.header_ledord || DEFAULTS.header_ledord;
+  const xLink = settings?.header_x_link || DEFAULTS.header_x_link;
+  const email = settings?.header_email || DEFAULTS.header_email;
+
+  const description = language === "sv" ? descSv : descEn;
 
   return (
     <header className="relative overflow-hidden">
@@ -75,15 +96,12 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
             </Link>
 
             <p className="hidden sm:block mt-2 md:mt-3 text-base md:text-xl text-slate-600 max-w-2xl leading-relaxed">
-              {t(
-                "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
-                "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
-              )}
+              {description}
             </p>
 
             <div className="hidden sm:flex mt-2 md:mt-4 flex-wrap items-center gap-3 md:gap-4">
               <a
-                href="https://x.com/stendellby"
+                href={xLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 md:gap-2 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
@@ -94,39 +112,29 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
                 X (Twitter)
               </a>
               <a
-                href="mailto:sten@dellby.info"
+                href={`mailto:${email}`}
                 className="inline-flex items-center gap-1.5 md:gap-2 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
               >
                 <Mail className="w-4 h-4 md:w-5 md:h-5" />
-                sten@dellby.info
+                {email}
               </a>
             </div>
 
-            {/* Keyword tags */}
-            <div className="hidden sm:flex mt-3 md:mt-4 flex-wrap gap-2 md:gap-3">
-              {["Vetenskap", "Behandlingsstrategi", "Samhällskritik", "Patientperspektiv"].map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 md:px-4 py-1 md:py-1.5 text-sm md:text-base font-medium text-slate-600 bg-white/60 backdrop-blur-sm border border-slate-300/60 rounded-full tracking-wide"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {/* Ledord inline */}
+            <p className="hidden sm:block mt-2 md:mt-3 text-sm md:text-base text-slate-500 italic">
+              Ledord: {ledord}
+            </p>
           </div>
         </div>
 
         {/* Mobile-only: description + links + language */}
         <div className="sm:hidden mt-2">
           <p className="text-base text-slate-600 leading-snug">
-            {t(
-              "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
-              "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill."
-            )}
+            {description}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <a
-              href="https://x.com/stendellby"
+              href={xLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
@@ -137,23 +145,16 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
               X
             </a>
             <a
-              href="mailto:sten@dellby.info"
+              href={`mailto:${email}`}
               className="inline-flex items-center gap-1.5 text-base font-medium text-slate-600 hover:text-slate-800 transition-colors"
             >
               <Mail className="w-4 h-4" />
-              sten@dellby.info
+              {email}
             </a>
-            {/* Keyword tags - mobile */}
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {["Vetenskap", "Behandlingsstrategi", "Samhällskritik", "Patientperspektiv"].map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2.5 py-0.5 text-xs font-medium text-slate-600 bg-white/60 backdrop-blur-sm border border-slate-300/60 rounded-full tracking-wide"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {/* Ledord inline - mobile */}
+            <p className="mt-1.5 text-xs text-slate-500 italic">
+              Ledord: {ledord}
+            </p>
             {showLanguage && (
               <>
                 <span className="text-slate-300">|</span>

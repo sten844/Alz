@@ -115,45 +115,11 @@ export default function PreviewHome() {
           {/* LEFT COLUMN: Articles + Tiles */}
           <div className="flex-1 min-w-0">
 
-            {/* SEARCH + CATEGORY FILTERS */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-              <div className="flex flex-wrap gap-1.5">
-                {displayCategories.map((cat) => {
-                  const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
-                  const isActive = mappedCat === activeCategory;
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => handleCategoryClick(cat)}
-                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                        isActive
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
-                      }`}
-                      style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
-                    >
-                      {cat}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="relative w-full sm:w-56">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder={t("Sök artiklar...", "Search articles...")}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* HERO ARTICLE (latest) */}
+            {/* HERO ARTICLE (latest) - reduced height */}
             {heroArticle && (
               <Link href={`/article/${heroArticle.id}`} className="block group mb-6">
                 <article>
-                  <div className="relative overflow-hidden rounded-lg aspect-[16/9] mb-3">
+                  <div className="relative overflow-hidden rounded-lg aspect-[3/1] mb-3">
                     <img
                       src={getArticleImage({ ...heroArticle, publishedAt: new Date(heroArticle.publishedAt).toISOString() })}
                       alt={heroArticle.title}
@@ -221,7 +187,7 @@ export default function PreviewHome() {
 
             {/* 2x3 ARTICLE GRID with thumbnails + titles */}
             {gridArticles.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 {gridArticles.map((article) => (
                   <Link key={article.id} href={`/article/${article.id}`} className="block group">
                     <article>
@@ -248,6 +214,38 @@ export default function PreviewHome() {
                 ))}
               </div>
             )}
+
+            {/* SEARCH + CATEGORY FILTERS - on one row below articles */}
+            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-slate-200 overflow-x-auto">
+              {displayCategories.map((cat) => {
+                const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
+                const isActive = mappedCat === activeCategory;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategoryClick(cat)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
+                      isActive
+                        ? "bg-slate-900 text-white shadow-md"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
+                    }`}
+                    style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+              <div className="relative ml-auto w-48">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder={t("S\u00f6k...", "Search...")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 transition-all"
+                />
+              </div>
+            </div>
 
             {/* TILES: 2x2 grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -348,8 +346,8 @@ export default function PreviewHome() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Diary - scrolls with page */}
-          <aside className="hidden lg:flex lg:flex-col w-72 xl:w-80 shrink-0">
+          {/* RIGHT COLUMN: Diary - limited to same height as articles */}
+          <aside className="hidden lg:block w-72 xl:w-80 shrink-0 self-start">
             <div className="pr-2">
               <h2
                 className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-4 pb-3 border-b-2 border-slate-900"
@@ -357,7 +355,7 @@ export default function PreviewHome() {
               >
                 {t("Dagbok", "Diary")}
               </h2>
-              <DiaryColumn hideHeader maxEntries={10} showArchiveLink />
+              <DiaryColumn hideHeader maxEntries={6} showArchiveLink />
             </div>
           </aside>
         </div>

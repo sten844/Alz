@@ -687,6 +687,29 @@ export const appRouter = router({
         await upsertSiteSetting(input.key, input.value);
         return { success: true };
       }),
+
+    // Public: get multiple settings at once (for header)
+    getMany: publicProcedure
+      .input(z.object({ keys: z.array(z.string()) }))
+      .query(async ({ input }) => {
+        const results: Record<string, string | null> = {};
+        for (const key of input.keys) {
+          results[key] = await getSiteSetting(key) ?? null;
+        }
+        return results;
+      }),
+
+    // Admin: update multiple settings at once
+    updateMany: adminProcedure
+      .input(z.object({
+        settings: z.array(z.object({ key: z.string(), value: z.string() })),
+      }))
+      .mutation(async ({ input }) => {
+        for (const { key, value } of input.settings) {
+          await upsertSiteSetting(key, value);
+        }
+        return { success: true };
+      }),
   }),
 
   // ---- Export / Import ----
