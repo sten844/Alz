@@ -15,13 +15,24 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getArticleImage, IMAGES, type Article } from "@/data/articles";
+import { getArticleImage, IMAGES, categories, categoriesEn, type Article } from "@/data/articles";
 import DiaryColumn from "@/components/DiaryColumn";
 import { Link } from "wouter";
-import { ExternalLink, ChevronRight, Loader2, Mail } from "lucide-react";
+import { ExternalLink, ChevronRight, Loader2, Mail, Search } from "lucide-react";
 
 export default function PreviewHome() {
   const { language, t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("Alla");
+
+  const categoryMap: Record<string, string> = {
+    All: "Alla",
+    Treatment: "Behandling",
+    Research: "Forskning",
+    "Daily Life": "Vardagsliv",
+    Medication: "Läkemedel",
+    Opinion: "Åsikt",
+  };
 
   // Fetch articles
   const { data: dbArticles, isLoading } = trpc.articles.list.useQuery({
@@ -48,12 +59,35 @@ export default function PreviewHome() {
     },
   });
 
+  const displayCategories = language === "sv" ? categories : categoriesEn;
+
+  const handleCategoryClick = (cat: string) => {
+    const mapped = language === "en" ? (categoryMap[cat] || cat) : cat;
+    setActiveCategory(mapped);
+  };
+
   const sortedArticles = useMemo(() => {
     if (!dbArticles) return [];
-    return [...dbArticles].sort(
+    let filtered = [...dbArticles];
+
+    if (activeCategory !== "Alla" && activeCategory !== "All") {
+      filtered = filtered.filter((a) => a.category === activeCategory);
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          a.excerpt.toLowerCase().includes(q) ||
+          a.content.toLowerCase().includes(q)
+      );
+    }
+
+    return filtered.sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
-  }, [dbArticles]);
+  }, [dbArticles, activeCategory, searchQuery]);
 
   const heroArticle = sortedArticles[0];
   const secondArticle = sortedArticles[1];
@@ -73,7 +107,16 @@ export default function PreviewHome() {
       <header className="border-b-4 border-slate-900 bg-white">
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
           <div className="flex items-center justify-between">
-            {/* Left: Title */}
+            {/* Left: Profile photo */}
+            <Link href="/" className="shrink-0 mr-4">
+              <img
+                src={IMAGES.profile}
+                alt="Sten Dellby"
+                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover border-3 border-slate-200 shadow-md"
+              />
+            </Link>
+
+            {/* Right: Title */}
             <div className="flex-1">
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-none uppercase"
@@ -87,15 +130,6 @@ export default function PreviewHome() {
                 av Sten Dellby
               </p>
             </div>
-
-            {/* Right: Profile photo */}
-            <Link href="/" className="shrink-0 ml-4">
-              <img
-                src={IMAGES.profile}
-                alt="Sten Dellby"
-                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover border-3 border-slate-200 shadow-md"
-              />
-            </Link>
           </div>
 
           {/* Navigation bar */}
@@ -142,7 +176,41 @@ export default function PreviewHome() {
           
           {/* LEFT COLUMN: Articles + Tiles */}
           <div className="flex-1 min-w-0">
-            
+
+            {/* SEARCH + CATEGORY FILTERS */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+              <div className="flex flex-wrap gap-1.5">
+                {displayCategories.map((cat) => {
+                  const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
+                  const isActive = mappedCat === activeCategory;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => handleCategoryClick(cat)}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                        isActive
+                          ? "bg-slate-900 text-white shadow-md"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
+                      }`}
+                      style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="relative w-full sm:w-56">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder={t("Sök artiklar...", "Search articles...")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-full bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-300 transition-all"
+                />
+              </div>
+            </div>
+
             {/* HERO ARTICLE (latest) */}
             {heroArticle && (
               <Link href={`/article/${heroArticle.id}`} className="block group mb-6">
@@ -330,16 +398,16 @@ export default function PreviewHome() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Diary */}
-          <aside className="hidden lg:block w-72 xl:w-80 shrink-0">
-            <div className="sticky top-6">
+          {/* RIGHT COLUMN: Diary - stretches full height */}
+          <aside className="hidden lg:flex lg:flex-col w-72 xl:w-80 shrink-0 self-stretch">
+            <div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto pr-2 scrollbar-thin">
               <h2
                 className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-4 pb-3 border-b-2 border-slate-900"
                 style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
               >
                 {t("Dagbok", "Diary")}
               </h2>
-              <DiaryColumn hideHeader maxEntries={8} showArchiveLink />
+              <DiaryColumn hideHeader maxEntries={5} showArchiveLink compact />
             </div>
           </aside>
         </div>

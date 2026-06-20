@@ -232,4 +232,6 @@
 - [ ] Bug: Diary editor bold toggle not working - cannot switch from bold back to normal text, toolbar feels chaotic
 - [x] Add "Min behandlingsplan" tile between "Nya artiklar" and "Följ mig på X" on homepage
 - [x] Bug: Cannot edit articles in admin panel - fixed duplicate tiptap extensions + added auto-scroll to form
-- [ ] Build new homepage design (Moscow Times style) at /preview-home - not live yet
+- [x] PreviewHome: Shorten diary column (reduce maxEntries to 5, keep compact with "mer →")
+- [x] PreviewHome: Add search bar + category filter buttons above articles
+- [x] PreviewHome: Move profile photo to left side of header
