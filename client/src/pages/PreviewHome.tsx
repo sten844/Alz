@@ -20,6 +20,7 @@ import DiaryColumn from "@/components/DiaryColumn";
 import { Link } from "wouter";
 import { ExternalLink, ChevronRight, Loader2, Mail, Search } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function PreviewHome() {
   const { language, t } = useLanguage();
@@ -347,49 +348,23 @@ export default function PreviewHome() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Diary - stretches full height */}
-          <aside className="hidden lg:flex lg:flex-col w-72 xl:w-80 shrink-0 self-stretch">
-            <div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto pr-2 scrollbar-thin">
+          {/* RIGHT COLUMN: Diary - scrolls with page */}
+          <aside className="hidden lg:flex lg:flex-col w-72 xl:w-80 shrink-0">
+            <div className="pr-2">
               <h2
                 className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-4 pb-3 border-b-2 border-slate-900"
                 style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
               >
                 {t("Dagbok", "Diary")}
               </h2>
-              <DiaryColumn hideHeader maxEntries={5} showArchiveLink compact />
+              <DiaryColumn hideHeader maxEntries={10} showArchiveLink />
             </div>
           </aside>
         </div>
       </main>
 
-      {/* === FOOTER === */}
-      <footer className="border-t border-slate-200 bg-slate-50 mt-8">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-base text-slate-500">
-            <div className="flex items-center gap-4">
-              <span className="font-semibold text-slate-700">Sten Dellby</span>
-              <span>|</span>
-              <a href="https://dellby.info" className="hover:text-slate-700 transition-colors">dellby.info</a>
-              <span>|</span>
-              <a href="mailto:sten@dellby.info" className="hover:text-slate-700 transition-colors">sten@dellby.info</a>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href="/about" className="hover:text-slate-700 transition-colors">
-                {t("Om mig", "About")}
-              </Link>
-              <Link href="/lankar" className="hover:text-slate-700 transition-colors">
-                {t("Länkar", "Links")}
-              </Link>
-              <a href="https://x.com/stendellby" target="_blank" rel="noopener noreferrer" className="hover:text-slate-700 transition-colors">
-                X
-              </a>
-            </div>
-          </div>
-          <p className="mt-4 text-center text-sm text-slate-400">
-            © {new Date().getFullYear()} Sten Dellby. {t("Alla rättigheter förbehållna.", "All rights reserved.")}
-          </p>
-        </div>
-      </footer>
+      {/* === FOOTER: Same dark footer as published site === */}
+      <SiteFooter />
     </div>
   );
 }

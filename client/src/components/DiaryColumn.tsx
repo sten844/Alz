@@ -123,15 +123,29 @@ function DiaryEntry({
     );
   }
 
-  // Full mode (desktop sidebar)
+  // Full mode (desktop sidebar) - 4 line clamp with expand
   return (
     <div className="diary-entry">
       <div className="text-base font-bold text-[#c05746] uppercase tracking-wide mb-2">
         {formatDateLong(entry.entryDate)}
       </div>
-      <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap">
-        {renderDiaryContent(displayContent)}
-      </p>
+      {!expanded ? (
+        <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap line-clamp-4">
+          {renderDiaryContent(displayContent)}
+        </p>
+      ) : (
+        <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap">
+          {renderDiaryContent(displayContent)}
+        </p>
+      )}
+      {displayContent.length > 150 && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-base font-medium text-[#c05746] hover:text-[#a8483b] mt-1 transition-colors"
+        >
+          {expanded ? t("\u2190 mindre", "\u2190 less") : t("mer \u2192", "more \u2192")}
+        </button>
+      )}
       <div className="mt-3 border-b border-border/30" />
     </div>
   );
