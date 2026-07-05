@@ -17,7 +17,8 @@ import PreviewHome from "./pages/PreviewHome";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={PreviewHome} />
+      <Route path="/old-home" component={Home} />
       <Route path="/article/:id" component={ArticlePage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/admin" component={AdminPage} />
