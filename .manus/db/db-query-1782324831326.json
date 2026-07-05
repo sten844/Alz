@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, title, attachmentUrl, attachmentName FROM articles WHERE title LIKE '%behandlingsplan%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, title, attachmentUrl, attachmentName FROM articles WHERE title LIKE '%behandlingsplan%';",
+  "rows": [
+    {
+      "id": "1",
+      "title": "Min behandlingsplan",
+      "attachmentUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/article-attachments/xv84qoar-Medicinlista.docx",
+      "attachmentName": "Medicinlista.docx"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tattachmentUrl\tattachmentName\n1\tMin behandlingsplan\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/article-attachments/xv84qoar-Medicinlista.docx\tMedicinlista.docx\n",
+  "stderr": "",
+  "execution_time_ms": 267
+}

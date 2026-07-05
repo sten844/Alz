@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, attachmentUrl, attachmentName FROM articles WHERE id = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT id, attachmentUrl, attachmentName FROM articles WHERE id = 1;",
+  "rows": [
+    {
+      "id": "1",
+      "attachmentUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/article-attachments/xv84qoar-Medicinlista.docx",
+      "attachmentName": "Medicinlista.docx"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tattachmentUrl\tattachmentName\n1\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663318206043/3BmmrMXwxV4Z2AuoDAe93z/article-attachments/xv84qoar-Medicinlista.docx\tMedicinlista.docx\n",
+  "stderr": "",
+  "execution_time_ms": 269
+}

@@ -91,9 +91,8 @@ export default function PreviewHome() {
     );
   }, [dbArticles, activeCategory, searchQuery]);
 
-  const heroArticle = sortedArticles[0];
-  const secondArticle = sortedArticles[1];
-  const gridArticles = sortedArticles.slice(2, 8); // 6 articles for 2x3 grid
+  const featuredArticle = sortedArticles[0];
+  const gridArticles = sortedArticles.slice(1, 7); // 6 articles for 2x3 grid
 
   if (isLoading) {
     return (
@@ -115,53 +114,19 @@ export default function PreviewHome() {
           {/* LEFT COLUMN: Articles + Tiles */}
           <div className="flex-1 min-w-0">
 
-            {/* HERO ARTICLE (latest) - reduced height */}
-            {heroArticle && (
-              <Link href={`/article/${heroArticle.id}`} className="block group mb-6">
-                <article>
-                  <div className="relative overflow-hidden rounded-lg aspect-[3/1] mb-3">
-                    <img
-                      src={getArticleImage({ ...heroArticle, publishedAt: new Date(heroArticle.publishedAt).toISOString() })}
-                      alt={heroArticle.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1 bg-red-700 text-white text-xs font-bold uppercase tracking-wider rounded">
-                        {heroArticle.category}
-                      </span>
-                    </div>
-                  </div>
-                  <h2
-                    className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight group-hover:text-red-800 transition-colors"
-                    style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                  >
-                    {heroArticle.title}
-                  </h2>
-                  <p className="mt-2 text-lg text-slate-600 leading-relaxed line-clamp-3">
-                    {heroArticle.excerpt}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-400">
-                    {new Date(heroArticle.publishedAt).toLocaleDateString(language === "sv" ? "sv-SE" : "en-US", {
-                      year: "numeric", month: "long", day: "numeric"
-                    })}
-                  </p>
-                </article>
-              </Link>
-            )}
-
-            {/* SECOND ARTICLE */}
-            {secondArticle && (
-              <Link href={`/article/${secondArticle.id}`} className="block group mb-6 pb-6 border-b border-slate-200">
+            {/* FEATURED ARTICLE (latest) - image left, text right */}
+            {featuredArticle && (
+              <Link href={`/article/${featuredArticle.id}`} className="block group mb-6 pb-6 border-b border-slate-200">
                 <article className="flex gap-4">
                   <div className="relative overflow-hidden rounded-lg w-48 h-32 shrink-0">
                     <img
-                      src={getArticleImage({ ...secondArticle, publishedAt: new Date(secondArticle.publishedAt).toISOString() })}
-                      alt={secondArticle.title}
+                      src={getArticleImage({ ...featuredArticle, publishedAt: new Date(featuredArticle.publishedAt).toISOString() })}
+                      alt={featuredArticle.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-2 left-2">
                       <span className="px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider rounded">
-                        {secondArticle.category}
+                        {featuredArticle.category}
                       </span>
                     </div>
                   </div>
@@ -170,13 +135,13 @@ export default function PreviewHome() {
                       className="text-xl md:text-2xl font-bold text-slate-900 leading-tight group-hover:text-red-800 transition-colors"
                       style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                     >
-                      {secondArticle.title}
+                      {featuredArticle.title}
                     </h3>
                     <p className="mt-1 text-base text-slate-600 leading-relaxed line-clamp-2">
-                      {secondArticle.excerpt}
+                      {featuredArticle.excerpt}
                     </p>
                     <p className="mt-1 text-sm text-slate-400">
-                      {new Date(secondArticle.publishedAt).toLocaleDateString(language === "sv" ? "sv-SE" : "en-US", {
+                      {new Date(featuredArticle.publishedAt).toLocaleDateString(language === "sv" ? "sv-SE" : "en-US", {
                         year: "numeric", month: "long", day: "numeric"
                       })}
                     </p>

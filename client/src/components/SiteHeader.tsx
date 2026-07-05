@@ -17,8 +17,8 @@ import { trpc } from "@/lib/trpc";
 const HEADER_KEYS = ["header_description_sv", "header_description_en", "header_ledord", "header_x_link", "header_email"];
 
 const DEFAULTS = {
-  header_description_sv: "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en liten faktasamling anpassad för oss sjuka.",
-  header_description_en: "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill.",
+  header_description_sv: "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en faktasamling om sjukdomen. Mina ledord: Vetenskap, Behandlingsstrategi, Patientperspektiv",
+  header_description_en: "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a knowledge base about the disease. My keywords: Science, Treatment Strategy, Patient Perspective",
   header_ledord: "Vetenskap, Behandlingsstrategi, Samhällskritik, Patientperspektiv",
   header_x_link: "https://x.com/stendellby",
   header_email: "sten@dellby.info",
@@ -120,10 +120,7 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
               </a>
             </div>
 
-            {/* Ledord inline */}
-            <p className="hidden sm:block mt-2 md:mt-3 text-sm md:text-base text-slate-500 italic">
-              Ledord: {ledord}
-            </p>
+
           </div>
         </div>
 
@@ -151,10 +148,7 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
               <Mail className="w-4 h-4" />
               {email}
             </a>
-            {/* Ledord inline - mobile */}
-            <p className="mt-1.5 text-xs text-slate-500 italic">
-              Ledord: {ledord}
-            </p>
+
             {showLanguage && (
               <>
                 <span className="text-slate-300">|</span>
