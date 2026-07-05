@@ -180,6 +180,17 @@ export default function PreviewHome() {
               </div>
             )}
 
+            {/* DIARY: visible on mobile and iPad portrait (below lg), placed after articles */}
+            <div className="lg:hidden mb-6 border-t border-slate-200 pt-6">
+              <h2
+                className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-4 pb-3 border-b-2 border-slate-900"
+                style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
+              >
+                {t("Dagbok", "Diary")}
+              </h2>
+              <DiaryColumn hideHeader maxEntries={2} showArchiveLink />
+            </div>
+
             {/* SEARCH + CATEGORY FILTERS - on one row below articles */}
             <div className="flex items-center gap-2 mb-6 pb-4 border-b border-slate-200 overflow-x-auto">
               {displayCategories.map((cat) => {
@@ -325,16 +336,7 @@ export default function PreviewHome() {
           </aside>
         </div>
 
-        {/* DIARY BELOW ARTICLES: visible on mobile and iPad portrait (below lg) */}
-        <div className="lg:hidden mt-8 border-t border-slate-200 pt-6">
-          <h2
-            className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-4 pb-3 border-b-2 border-slate-900"
-            style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
-          >
-            {t("Dagbok", "Diary")}
-          </h2>
-          <DiaryColumn hideHeader maxEntries={4} showArchiveLink />
-        </div>
+
       </main>
 
       {/* === FOOTER: Same dark footer as published site === */}
