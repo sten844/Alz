@@ -150,11 +150,11 @@ export default function PreviewHome() {
               </Link>
             )}
 
-            {/* 2x3 ARTICLE GRID with thumbnails + titles */}
+            {/* ARTICLE GRID - 2 cols on mobile (fewer items), 3 cols on md+ */}
             {gridArticles.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                {gridArticles.map((article) => (
-                  <Link key={article.id} href={`/article/${article.id}`} className="block group">
+                {gridArticles.map((article, idx) => (
+                  <Link key={article.id} href={`/article/${article.id}`} className={`group ${idx >= 4 ? 'hidden md:block' : 'block'}`}>
                     <article>
                       <div className="relative overflow-hidden rounded-md aspect-[4/3] mb-2">
                         <img
@@ -311,7 +311,7 @@ export default function PreviewHome() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Diary - limited to same height as articles */}
+          {/* RIGHT COLUMN: Diary - visible only on large screens (desktop) */}
           <aside className="hidden lg:block w-72 xl:w-80 shrink-0 self-start">
             <div className="pr-2">
               <h2
@@ -323,6 +323,17 @@ export default function PreviewHome() {
               <DiaryColumn hideHeader maxEntries={6} showArchiveLink />
             </div>
           </aside>
+        </div>
+
+        {/* DIARY BELOW ARTICLES: visible on mobile and iPad portrait (below lg) */}
+        <div className="lg:hidden mt-8 border-t border-slate-200 pt-6">
+          <h2
+            className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-4 pb-3 border-b-2 border-slate-900"
+            style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
+          >
+            {t("Dagbok", "Diary")}
+          </h2>
+          <DiaryColumn hideHeader maxEntries={4} showArchiveLink />
         </div>
       </main>
 
