@@ -180,6 +180,13 @@ export default function PreviewHome() {
               </div>
             )}
 
+            {/* Link to older articles */}
+            <div className="mb-6 text-center">
+              <Link href="/old-home" className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-red-800 transition-colors">
+                {t("Äldre artiklar →", "Older articles →")}
+              </Link>
+            </div>
+
             {/* DIARY: visible on mobile and iPad portrait (below lg), placed after articles */}
             <div className="lg:hidden mb-6 border-t border-slate-200 pt-6">
               <h2
