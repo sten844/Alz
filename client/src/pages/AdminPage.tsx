@@ -1651,6 +1651,23 @@ function SubscribersEditor() {
         )}
       </p>
 
+      {subscribersList && subscribersList.length > 0 && (
+        <button
+          onClick={() => {
+            const emails = subscribersList
+              .filter((s: any) => s.active)
+              .map((s: any) => s.email)
+              .join(", ");
+            navigator.clipboard.writeText(emails);
+            toast.success(t("Mailadresser kopierade! Klistra in i BCC-fältet.", "Email addresses copied! Paste into BCC field."));
+          }}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#c05746] text-white rounded-lg text-sm font-semibold hover:bg-[#a04636] transition-colors"
+        >
+          <Mail className="w-4 h-4" />
+          {t("Kopiera alla mailadresser (för BCC)", "Copy all email addresses (for BCC)")}
+        </button>
+      )}
+
       {(!subscribersList || subscribersList.length === 0) ? (
         <div className="bg-card rounded-2xl border border-border/50 p-12 text-center shadow-sm">
           <Mail className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />

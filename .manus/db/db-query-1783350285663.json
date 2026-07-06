@@ -1,0 +1,97 @@
+{
+  "query": "SELECT email FROM subscribers WHERE active = 1 ORDER BY id LIMIT 50 OFFSET 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT email FROM subscribers WHERE active = 1 ORDER BY id LIMIT 50 OFFSET 20;",
+  "rows": [
+    {
+      "email": "ing.mar.wikstrom@telia.com"
+    },
+    {
+      "email": "evvva.andersson@gmail.com"
+    },
+    {
+      "email": "carra1us@hotmail.com"
+    },
+    {
+      "email": "magganklv@hotmail.com"
+    },
+    {
+      "email": "sa.ivarsson@telia.com"
+    },
+    {
+      "email": "kerro.holmberg@gmail.com"
+    },
+    {
+      "email": "rolfdigervall@gmail.com"
+    },
+    {
+      "email": "vanjabe67@gmail.com"
+    },
+    {
+      "email": "goran.johansson@cleanbusiness.se"
+    },
+    {
+      "email": "lena.oman.hoglund@boras.se"
+    },
+    {
+      "email": "liselotte.bjork@seniorgladje.se"
+    },
+    {
+      "email": "carina.crifalt@soderkoping.se"
+    },
+    {
+      "email": "michog@live.se"
+    },
+    {
+      "email": "mia.haggebacken@gmail.com"
+    },
+    {
+      "email": "frassesara@hotmail.com"
+    },
+    {
+      "email": "stina.stahl@gmail.com"
+    },
+    {
+      "email": "ann-louise.ostling-lind@telia.com"
+    },
+    {
+      "email": "susi.burton@gmail.com"
+    },
+    {
+      "email": "bennman@me.com"
+    },
+    {
+      "email": "matslarson2020@gmail.con"
+    },
+    {
+      "email": "tommy.auoja@gmail.com"
+    },
+    {
+      "email": "anders.lagergren@me.com"
+    },
+    {
+      "email": "annlouiseolsson7@gmail.com"
+    },
+    {
+      "email": "flatenberg@gmail.com"
+    },
+    {
+      "email": "dellby.fredrik@gmail.com"
+    },
+    {
+      "email": "bjacobssonekblom@gmail.com"
+    },
+    {
+      "email": "syfabriken@gmail.com"
+    },
+    {
+      "email": "monastyrski@gmail.com"
+    },
+    {
+      "email": "ldellby3@gmail.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "email\ning.mar.wikstrom@telia.com\nevvva.andersson@gmail.com\ncarra1us@hotmail.com\nmagganklv@hotmail.com\nsa.ivarsson@telia.com\nkerro.holmberg@gmail.com\nrolfdigervall@gmail.com\nvanjabe67@gmail.com\ngoran.johansson@cleanbusiness.se\nlena.oman.hoglund@boras.se\nliselotte.bjork@seniorgladje.se\ncarina.crifalt@soderkoping.se\nmichog@live.se\nmia.haggebacken@gmail.com\nfrassesara@hotmail.com\nstina.stahl@gmail.com\nann-louise.ostling-lind@telia.com\nsusi.burton@gmail.com\nbennman@me.com\nmatslarson2020@gmail.con\ntommy.auoja@gmail.com\nanders.lagergren@me.com\nannlouiseolsson7@gmail.com\nflatenberg@gmail.com\ndellby.fredrik@gmail.com\nbjacobssonekblom@gmail.com\nsyfabriken@gmail.com\nmonastyrski@gmail.com\nldellby3@gmail.com\n",
+  "stderr": "",
+  "execution_time_ms": 404
+}

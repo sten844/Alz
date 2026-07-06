@@ -1,0 +1,402 @@
+{
+  "query": "SELECT * FROM subscribers LIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT * FROM subscribers LIMIT 50;",
+  "rows": [
+    {
+      "id": "30001",
+      "email": "annie.winter.andreasson@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-03-11 12:32:34",
+      "updatedAt": "2026-03-11 12:32:34"
+    },
+    {
+      "id": "60001",
+      "email": "krakekull@hotmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-03-12 18:07:17",
+      "updatedAt": "2026-03-12 18:07:17"
+    },
+    {
+      "id": "60002",
+      "email": "krakekull1@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-03-12 18:07:48",
+      "updatedAt": "2026-03-12 18:07:48"
+    },
+    {
+      "id": "90001",
+      "email": "hakan.alm@hb.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-03-14 08:22:14",
+      "updatedAt": "2026-03-14 08:22:14"
+    },
+    {
+      "id": "120001",
+      "email": "stina.sundling@hb.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-04-02 07:37:23",
+      "updatedAt": "2026-04-02 07:37:23"
+    },
+    {
+      "id": "150001",
+      "email": "eric.g.olsson@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-04-03 18:22:55",
+      "updatedAt": "2026-04-03 18:22:55"
+    },
+    {
+      "id": "180001",
+      "email": "sooki50@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-04-05 16:51:19",
+      "updatedAt": "2026-04-05 16:51:19"
+    },
+    {
+      "id": "210001",
+      "email": "sten@dellby.info",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-04-12 05:45:12",
+      "updatedAt": "2026-04-12 05:45:12"
+    },
+    {
+      "id": "240001",
+      "email": "henrik@frenkelmedia.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-02 14:30:41",
+      "updatedAt": "2026-05-02 14:30:41"
+    },
+    {
+      "id": "270001",
+      "email": "pesven61@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-04 17:07:55",
+      "updatedAt": "2026-05-04 17:07:55"
+    },
+    {
+      "id": "300001",
+      "email": "ankisepost1@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 08:30:15",
+      "updatedAt": "2026-05-16 08:30:15"
+    },
+    {
+      "id": "330001",
+      "email": "carina_servin@hotmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 09:02:01",
+      "updatedAt": "2026-05-16 09:02:01"
+    },
+    {
+      "id": "360001",
+      "email": "elisabeth.schoede@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 09:23:53",
+      "updatedAt": "2026-05-16 09:23:53"
+    },
+    {
+      "id": "390001",
+      "email": "rolf47arvifsson@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 10:03:31",
+      "updatedAt": "2026-05-16 10:03:31"
+    },
+    {
+      "id": "390002",
+      "email": "rolf47arvidsson@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 10:04:02",
+      "updatedAt": "2026-05-16 10:04:02"
+    },
+    {
+      "id": "420001",
+      "email": "solgerd.nilsson@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 11:24:23",
+      "updatedAt": "2026-05-16 11:24:23"
+    },
+    {
+      "id": "450001",
+      "email": "amie.malmberg@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 12:40:37",
+      "updatedAt": "2026-05-16 12:40:37"
+    },
+    {
+      "id": "480001",
+      "email": "ingmar.servin@hotmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 13:44:19",
+      "updatedAt": "2026-05-16 13:44:19"
+    },
+    {
+      "id": "510001",
+      "email": "ann@rudback.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-16 16:39:39",
+      "updatedAt": "2026-05-16 16:39:39"
+    },
+    {
+      "id": "540001",
+      "email": "ulf.j.bengtsson@me.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 05:42:45",
+      "updatedAt": "2026-05-17 05:42:45"
+    },
+    {
+      "id": "570001",
+      "email": "ing.mar.wikstrom@telia.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 07:32:42",
+      "updatedAt": "2026-05-17 07:32:42"
+    },
+    {
+      "id": "600001",
+      "email": "evvva.andersson@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 08:11:42",
+      "updatedAt": "2026-05-17 08:11:42"
+    },
+    {
+      "id": "630001",
+      "email": "carra1us@hotmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 08:39:23",
+      "updatedAt": "2026-05-17 08:39:23"
+    },
+    {
+      "id": "660001",
+      "email": "magganklv@hotmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 11:32:34",
+      "updatedAt": "2026-05-17 11:32:34"
+    },
+    {
+      "id": "690001",
+      "email": "sa.ivarsson@telia.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 12:40:59",
+      "updatedAt": "2026-05-17 12:40:59"
+    },
+    {
+      "id": "720001",
+      "email": "kerro.holmberg@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 13:54:22",
+      "updatedAt": "2026-05-17 13:54:22"
+    },
+    {
+      "id": "750001",
+      "email": "rolfdigervall@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 18:55:29",
+      "updatedAt": "2026-05-17 18:55:29"
+    },
+    {
+      "id": "780001",
+      "email": "vanjabe67@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 20:45:10",
+      "updatedAt": "2026-05-17 20:45:10"
+    },
+    {
+      "id": "810001",
+      "email": "goran.johansson@cleanbusiness.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-17 21:50:02",
+      "updatedAt": "2026-05-17 21:50:02"
+    },
+    {
+      "id": "840001",
+      "email": "lena.oman.hoglund@boras.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-18 05:57:30",
+      "updatedAt": "2026-05-18 05:57:30"
+    },
+    {
+      "id": "870001",
+      "email": "liselotte.bjork@seniorgladje.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-18 06:13:28",
+      "updatedAt": "2026-05-18 06:13:28"
+    },
+    {
+      "id": "900001",
+      "email": "carina.crifalt@soderkoping.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-18 06:47:20",
+      "updatedAt": "2026-05-18 06:47:20"
+    },
+    {
+      "id": "930001",
+      "email": "michog@live.se",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-18 18:48:44",
+      "updatedAt": "2026-05-18 18:48:44"
+    },
+    {
+      "id": "960001",
+      "email": "mia.haggebacken@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-19 17:44:34",
+      "updatedAt": "2026-05-19 17:44:34"
+    },
+    {
+      "id": "990001",
+      "email": "frassesara@hotmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-20 06:57:01",
+      "updatedAt": "2026-05-20 06:57:01"
+    },
+    {
+      "id": "1020001",
+      "email": "stina.stahl@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-20 07:21:52",
+      "updatedAt": "2026-05-20 07:21:52"
+    },
+    {
+      "id": "1050001",
+      "email": "ann-louise.ostling-lind@telia.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-20 07:45:37",
+      "updatedAt": "2026-05-20 07:45:37"
+    },
+    {
+      "id": "1080001",
+      "email": "susi.burton@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-20 07:57:17",
+      "updatedAt": "2026-05-20 07:57:17"
+    },
+    {
+      "id": "1110001",
+      "email": "bennman@me.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-20 08:10:50",
+      "updatedAt": "2026-05-20 08:10:50"
+    },
+    {
+      "id": "1140001",
+      "email": "matslarson2020@gmail.con",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-21 19:43:59",
+      "updatedAt": "2026-05-21 19:43:59"
+    },
+    {
+      "id": "1170001",
+      "email": "tommy.auoja@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-24 13:21:58",
+      "updatedAt": "2026-05-24 13:21:58"
+    },
+    {
+      "id": "1200001",
+      "email": "anders.lagergren@me.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-05-30 15:29:32",
+      "updatedAt": "2026-05-30 15:29:32"
+    },
+    {
+      "id": "1230001",
+      "email": "annlouiseolsson7@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-06-03 13:15:09",
+      "updatedAt": "2026-06-03 13:15:09"
+    },
+    {
+      "id": "1260001",
+      "email": "flatenberg@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-06-04 06:02:46",
+      "updatedAt": "2026-06-04 06:02:46"
+    },
+    {
+      "id": "1290001",
+      "email": "dellby.fredrik@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-06-14 13:11:04",
+      "updatedAt": "2026-06-14 13:11:04"
+    },
+    {
+      "id": "1320001",
+      "email": "bjacobssonekblom@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-06-29 08:20:05",
+      "updatedAt": "2026-06-29 08:20:05"
+    },
+    {
+      "id": "1350001",
+      "email": "syfabriken@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-07-02 13:50:45",
+      "updatedAt": "2026-07-02 13:50:45"
+    },
+    {
+      "id": "1380001",
+      "email": "monastyrski@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-07-02 17:41:24",
+      "updatedAt": "2026-07-02 17:41:24"
+    },
+    {
+      "id": "1410001",
+      "email": "ldellby3@gmail.com",
+      "confirmed": "1",
+      "active": "1",
+      "createdAt": "2026-07-03 15:50:00",
+      "updatedAt": "2026-07-03 15:50:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tconfirmed\tactive\tcreatedAt\tupdatedAt\n30001\tannie.winter.andreasson@gmail.com\t1\t1\t2026-03-11 12:32:34\t2026-03-11 12:32:34\n60001\tkrakekull@hotmail.com\t1\t1\t2026-03-12 18:07:17\t2026-03-12 18:07:17\n60002\tkrakekull1@gmail.com\t1\t1\t2026-03-12 18:07:48\t2026-03-12 18:07:48\n90001\thakan.alm@hb.se\t1\t1\t2026-03-14 08:22:14\t2026-03-14 08:22:14\n120001\tstina.sundling@hb.se\t1\t1\t2026-04-02 07:37:23\t2026-04-02 07:37:23\n150001\teric.g.olsson@gmail.com\t1\t1\t2026-04-03 18:22:55\t2026-04-03 18:22:55\n180001\tsooki50@gmail.com\t1\t1\t2026-04-05 16:51:19\t2026-04-05 16:51:19\n210001\tsten@dellby.info\t1\t1\t2026-04-12 05:45:12\t2026-04-12 05:45:12\n240001\thenrik@frenkelmedia.se\t1\t1\t2026-05-02 14:30:41\t2026-05-02 14:30:41\n270001\tpesven61@gmail.com\t1\t1\t2026-05-04 17:07:55\t2026-05-04 17:07:55\n300001\tankisepost1@gmail.com\t1\t1\t2026-05-16 08:30:15\t2026-05-16 08:30:15\n330001\tcarina_servin@hotmail.com\t1\t1\t2026-05-16 09:02:01\t2026-05-16 09:02:01\n360001\telisabeth.schoede@gmail.com\t1\t1\t2026-05-16 09:23:53\t2026-05-16 09:23:53\n390001\trolf47arvifsson@gmail.com\t1\t1\t2026-05-16 10:03:31\t2026-05-16 10:03:31\n390002\trolf47arvidsson@gmail.com\t1\t1\t2026-05-16 10:04:02\t2026-05-16 10:04:02\n420001\tsolgerd.nilsson@gmail.com\t1\t1\t2026-05-16 11:24:23\t2026-05-16 11:24:23\n450001\tamie.malmberg@gmail.com\t1\t1\t2026-05-16 12:40:37\t2026-05-16 12:40:37\n480001\tingmar.servin@hotmail.com\t1\t1\t2026-05-16 13:44:19\t2026-05-16 13:44:19\n510001\tann@rudback.se\t1\t1\t2026-05-16 16:39:39\t2026-05-16 16:39:39\n540001\tulf.j.bengtsson@me.com\t1\t1\t2026-05-17 05:42:45\t2026-05-17 05:42:45\n570001\ting.mar.wikstrom@telia.com\t1\t1\t2026-05-17 07:32:42\t2026-05-17 07:32:42\n600001\tevvva.andersson@gmail.com\t1\t1\t2026-05-17 08:11:42\t2026-05-17 08:11:42\n630001\tcarra1us@hotmail.com\t1\t1\t2026-05-17 08:39:23\t2026-05-17 08:39:23\n660001\tmagganklv@hotmail.com\t1\t1\t2026-05-17 11:32:34\t2026-05-17 11:32:34\n690001\tsa.ivarsson@telia.com\t1\t1\t2026-05-17 12:40:59\t2026-05-17 12:40:59\n720001\tkerro.holmberg@gmail.com\t1\t1\t2026-05-17 13:54:22\t2026-05-17 13:54:22\n750001\trolfdigervall@gmail.com\t1\t1\t2026-05-17 18:55:29\t2026-05-17 18:55:29\n780001\tvanjabe67@gmail.com\t1\t1\t2026-05-17 20:45:10\t2026-05-17 20:45:10\n810001\tgoran.johansson@cleanbusiness.se\t1\t1\t2026-05-17 21:50:02\t2026-05-17 21:50:02\n840001\tlena.oman.hoglund@boras.se\t1\t1\t2026-05-18 05:57:30\t2026-05-18 05:57:30\n870001\tliselotte.bjork@seniorgladje.se\t1\t1\t2026-05-18 06:13:28\t2026-05-18 06:13:28\n900001\tcarina.crifalt@soderkoping.se\t1\t1\t2026-05-18 06:47:20\t2026-05-18 06:47:20\n930001\tmichog@live.se\t1\t1\t2026-05-18 18:48:44\t2026-05-18 18:48:44\n960001\tmia.haggebacken@gmail.com\t1\t1\t2026-05-19 17:44:34\t2026-05-19 17:44:34\n990001\tfrassesara@hotmail.com\t1\t1\t2026-05-20 06:57:01\t2026-05-20 06:57:01\n1020001\tstina.stahl@gmail.com\t1\t1\t2026-05-20 07:21:52\t2026-05-20 07:21:52\n1050001\tann-louise.ostling-lind@telia.com\t1\t1\t2026-05-20 07:45:37\t2026-05-20 07:45:37\n1080001\tsusi.burton@gmail.com\t1\t1\t2026-05-20 07:57:17\t2026-05-20 07:57:17\n1110001\tbennman@me.com\t1\t1\t2026-05-20 08:10:50\t2026-05-20 08:10:50\n1140001\tmatslarson2020@gmail.con\t1\t1\t2026-05-21 19:43:59\t2026-05-21 19:43:59\n1170001\ttommy.auoja@gmail.com\t1\t1\t2026-05-24 13:21:58\t2026-05-24 13:21:58\n1200001\tanders.lagergren@me.com\t1\t1\t2026-05-30 15:29:32\t2026-05-30 15:29:32\n1230001\tannlouiseolsson7@gmail.com\t1\t1\t2026-06-03 13:15:09\t2026-06-03 13:15:09\n1260001\tflatenberg@gmail.com\t1\t1\t2026-06-04 06:02:46\t2026-06-04 06:02:46\n1290001\tdellby.fredrik@gmail.com\t1\t1\t2026-06-14 13:11:04\t2026-06-14 13:11:04\n1320001\tbjacobssonekblom@gmail.com\t1\t1\t2026-06-29 08:20:05\t2026-06-29 08:20:05\n1350001\tsyfabriken@gmail.com\t1\t1\t2026-07-02 13:50:45\t2026-07-02 13:50:45\n1380001\tmonastyrski@gmail.com\t1\t1\t2026-07-02 17:41:24\t2026-07-02 17:41:24\n1410001\tldellby3@gmail.com\t1\t1\t2026-07-03 15:50:00\t2026-07-03 15:50:00\n",
+  "stderr": "",
+  "execution_time_ms": 411
+}

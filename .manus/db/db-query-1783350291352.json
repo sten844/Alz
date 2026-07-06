@@ -1,0 +1,37 @@
+{
+  "query": "SELECT email FROM subscribers WHERE active = 1 ORDER BY id LIMIT 50 OFFSET 40;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 42vUY4GWD37yPbX.84737946735b --database 3BmmrMXwxV4Z2AuoDAe93z --execute SELECT email FROM subscribers WHERE active = 1 ORDER BY id LIMIT 50 OFFSET 40;",
+  "rows": [
+    {
+      "email": "tommy.auoja@gmail.com"
+    },
+    {
+      "email": "anders.lagergren@me.com"
+    },
+    {
+      "email": "annlouiseolsson7@gmail.com"
+    },
+    {
+      "email": "flatenberg@gmail.com"
+    },
+    {
+      "email": "dellby.fredrik@gmail.com"
+    },
+    {
+      "email": "bjacobssonekblom@gmail.com"
+    },
+    {
+      "email": "syfabriken@gmail.com"
+    },
+    {
+      "email": "monastyrski@gmail.com"
+    },
+    {
+      "email": "ldellby3@gmail.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "email\ntommy.auoja@gmail.com\nanders.lagergren@me.com\nannlouiseolsson7@gmail.com\nflatenberg@gmail.com\ndellby.fredrik@gmail.com\nbjacobssonekblom@gmail.com\nsyfabriken@gmail.com\nmonastyrski@gmail.com\nldellby3@gmail.com\n",
+  "stderr": "",
+  "execution_time_ms": 273
+}
