@@ -9,7 +9,7 @@ import SiteFooter from "@/components/SiteFooter";
 import { getArticleImage, categoryColors } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Calendar, Loader2 } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, MessageCircle, ExternalLink } from "lucide-react";
 
 function renderMarkdown(content: string): string {
   let html = content;
@@ -96,6 +96,10 @@ export default function ArticlePage() {
     { id: articleId },
     { enabled: !isNaN(articleId) }
   );
+
+  // Comments setting
+  const { data: commentsSettingValue } = trpc.settings.get.useQuery({ key: "comments_enabled" });
+  const commentsEnabled = commentsSettingValue === "true";
 
   if (isLoading) {
     return (
@@ -269,6 +273,33 @@ export default function ArticlePage() {
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                 {(article as any).attachmentName || t("Ladda ner bilaga", "Download attachment")}
+              </a>
+            </div>
+          )}
+
+          {/* Comments section - shown when enabled in admin settings */}
+          {commentsEnabled && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 md:p-8 mb-8">
+              <div className="flex items-center gap-3 mb-3">
+                <MessageCircle className="w-6 h-6 text-emerald-700" />
+                <h2 className="text-xl font-bold text-emerald-900" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>
+                  {t("Kommentarer och diskussion", "Comments and discussion")}
+                </h2>
+              </div>
+              <p className="text-emerald-800 mb-4">
+                {t(
+                  "Dela dina tankar, ställ frågor eller diskutera denna artikel.",
+                  "Share your thoughts, ask questions, or discuss this article."
+                )}
+              </p>
+              <a
+                href="https://jagochminalzheimer.manus.space/comments"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 text-white rounded-lg text-sm font-semibold hover:bg-emerald-800 transition-colors"
+              >
+                {t("Gå till diskussionen", "Go to the discussion")}
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
           )}
