@@ -17,9 +17,9 @@ import { trpc } from "@/lib/trpc";
 const HEADER_KEYS = ["header_description_sv", "header_description_en", "header_ledord", "header_x_link", "header_email"];
 
 const DEFAULTS = {
-  header_description_sv: "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en faktasamling om sjukdomen. Mina ledord: Vetenskap, Behandlingsstrategi, Patientperspektiv",
-  header_description_en: "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a knowledge base about the disease. My keywords: Science, Treatment Strategy, Patient Perspective",
-  header_ledord: "Vetenskap, Behandlingsstrategi, Samhällskritik, Patientperspektiv",
+  header_description_sv: "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en faktasamling om sjukdomen. Mina ledord: Vetenskap, Behandling, Vardag",
+  header_description_en: "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a knowledge base about the disease. My keywords: Science, Treatment, Everyday Life",
+  header_ledord: "Vetenskap, Behandling, Vardag",
   header_x_link: "https://x.com/stendellby",
   header_email: "sten@dellby.info",
 };
