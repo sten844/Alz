@@ -191,3 +191,18 @@ export const resourceLinks = mysqlTable("resource_links", {
 
 export type ResourceLink = typeof resourceLinks.$inferSelect;
 export type InsertResourceLink = typeof resourceLinks.$inferInsert;
+
+/**
+ * Page views table for simple visitor tracking.
+ * Stores one row per visit with visitor fingerprint for unique counting.
+ */
+export const pageViews = mysqlTable("page_views", {
+  id: int("id").autoincrement().primaryKey(),
+  path: varchar("path", { length: 500 }).notNull(),
+  visitorId: varchar("visitor_id", { length: 64 }).notNull(),
+  referrer: varchar("referrer", { length: 1000 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PageView = typeof pageViews.$inferSelect;
+export type InsertPageView = typeof pageViews.$inferInsert;

@@ -33,6 +33,7 @@ import {
   EyeOff,
   MailCheck,
   Paperclip,
+  BarChart3,
 } from "lucide-react";
 import { Link } from "wouter";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -106,7 +107,7 @@ const CATEGORIES = ["Behandling", "Forskning", "Vardagsliv", "Läkemedel", "Åsi
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "links" | "subscribers" | "settings" | "backup">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "links" | "subscribers" | "settings" | "backup" | "analytics">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -740,6 +741,17 @@ export default function AdminPage() {
             >
               <Database className="w-5 h-5" />
               {t("Backup", "Backup")}
+            </button>
+            <button
+              onClick={() => setActiveTab("analytics")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "analytics"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <BarChart3 className="w-5 h-5" />
+              {t("Besökare", "Visitors")}
             </button>
           </div>
 
@@ -1492,6 +1504,11 @@ export default function AdminPage() {
           {/* ============ BACKUP TAB ============ */}
           {activeTab === "backup" && (
             <BackupEditor />
+          )}
+
+          {/* ============ ANALYTICS TAB ============ */}
+          {activeTab === "analytics" && (
+            <AnalyticsEditor />
           )}
         </div>
       </main>
@@ -2294,6 +2311,84 @@ function BackupEditor() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AnalyticsEditor() {
+  const { t } = useLanguage();
+  const { data: stats, isLoading } = trpc.analytics.stats.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          {t("Besöksstatistik", "Visitor Statistics")}
+        </h2>
+        <p className="text-muted-foreground text-lg">
+          {t("Unika besökare och sidvisningar", "Unique visitors and page views")}
+        </p>
+      </div>
+
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-card border border-border rounded-xl p-5">
+          <p className="text-sm text-muted-foreground">{t("Idag", "Today")}</p>
+          <p className="text-3xl font-bold text-foreground mt-1">{stats?.todayVisitors || 0}</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <p className="text-sm text-muted-foreground">{t("Senaste 7 dagar", "Last 7 days")}</p>
+          <p className="text-3xl font-bold text-foreground mt-1">{stats?.weekVisitors || 0}</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <p className="text-sm text-muted-foreground">{t("Senaste 30 dagar", "Last 30 days")}</p>
+          <p className="text-3xl font-bold text-foreground mt-1">{stats?.monthVisitors || 0}</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <p className="text-sm text-muted-foreground">{t("Totalt (alla)", "Total (all time)")}</p>
+          <p className="text-3xl font-bold text-foreground mt-1">{stats?.uniqueVisitors || 0}</p>
+        </div>
+      </div>
+
+      {/* Total page views */}
+      <div className="bg-card border border-border rounded-xl p-5">
+        <p className="text-muted-foreground">{t("Totala sidvisningar", "Total page views")}: <span className="font-bold text-foreground">{stats?.totalViews || 0}</span></p>
+      </div>
+
+      {/* Top pages */}
+      {stats?.topPages && stats.topPages.length > 0 && (
+        <div>
+          <h3 className="text-xl font-semibold mb-4">{t("Mest besökta sidor (30 dagar)", "Most visited pages (30 days)")}</h3>
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="px-4 py-3 text-sm font-medium text-muted-foreground">{t("Sida", "Page")}</th>
+                  <th className="px-4 py-3 text-sm font-medium text-muted-foreground text-right">{t("Visningar", "Views")}</th>
+                  <th className="px-4 py-3 text-sm font-medium text-muted-foreground text-right">{t("Unika", "Unique")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.topPages.map((page: { path: string; views: number; uniqueVisitors: number }, i: number) => (
+                  <tr key={page.path} className={i % 2 === 0 ? "" : "bg-muted/20"}>
+                    <td className="px-4 py-3 text-sm font-mono">{page.path}</td>
+                    <td className="px-4 py-3 text-sm text-right">{page.views}</td>
+                    <td className="px-4 py-3 text-sm text-right">{page.uniqueVisitors}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

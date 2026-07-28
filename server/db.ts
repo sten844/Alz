@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -585,4 +585,50 @@ export async function importAllContent(data: {
   }
 
   return stats;
+}
+
+// ─── Page Views (Analytics) ───────────────────────────────────────────────────
+
+export async function recordPageView(path: string, visitorId: string, referrer?: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(pageViews).values({ path, visitorId, referrer: referrer || null });
+}
+
+export async function getAnalyticsStats() {
+  const db = await getDb();
+  if (!db) return { totalViews: 0, uniqueVisitors: 0, todayVisitors: 0, weekVisitors: 0, monthVisitors: 0, topPages: [] };
+  
+  // Total page views
+  const totalResult = await db.select({ count: sql<number>`COUNT(*)` }).from(pageViews);
+  const totalViews = totalResult[0]?.count || 0;
+
+  // Unique visitors (all time)
+  const uniqueResult = await db.select({ count: sql<number>`COUNT(DISTINCT ${pageViews.visitorId})` }).from(pageViews);
+  const uniqueVisitors = uniqueResult[0]?.count || 0;
+
+  // Today
+  const todayResult = await db.select({ count: sql<number>`COUNT(DISTINCT ${pageViews.visitorId})` }).from(pageViews).where(sql`DATE(${pageViews.createdAt}) = CURDATE()`);
+  const todayVisitors = todayResult[0]?.count || 0;
+
+  // Last 7 days
+  const weekResult = await db.select({ count: sql<number>`COUNT(DISTINCT ${pageViews.visitorId})` }).from(pageViews).where(sql`${pageViews.createdAt} >= DATE_SUB(NOW(), INTERVAL 7 DAY)`);
+  const weekVisitors = weekResult[0]?.count || 0;
+
+  // Last 30 days
+  const monthResult = await db.select({ count: sql<number>`COUNT(DISTINCT ${pageViews.visitorId})` }).from(pageViews).where(sql`${pageViews.createdAt} >= DATE_SUB(NOW(), INTERVAL 30 DAY)`);
+  const monthVisitors = monthResult[0]?.count || 0;
+
+  // Top pages (last 30 days)
+  const topPages = await db.select({
+    path: pageViews.path,
+    views: sql<number>`COUNT(*)`,
+    uniqueVisitors: sql<number>`COUNT(DISTINCT ${pageViews.visitorId})`,
+  }).from(pageViews)
+    .where(sql`${pageViews.createdAt} >= DATE_SUB(NOW(), INTERVAL 30 DAY)`)
+    .groupBy(pageViews.path)
+    .orderBy(sql`COUNT(*) DESC`)
+    .limit(20);
+
+  return { totalViews, uniqueVisitors, todayVisitors, weekVisitors, monthVisitors, topPages };
 }

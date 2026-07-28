@@ -14,6 +14,7 @@ import AIPage from "./pages/AIPage";
 import DiaryArchivePage from "./pages/DiaryArchivePage";
 import LinksPage from "./pages/LinksPage";
 import PreviewHome from "./pages/PreviewHome";
+import { usePageTracking } from "./hooks/usePageTracking";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function Router() {
 }
 
 function App() {
+  usePageTracking();
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">

@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { Resend } from "resend";
@@ -780,6 +780,20 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await deleteResourceLink(input.id);
         return { success: true };
+      }),
+  }),
+
+  analytics: router({
+    track: publicProcedure
+      .input(z.object({ path: z.string(), visitorId: z.string(), referrer: z.string().optional() }))
+      .mutation(async ({ input }) => {
+        await recordPageView(input.path, input.visitorId, input.referrer);
+        return { success: true };
+      }),
+
+    stats: adminProcedure
+      .query(async () => {
+        return await getAnalyticsStats();
       }),
   }),
 });
