@@ -265,6 +265,19 @@ export default function ArticlePage() {
       <SiteHeader />
 
       <main className="flex-1">
+        {/* Sticky back-to-home bar */}
+        <div className="sticky top-0 z-20 bg-background/90 backdrop-blur-sm border-b border-border/30 py-2 px-4">
+          <div className="container max-w-3xl mx-auto">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#c05746] hover:text-[#a04636] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t("Till startsidan", "To home page")}
+            </Link>
+          </div>
+        </div>
+
         {/* Article hero */}
         <div className="relative h-64 md:h-80 overflow-hidden">
           <img
