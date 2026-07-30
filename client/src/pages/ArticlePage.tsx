@@ -9,7 +9,8 @@ import SiteFooter from "@/components/SiteFooter";
 import { getArticleImage, categoryColors } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Calendar, Loader2, MessageCircle, ExternalLink } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, MessageCircle, Send } from "lucide-react";
+import { useState } from "react";
 
 function renderMarkdown(content: string): string {
   let html = content;
@@ -85,6 +86,92 @@ function renderMarkdown(content: string): string {
   if (inList) result += '</ul>';
 
   return result;
+}
+
+function CommentForm({ articleTitle, articleSlug }: { articleTitle: string; articleSlug: string }) {
+  const { t } = useLanguage();
+  const [name, setName] = useState("");
+  const [comment, setComment] = useState("");
+  const [sent, setSent] = useState(false);
+  const submitComment = trpc.comments.submit.useMutation({
+    onSuccess: () => {
+      setSent(true);
+      setName("");
+      setComment("");
+    },
+  });
+
+  if (sent) {
+    return (
+      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 md:p-8 mb-8 text-center">
+        <MessageCircle className="w-8 h-8 text-emerald-700 mx-auto mb-3" />
+        <p className="text-emerald-800 font-semibold text-lg">
+          {t("Tack för din kommentar!", "Thank you for your comment!")}
+        </p>
+        <p className="text-emerald-700 mt-2">
+          {t("Din kommentar har skickats till Sten.", "Your comment has been sent to Sten.")}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 md:p-8 mb-8">
+      <div className="flex items-center gap-3 mb-4">
+        <MessageCircle className="w-6 h-6 text-emerald-700" />
+        <h2 className="text-xl font-bold text-emerald-900" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>
+          {t("Lämna en kommentar", "Leave a comment")}
+        </h2>
+      </div>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-emerald-800 mb-1">
+            {t("Ditt namn", "Your name")}
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t("Skriv ditt namn...", "Enter your name...")}
+            className="w-full px-4 py-2.5 rounded-lg border border-emerald-300 bg-white text-emerald-900 placeholder:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-emerald-800 mb-1">
+            {t("Din kommentar", "Your comment")}
+          </label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder={t("Skriv din kommentar här...", "Write your comment here...")}
+            rows={4}
+            className="w-full px-4 py-2.5 rounded-lg border border-emerald-300 bg-white text-emerald-900 placeholder:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+          />
+        </div>
+        <button
+          onClick={() => {
+            if (name.trim() && comment.trim()) {
+              submitComment.mutate({ articleTitle, articleSlug, name: name.trim(), comment: comment.trim() });
+            }
+          }}
+          disabled={!name.trim() || !comment.trim() || submitComment.isPending}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 text-white rounded-lg text-sm font-semibold hover:bg-emerald-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {submitComment.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Send className="w-4 h-4" />
+          )}
+          {t("Skicka kommentar", "Send comment")}
+        </button>
+        {submitComment.isError && (
+          <p className="text-red-600 text-sm">
+            {t("Något gick fel. Försök igen.", "Something went wrong. Please try again.")}
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function ArticlePage() {
@@ -278,28 +365,8 @@ export default function ArticlePage() {
           )}
 
           {/* Comments section - shown when enabled in admin settings */}
-          {commentsEnabled && (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 md:p-8 mb-8">
-              <div className="flex items-center gap-3 mb-3">
-                <MessageCircle className="w-6 h-6 text-emerald-700" />
-                <h2 className="text-xl font-bold text-emerald-900" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>
-                  {t("Kommentarer och diskussion", "Comments and discussion")}
-                </h2>
-              </div>
-              <p className="text-emerald-800 mb-4">
-                {t(
-                  "Dela dina tankar, ställ frågor eller diskutera denna artikel.",
-                  "Share your thoughts, ask questions, or discuss this article."
-                )}
-              </p>
-              <a
-                href={`mailto:sten@dellby.info?subject=${encodeURIComponent(article?.title || 'Kommentar')}`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 text-white rounded-lg text-sm font-semibold hover:bg-emerald-800 transition-colors"
-              >
-                {t("Skicka en kommentar via mail", "Send a comment via email")}
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
+          {commentsEnabled && article && (
+            <CommentForm articleTitle={article.title} articleSlug={String(article.id)} />
           )}
 
           {/* Back to articles */}

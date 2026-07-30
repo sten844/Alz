@@ -7,6 +7,7 @@ import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { Resend } from "resend";
 import { ENV } from "./_core/env";
+import { notifyOwner } from "./_core/notification";
 import { z } from "zod";
 
 // Swedish → English category mapping
@@ -794,6 +795,25 @@ export const appRouter = router({
     stats: adminProcedure
       .query(async () => {
         return await getAnalyticsStats();
+      }),
+  }),
+
+  comments: router({
+    submit: publicProcedure
+      .input(z.object({
+        articleTitle: z.string(),
+        articleSlug: z.string(),
+        name: z.string().min(1).max(100),
+        comment: z.string().min(1).max(2000),
+      }))
+      .mutation(async ({ input }) => {
+        const { articleTitle, articleSlug, name, comment } = input;
+        // Send notification to site owner
+        await notifyOwner({
+          title: `Ny kommentar på: ${articleTitle}`,
+          content: `Från: ${name}\n\nArtikel: ${articleTitle}\nLänk: https://dellby.info/article/${articleSlug}\n\nKommentar:\n${comment}`,
+        });
+        return { success: true };
       }),
   }),
 });
