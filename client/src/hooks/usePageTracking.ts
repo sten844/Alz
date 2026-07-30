@@ -42,6 +42,9 @@ export function usePageTracking() {
     // Skip admin users (site owner)
     if (user?.role === "admin") return;
 
+    // Skip admin pages from statistics
+    if (location.startsWith("/admin")) return;
+
     if (location === lastTracked.current) return;
     lastTracked.current = location;
 

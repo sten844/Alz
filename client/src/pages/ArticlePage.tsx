@@ -293,12 +293,10 @@ export default function ArticlePage() {
                 )}
               </p>
               <a
-                href="https://jagochminalzheimer.manus.space/comments"
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`mailto:sten@dellby.info?subject=${encodeURIComponent(article?.title || 'Kommentar')}`}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-700 text-white rounded-lg text-sm font-semibold hover:bg-emerald-800 transition-colors"
               >
-                {t("Gå till diskussionen", "Go to the discussion")}
+                {t("Skicka en kommentar via mail", "Send a comment via email")}
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>

@@ -240,3 +240,5 @@
 - [x] Add admin-editable header settings (title, description, ledord, X-link, email) stored in DB
 - [x] Build admin page for editing header fields
 - [x] Wire PreviewHome SiteHeader to read settings from DB
+- [x] Exclude /admin pages from visitor tracking statistics
+- [x] Fix discussion/comments link under articles (clicking does nothing)
