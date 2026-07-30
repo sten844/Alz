@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView, comments, InsertComment } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -631,4 +631,29 @@ export async function getAnalyticsStats() {
     .limit(20);
 
   return { totalViews, uniqueVisitors, todayVisitors, weekVisitors, monthVisitors, topPages };
+}
+
+// ─── Comments ───────────────────────────────────────────────────────────────
+
+export async function listCommentsByArticle(articleId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(comments).where(eq(comments.articleId, articleId)).orderBy(asc(comments.createdAt));
+}
+
+export async function createComment(data: { articleId: number; name: string; content: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(comments).values({
+    articleId: data.articleId,
+    name: data.name,
+    content: data.content,
+  });
+  return { id: result[0].insertId };
+}
+
+export async function deleteComment(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(comments).where(eq(comments.id, id));
 }

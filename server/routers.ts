@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats, listCommentsByArticle, createComment, deleteComment } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { Resend } from "resend";
@@ -799,20 +799,35 @@ export const appRouter = router({
   }),
 
   comments: router({
+    list: publicProcedure
+      .input(z.object({ articleId: z.number() }))
+      .query(async ({ input }) => {
+        return await listCommentsByArticle(input.articleId);
+      }),
+
     submit: publicProcedure
       .input(z.object({
+        articleId: z.number(),
         articleTitle: z.string(),
-        articleSlug: z.string(),
         name: z.string().min(1).max(100),
         comment: z.string().min(1).max(2000),
       }))
       .mutation(async ({ input }) => {
-        const { articleTitle, articleSlug, name, comment } = input;
+        const { articleId, articleTitle, name, comment } = input;
+        // Save to database
+        const result = await createComment({ articleId, name, content: comment });
         // Send notification to site owner
         await notifyOwner({
           title: `Ny kommentar på: ${articleTitle}`,
-          content: `Från: ${name}\n\nArtikel: ${articleTitle}\nLänk: https://dellby.info/article/${articleSlug}\n\nKommentar:\n${comment}`,
+          content: `Från: ${name}\n\nArtikel: ${articleTitle}\nLänk: https://dellby.info/article/${articleId}\n\nKommentar:\n${comment}`,
         });
+        return { success: true, id: result.id };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteComment(input.id);
         return { success: true };
       }),
   }),

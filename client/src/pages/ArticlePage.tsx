@@ -88,41 +88,67 @@ function renderMarkdown(content: string): string {
   return result;
 }
 
-function CommentForm({ articleTitle, articleSlug }: { articleTitle: string; articleSlug: string }) {
+function CommentForm({ articleId, articleTitle }: { articleId: number; articleTitle: string }) {
   const { t } = useLanguage();
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
+  const utils = trpc.useUtils();
+
+  // Fetch existing comments
+  const { data: existingComments } = trpc.comments.list.useQuery({ articleId });
+
   const submitComment = trpc.comments.submit.useMutation({
     onSuccess: () => {
       setSent(true);
       setName("");
       setComment("");
+      // Refetch comments to show the new one
+      utils.comments.list.invalidate({ articleId });
+      // Reset sent state after 3 seconds so user can comment again
+      setTimeout(() => setSent(false), 3000);
     },
   });
-
-  if (sent) {
-    return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 md:p-8 mb-8 text-center">
-        <MessageCircle className="w-8 h-8 text-emerald-700 mx-auto mb-3" />
-        <p className="text-emerald-800 font-semibold text-lg">
-          {t("Tack för din kommentar!", "Thank you for your comment!")}
-        </p>
-        <p className="text-emerald-700 mt-2">
-          {t("Din kommentar har skickats till Sten.", "Your comment has been sent to Sten.")}
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 md:p-8 mb-8">
       <div className="flex items-center gap-3 mb-4">
         <MessageCircle className="w-6 h-6 text-emerald-700" />
         <h2 className="text-xl font-bold text-emerald-900" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>
-          {t("Lämna en kommentar", "Leave a comment")}
+          {t("Kommentarer", "Comments")}
+          {existingComments && existingComments.length > 0 && (
+            <span className="text-base font-normal text-emerald-600 ml-2">({existingComments.length})</span>
+          )}
         </h2>
       </div>
+
+      {/* Existing comments */}
+      {existingComments && existingComments.length > 0 && (
+        <div className="space-y-4 mb-6">
+          {existingComments.map((c) => (
+            <div key={c.id} className="bg-white rounded-lg p-4 border border-emerald-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-semibold text-emerald-900">{c.name}</span>
+                <span className="text-xs text-emerald-600">
+                  {new Date(c.createdAt).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+              </div>
+              <p className="text-emerald-800 whitespace-pre-wrap">{c.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Success message */}
+      {sent && (
+        <div className="bg-emerald-100 rounded-lg p-3 mb-4 text-center">
+          <p className="text-emerald-800 font-semibold">
+            {t("Tack för din kommentar!", "Thank you for your comment!")}
+          </p>
+        </div>
+      )}
+
+      {/* Comment form */}
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-emerald-800 mb-1">
@@ -144,14 +170,14 @@ function CommentForm({ articleTitle, articleSlug }: { articleTitle: string; arti
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder={t("Skriv din kommentar här...", "Write your comment here...")}
-            rows={4}
+            rows={3}
             className="w-full px-4 py-2.5 rounded-lg border border-emerald-300 bg-white text-emerald-900 placeholder:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
           />
         </div>
         <button
           onClick={() => {
             if (name.trim() && comment.trim()) {
-              submitComment.mutate({ articleTitle, articleSlug, name: name.trim(), comment: comment.trim() });
+              submitComment.mutate({ articleId, articleTitle, name: name.trim(), comment: comment.trim() });
             }
           }}
           disabled={!name.trim() || !comment.trim() || submitComment.isPending}
@@ -366,7 +392,7 @@ export default function ArticlePage() {
 
           {/* Comments section - shown when enabled in admin settings */}
           {commentsEnabled && article && (
-            <CommentForm articleTitle={article.title} articleSlug={String(article.id)} />
+            <CommentForm articleId={article.id} articleTitle={article.title} />
           )}
 
           {/* Back to articles */}

@@ -243,3 +243,4 @@
 - [x] Exclude /admin pages from visitor tracking statistics
 - [x] Fix discussion/comments link under articles (clicking does nothing)
 - [x] Replace mail link with inline comment form under articles (user types comment, clicks send, owner gets email notification)
+- [x] Make comments visible as public discussion thread under articles + email notification to owner for each new comment
