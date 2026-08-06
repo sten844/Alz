@@ -162,9 +162,9 @@
 - [x] Build backend import endpoint (restore from exported file)
 - [x] Add export/import buttons in admin panel (Backup tab)
 - [x] Tests for export/import functionality (7 tests passing)
-- [ ] Bug: User cannot access /admin page after logging in
+- [x] Bug: User cannot access /admin page after logging in (fixed: relaxed session name requirement, ensured owner always gets admin role)
 - [x] Make 'Det spektakulära' section on AI page visually spectacular (not just descriptive)
-- [ ] Bug: Editing English article excerpt removed 'ny' from Swedish version but kept 'new' in English
+- [x] Bug: Editing English article excerpt removed 'ny' from Swedish version but kept 'new' in English (fixed: auto-translation now only runs SV→EN, never back-propagates EN→SV)
 - [x] Remove AI sub-page from public navigation (keep code intact, keep admin tab)
 - [x] Remove AI block from homepage grid
 - [x] Verified: no AI nav link in header/menu or footer
@@ -229,7 +229,7 @@
 - [x] Bug: Removing .focus() from toolbar buttons broke editor - fixed with focus(undefined, { scrollIntoView: false }) to keep focus without page jumping
 - [x] Add arrow navigation buttons (← →) to editor toolbar for precise cursor positioning on iPad
 - [x] Bug: Avpublicera (unpublish) feature is not working - confirmation dialog was hidden at bottom of page, now shows as centered modal overlay
-- [ ] Bug: Diary editor bold toggle not working - cannot switch from bold back to normal text, toolbar feels chaotic
+- [x] Bug: Diary editor bold toggle not working (fixed: prevented re-entrant setContent from resetting stored marks, added simple toolbar mode for diary, added onSelectionUpdate for toolbar reactivity)
 - [x] Add "Min behandlingsplan" tile between "Nya artiklar" and "Följ mig på X" on homepage
 - [x] Bug: Cannot edit articles in admin panel - fixed duplicate tiptap extensions + added auto-scroll to form
 - [x] PreviewHome: Shorten diary column (reduce maxEntries to 5, keep compact with "mer →")

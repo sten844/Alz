@@ -14,6 +14,8 @@ interface RichTextEditorProps {
   onChange: (html: string) => void;
   placeholder?: string;
   minHeight?: string;
+  /** Simple mode: shows only essential formatting (bold, italic) for short entries like diary */
+  simple?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -277,12 +279,14 @@ function Toolbar({
   onToggleSelectMode,
   showSearchFormat,
   onToggleSearchFormat,
+  simple,
 }: {
   editor: ReturnType<typeof useEditor>;
   selectMode: boolean;
   onToggleSelectMode: () => void;
   showSearchFormat: boolean;
   onToggleSearchFormat: () => void;
+  simple?: boolean;
 }) {
   const { t } = useLanguage();
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -330,6 +334,86 @@ function Toolbar({
     setShowLinkInput(true);
     setTimeout(() => linkInputRef.current?.focus(), 50);
   };
+
+  // Simple mode: minimal toolbar for diary entries
+  if (simple) {
+    return (
+      <div className="bg-accent/30 border-b-2 border-border/40 rounded-t-lg">
+        <div className="flex items-center gap-1.5 p-2 flex-wrap">
+          {/* Bold */}
+          <button
+            type="button"
+            onClick={() => editor.chain().focus(undefined, { scrollIntoView: false }).toggleBold().run()}
+            className={`${btnBase} ${editor.isActive("bold") ? btnActive : btnInactive}`}
+            title={t("Fet", "Bold")}
+          >
+            <span className="font-black text-lg">B</span>
+          </button>
+          {/* Italic */}
+          <button
+            type="button"
+            onClick={() => editor.chain().focus(undefined, { scrollIntoView: false }).toggleItalic().run()}
+            className={`${btnBase} ${editor.isActive("italic") ? btnActive : btnInactive}`}
+            title={t("Kursiv", "Italic")}
+          >
+            <span className="italic text-lg" style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}>I</span>
+          </button>
+
+          {separator}
+
+          {/* Search & Format — iPad tool */}
+          <button
+            type="button"
+            onClick={onToggleSearchFormat}
+            className={`${btnBase} ${showSearchFormat ? btnSearchActive : btnInactive}`}
+            title={t("Sök och formatera", "Search and format")}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <text x="8" y="14" fontSize="9" fill="currentColor" stroke="none" fontWeight="bold">B</text>
+            </svg>
+          </button>
+
+          {separator}
+
+          {/* Undo/Redo */}
+          <button
+            type="button"
+            onClick={() => editor.chain().focus(undefined, { scrollIntoView: false }).undo().run()}
+            disabled={!editor.can().undo()}
+            className={`${btnBase} ${btnInactive} disabled:opacity-30`}
+            title={t("Ångra", "Undo")}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus(undefined, { scrollIntoView: false }).redo().run()}
+            disabled={!editor.can().redo()}
+            className={`${btnBase} ${btnInactive} disabled:opacity-30`}
+            title={t("Gör om", "Redo")}
+          >
+            <svg className="w-5 h-5 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Search format panel */}
+        {showSearchFormat && (
+          <SearchFormatPanel
+            editor={editor}
+            onClose={() => onToggleSearchFormat()}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-accent/30 border-b-2 border-border/40 rounded-t-lg">
@@ -722,6 +806,7 @@ export default function RichTextEditor({
   onChange,
   placeholder,
   minHeight = "300px",
+  simple = false,
 }: RichTextEditorProps) {
   const [selectMode, setSelectMode] = useState(false);
   const [showSearchFormat, setShowSearchFormat] = useState(false);
@@ -733,13 +818,25 @@ export default function RichTextEditor({
     selectModeRef.current = selectMode;
   }, [selectMode]);
 
+  // Track whether we are currently updating from inside the editor (to prevent re-entrant setContent)
+  const isInternalUpdateRef = useRef(false);
+
   const handleUpdate = useCallback(
     ({ editor }: { editor: any }) => {
+      isInternalUpdateRef.current = true;
       const html = editor.getHTML();
       onChange(html);
+      // Reset the flag after React has processed the state update
+      setTimeout(() => { isInternalUpdateRef.current = false; }, 0);
     },
     [onChange]
   );
+
+  // Force toolbar re-render on selection changes (needed for bold/italic active state)
+  const [, forceUpdate] = useState(0);
+  const handleSelectionUpdate = useCallback(() => {
+    forceUpdate(n => n + 1);
+  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -765,6 +862,7 @@ export default function RichTextEditor({
     ],
     content: content || "<p></p>",
     onUpdate: handleUpdate,
+    onSelectionUpdate: handleSelectionUpdate,
     editorProps: {
       attributes: {
         class: "prose prose-lg max-w-none focus:outline-none px-5 py-4",
@@ -774,13 +872,19 @@ export default function RichTextEditor({
   });
 
   // Update content when it changes externally (e.g., loading an article for editing)
+  // Skip if the change originated from the editor itself (internal update)
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
+    if (!editor) return;
+    // Don't reset content if this update came from the editor's own onUpdate callback
+    if (isInternalUpdateRef.current) return;
+
+    if (content !== editor.getHTML()) {
       const editorText = editor.getText();
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = content;
       const contentText = tempDiv.textContent || "";
 
+      // Only reset if there's a significant text difference (external load)
       if (Math.abs(editorText.length - contentText.length) > 5 || !editorText) {
         editor.commands.setContent(content || "<p></p>");
       }
@@ -945,8 +1049,9 @@ export default function RichTextEditor({
         onToggleSelectMode={handleToggleSelectMode}
         showSearchFormat={showSearchFormat}
         onToggleSearchFormat={handleToggleSearchFormat}
+        simple={simple}
       />
-      {showSearchFormat && (
+      {!simple && showSearchFormat && (
         <SearchFormatPanel
           editor={editor}
           onClose={() => setShowSearchFormat(false)}

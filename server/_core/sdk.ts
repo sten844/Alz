@@ -214,8 +214,7 @@ class SDKServer {
 
       if (
         !isNonEmptyString(openId) ||
-        !isNonEmptyString(appId) ||
-        !isNonEmptyString(name)
+        !isNonEmptyString(appId)
       ) {
         console.warn("[Auth] Session payload missing required fields");
         return null;
@@ -224,7 +223,7 @@ class SDKServer {
       return {
         openId,
         appId,
-        name,
+        name: isNonEmptyString(name) ? name : openId,
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
@@ -290,6 +289,11 @@ class SDKServer {
 
     if (!user) {
       throw ForbiddenError("User not found");
+    }
+
+    // Ensure owner always has admin role (fixes case where role was set before OWNER_OPEN_ID was configured)
+    if (user.openId === ENV.ownerOpenId && user.role !== 'admin') {
+      user = { ...user, role: 'admin' };
     }
 
     await db.upsertUser({

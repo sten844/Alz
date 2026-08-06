@@ -1394,6 +1394,8 @@ export default function AdminPage() {
                         content={diaryContentHtml}
                         onChange={handleDiaryContentChange}
                         placeholder={t("Skriv ditt dagboksinlägg...", "Write your diary entry...")}
+                        simple
+                        minHeight="150px"
                       />
                     </div>
                     <div className="flex items-center justify-between pt-3">

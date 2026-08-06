@@ -258,23 +258,21 @@ export const appRouter = router({
             }
           }
 
-          if (pairedArticle && (data.title || data.content || data.excerpt)) {
+          // Only auto-translate from Swedish → English (never back-propagate EN → SV to avoid corrupting the Swedish source)
+          if (pairedArticle && article.language === "sv" && (data.title || data.content || data.excerpt)) {
             // Re-translate text fields in background (takes time due to LLM)
             (async () => {
               try {
                 const currentArticle = await getArticleById(id);
                 if (!currentArticle) return;
-                const direction = currentArticle.language === "sv" ? "sv-en" : "en-sv";
                 const translated = await translateArticleFields(
                   currentArticle.title,
                   currentArticle.excerpt,
                   currentArticle.content,
-                  direction
+                  "sv-en"
                 );
                 if (translated.title && translated.content) {
-                  const targetCategory = currentArticle.language === "sv"
-                    ? (categoryToEnglish[currentArticle.category] || currentArticle.category)
-                    : (categoryToSwedish[currentArticle.category] || currentArticle.category);
+                  const targetCategory = categoryToEnglish[currentArticle.category] || currentArticle.category;
                   await updateArticle(pairedArticle.id, {
                     title: translated.title,
                     excerpt: translated.excerpt,
@@ -283,7 +281,7 @@ export const appRouter = router({
                     imageUrl: data.imageUrl !== undefined ? data.imageUrl : undefined,
                     published: data.published !== undefined ? data.published : undefined,
                   });
-                  console.log(`[Translation] Updated ${targetLang.toUpperCase()} translation (id: ${pairedArticle.id}) for ${currentArticle.language.toUpperCase()} article (id: ${id})`);
+                  console.log(`[Translation] Updated EN translation (id: ${pairedArticle.id}) for SV article (id: ${id})`);
                 }
               } catch (error) {
                 console.error("[Translation] Failed to update translation:", error);
