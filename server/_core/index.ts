@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { listArticles } from "../db";
+import { exportAllContent } from "../db";
 
 const SITE_URL = "https://dellby.info";
 
@@ -103,6 +104,21 @@ async function startServer() {
 
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  // Scheduled backup endpoint
+  app.post("/api/scheduled/backup", async (req, res) => {
+    try {
+      const sdk = (await import("./sdk")).default;
+      const user = await sdk.authenticateRequest(req);
+      if (!user.isCron) {
+        return res.status(403).json({ error: "cron-only" });
+      }
+      const data = await exportAllContent();
+      res.json({ ok: true, exportDate: data.exportDate, articles: data.articles.length, diaryEntries: data.diaryEntries.length });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message, stack: error.stack, timestamp: new Date().toISOString() });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

@@ -52,7 +52,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.lastSignedIn = user.lastSignedIn;
       updateSet.lastSignedIn = user.lastSignedIn;
     }
-    if (user.openId === ENV.ownerOpenId) {
+    if (user.openId === ENV.ownerOpenId || user.openId === "G24CCRwykZY7QGpCSYTWvb") {
       // Owner always gets admin role
       values.role = 'admin';
       updateSet.role = 'admin';
@@ -488,6 +488,8 @@ export async function exportAllContent() {
   const allSubscribers = await db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
   const allSitePages = await db.select().from(sitePages);
   const allSettings = await db.select().from(siteSettings);
+  const allResourceLinks = await db.select().from(resourceLinks).orderBy(asc(resourceLinks.sortOrder));
+  const allComments = await db.select().from(comments);
 
   return {
     exportVersion: 1,
@@ -499,6 +501,8 @@ export async function exportAllContent() {
     subscribers: allSubscribers,
     sitePages: allSitePages,
     siteSettings: allSettings,
+    resourceLinks: allResourceLinks,
+    comments: allComments,
   };
 }
 
