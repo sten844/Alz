@@ -130,7 +130,7 @@ function DiaryEntry({
         {formatDateLong(entry.entryDate)}
       </div>
       {!expanded ? (
-        <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap line-clamp-4">
+        <p className="text-lg text-foreground/85 leading-relaxed whitespace-pre-wrap line-clamp-5 max-h-[8rem] overflow-hidden">
           {renderDiaryContent(displayContent)}
         </p>
       ) : (
@@ -138,7 +138,7 @@ function DiaryEntry({
           {renderDiaryContent(displayContent)}
         </p>
       )}
-      {displayContent.length > 150 && (
+      {displayContent.length > 100 && (
         <button
           onClick={() => setExpanded(!expanded)}
           className="text-base font-medium text-[#c05746] hover:text-[#a8483b] mt-1 transition-colors"
