@@ -1856,13 +1856,15 @@ function HeaderSettingsEditor() {
   const [isSaving, setIsSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const headerKeys = ["header_description_sv", "header_description_en", "header_ledord", "header_x_link", "header_email"];
+  const headerKeys = ["header_description_sv", "header_description_en", "homepage_intro_sv", "homepage_intro_en", "header_ledord", "header_x_link", "header_email"];
 
   const { data: settings, isLoading } = trpc.settings.getMany.useQuery({ keys: headerKeys });
 
   const [form, setForm] = useState({
     descriptionSv: "",
     descriptionEn: "",
+    introSv: "",
+    introEn: "",
     ledord: "",
     xLink: "",
     email: "",
@@ -1873,6 +1875,8 @@ function HeaderSettingsEditor() {
       setForm({
         descriptionSv: settings.header_description_sv || "Jag har f\u00e5tt en Alzheimers diagnos (Kod F002/F018). H\u00e4r publicerar jag texter i ett f\u00f6rs\u00f6k att bygga en liten faktasamling anpassad f\u00f6r oss sjuka.",
         descriptionEn: settings.header_description_en || "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a small knowledge base adapted for those of us who are ill.",
+        introSv: settings.homepage_intro_sv || "En personlig webbplats om att leva med Alzheimer – och om mitt försök att följa forskning, finna behandling och förbättra vardagsliv.",
+        introEn: settings.homepage_intro_en || "A personal website about living with Alzheimer's – and about my attempt to follow research, find treatments, and improve everyday life.",
         ledord: settings.header_ledord || "Vetenskap, Behandlingsstrategi, Samh\u00e4llskritik, Patientperspektiv",
         xLink: settings.header_x_link || "https://x.com/stendellby",
         email: settings.header_email || "sten@dellby.info",
@@ -1899,6 +1903,8 @@ function HeaderSettingsEditor() {
       settings: [
         { key: "header_description_sv", value: form.descriptionSv },
         { key: "header_description_en", value: form.descriptionEn },
+        { key: "homepage_intro_sv", value: form.introSv },
+        { key: "homepage_intro_en", value: form.introEn },
         { key: "header_ledord", value: form.ledord },
         { key: "header_x_link", value: form.xLink },
         { key: "header_email", value: form.email },
@@ -1927,6 +1933,30 @@ function HeaderSettingsEditor() {
       </p>
 
       <div className="space-y-5">
+        <div>
+          <label className="block text-base font-medium text-foreground mb-1">
+            {t("Ingresstext (svenska)", "Introduction (Swedish)")}
+          </label>
+          <textarea
+            value={form.introSv}
+            onChange={(e) => setForm({ ...form, introSv: e.target.value })}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+          />
+        </div>
+
+        <div>
+          <label className="block text-base font-medium text-foreground mb-1">
+            {t("Ingresstext (engelska)", "Introduction (English)")}
+          </label>
+          <textarea
+            value={form.introEn}
+            onChange={(e) => setForm({ ...form, introEn: e.target.value })}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
+          />
+        </div>
+
         <div>
           <label className="block text-base font-medium text-foreground mb-1">
             {t("Beskrivning (svenska)", "Description (Swedish)")}

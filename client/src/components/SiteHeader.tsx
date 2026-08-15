@@ -14,11 +14,13 @@ import { Link } from "wouter";
 import { Mail } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-const HEADER_KEYS = ["header_description_sv", "header_description_en", "header_ledord", "header_x_link", "header_email"];
+const HEADER_KEYS = ["header_description_sv", "header_description_en", "homepage_intro_sv", "homepage_intro_en", "header_ledord", "header_x_link", "header_email"];
 
 const DEFAULTS = {
   header_description_sv: "Jag har fått en Alzheimers diagnos (Kod F002/F018). Här publicerar jag texter i ett försök att bygga en faktasamling om sjukdomen. Mina ledord: Vetenskap, Behandling, Vardag",
   header_description_en: "I have been diagnosed with Alzheimer's (Code F002/F018). Here I publish texts in an attempt to build a knowledge base about the disease. My keywords: Science, Treatment, Everyday Life",
+  homepage_intro_sv: "En personlig webbplats om att leva med Alzheimer – och om mitt försök att följa forskning, finna behandling och förbättra vardagsliv.",
+  homepage_intro_en: "A personal website about living with Alzheimer's – and about my attempt to follow research, find treatments, and improve everyday life.",
   header_ledord: "Vetenskap, Behandling, Vardag",
   header_x_link: "https://x.com/stendellby",
   header_email: "sten@dellby.info",
@@ -29,13 +31,13 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
 
   const { data: settings } = trpc.settings.getMany.useQuery({ keys: HEADER_KEYS });
 
+  const introSv = settings?.homepage_intro_sv || DEFAULTS.homepage_intro_sv;
+  const introEn = settings?.homepage_intro_en || DEFAULTS.homepage_intro_en;
   const ledord = settings?.header_ledord || DEFAULTS.header_ledord;
   const xLink = settings?.header_x_link || DEFAULTS.header_x_link;
   const email = settings?.header_email || DEFAULTS.header_email;
 
-  const description = language === "sv"
-    ? "En personlig webbplats om att leva med Alzheimer – och om mitt försök att följa forskning, behandling och vardagsliv."
-    : "A personal website about living with Alzheimer's – and about my attempt to follow research, treatment and everyday life.";
+  const description = language === "sv" ? introSv : introEn;
 
   return (
     <header className="relative overflow-hidden">

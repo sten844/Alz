@@ -250,3 +250,7 @@
 - [x] Uppskjutet enligt användarens begränsade omfattning: skapa den redigerbara sidan ”Börja här” med personligt syfte, medicinsk avgränsning och länkurval.
 - [x] Uppskjutet enligt användarens begränsade omfattning: lägga till administration för ”Börja här” och dess länkurval.
 - [x] Testa endast ingressändringen med riktad Vitest-kontroll och produktsbygge; ingen ändring av befintligt databasinnehåll har gjorts.
+- [x] Ersätta den svenska och engelska ingresstexten med användarens reviderade formuleringar om forskning, behandling och vardagsliv.
+- [x] Köra riktad kontroll och skicka endast de reviderade ingresstexterna till GitHub.
+- [x] Återanvända befintliga headerinställningar så att ingresstexten kan ändras i adminläget på svenska och engelska.
+- [x] Sätta den reviderade svenska och engelska ingresstexten som standardvärden i adminläget och testa sparflödet.
