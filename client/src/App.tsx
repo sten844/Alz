@@ -14,6 +14,7 @@ import AIPage from "./pages/AIPage";
 import DiaryArchivePage from "./pages/DiaryArchivePage";
 import LinksPage from "./pages/LinksPage";
 import PreviewHome from "./pages/PreviewHome";
+import AdminWorkspacePage from "./pages/AdminWorkspacePage";
 import { usePageTracking } from "./hooks/usePageTracking";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/article/:id" component={ArticlePage} />
       <Route path="/about" component={AboutPage} />
       <Route path="/admin" component={AdminPage} />
+      <Route path="/admin/min-webbplats" component={AdminWorkspacePage} />
       <Route path="/ai" component={AIPage} />
       <Route path="/diary" component={DiaryArchivePage} />
       <Route path="/lankar" component={LinksPage} />

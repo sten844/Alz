@@ -650,6 +650,12 @@ export default function AdminPage() {
                 {t("Admin", "Admin")}
               </h1>
             </div>
+            <Link
+              href="/admin/min-webbplats"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-card border border-border/50 rounded-full text-base font-semibold text-foreground hover:bg-accent transition-colors"
+            >
+              {t("Min webbplats", "My website")}
+            </Link>
           </div>
 
           {/* Tabs */}

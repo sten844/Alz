@@ -734,6 +734,20 @@ export const appRouter = router({
       }),
   }),
 
+  adminWorkspace: router({
+    get: adminProcedure.query(async () => {
+      const chatLink = await getSiteSetting("admin_workspace_chat_link");
+      return { chatLink: chatLink ?? "" };
+    }),
+
+    updateChatLink: adminProcedure
+      .input(z.object({ chatLink: z.union([z.literal(""), z.string().url()]) }))
+      .mutation(async ({ input }) => {
+        await upsertSiteSetting("admin_workspace_chat_link", input.chatLink);
+        return { success: true };
+      }),
+  }),
+
   // ---- Export / Import ----
   backup: router({
     export: adminProcedure

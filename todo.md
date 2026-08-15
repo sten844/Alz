@@ -257,3 +257,12 @@
 - [x] Lägga till en adminåtgärd som skapar ett tematiskt engelskt översättningsförslag från den svenska ingresstexten utan att spara automatiskt.
 - [x] Låta användaren redigera den engelska robotöversättningen innan befintliga inställningar sparas.
 - [x] Testa, bygga och skicka den begränsade översättningsfunktionen till GitHub.
+- [x] Bekräfta den exakta placeringen av headerredigeringen i adminläget och om den nya versionen har publicerats. Den ligger under Inställningar; den nya ingressfunktionen syns först efter publicering av den nya GitHub-versionen. Kontrollen av dellby.info visade att den äldre versionen fortfarande är publicerad.
+- [x] Bekräfta att den saknade översättningsknappen beror på att den publicerade adminversionen inte använder den senaste GitHub-commiten. Liveversionens JavaScript saknar både översättningsknappen och ingressinställningarna, medan GitHub-huvudgrenen är commit 7345d86.
+- [x] Kartlägga den kortaste publiceringsvägen från GitHub-commit 7345d86 till dellby.info. GitHub-projektet saknar automatiskt publiceringsflöde och registrerad GitHub-driftsättning; publicering måste ske från webbplatsens egentliga projektmiljö.
+- [x] Identifiera den faktiska publiceringsmiljön bakom dellby.info utan att användaren behöver navigera i projekt- eller filträd. Webbplatsens publicerade Manus-version är `da85ee0f`; den är äldre än GitHub-versionen med översättningsfunktionen.
+- [x] Skapa en kort återvägslapp med direktlänk till den publicerade Manus-versionen och den färdiga GitHub-commiten.
+- [x] Skapa sidan ”Min webbplats – administration” med återvägar till GitHub, arbetschatt, Manus och administrativa instruktioner.
+- [x] Skydda sidan så att endast administratör kan se den och undanhåll den från publik navigering.
+- [x] Lägg till en tydlig länk till sidan enbart från adminläget.
+- [x] Testa åtkomstskyddet, bygga projektet och skicka ändringen till GitHub.
