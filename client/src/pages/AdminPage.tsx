@@ -1854,6 +1854,7 @@ function HeaderSettingsEditor() {
   const { t } = useLanguage();
   const utils = trpc.useUtils();
   const [isSaving, setIsSaving] = useState(false);
+  const [isTranslatingIntro, setIsTranslatingIntro] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   const headerKeys = ["header_description_sv", "header_description_en", "homepage_intro_sv", "homepage_intro_en", "header_ledord", "header_x_link", "header_email"];
@@ -1896,6 +1897,25 @@ function HeaderSettingsEditor() {
       setIsSaving(false);
     },
   });
+  const suggestIntroTranslationMutation = trpc.settings.suggestHomepageIntroTranslation.useMutation();
+
+  const handleSuggestIntroTranslation = async () => {
+    if (!form.introSv.trim()) {
+      toast.error(t("Skriv först den svenska ingresstexten.", "Write the Swedish introduction first."));
+      return;
+    }
+
+    setIsTranslatingIntro(true);
+    try {
+      const result = await suggestIntroTranslationMutation.mutateAsync({ swedishText: form.introSv });
+      setForm((current) => ({ ...current, introEn: result.translation }));
+      toast.success(t("Ett engelskt förslag är klart. Du kan ändra det innan du sparar.", "An English suggestion is ready. You can edit it before saving."));
+    } catch {
+      toast.error(t("Kunde inte skapa engelsk översättning.", "Could not create English translation."));
+    } finally {
+      setIsTranslatingIntro(false);
+    }
+  };
 
   const handleSave = () => {
     setIsSaving(true);
@@ -1943,6 +1963,15 @@ function HeaderSettingsEditor() {
             rows={3}
             className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
           />
+          <button
+            type="button"
+            onClick={handleSuggestIntroTranslation}
+            disabled={isTranslatingIntro}
+            className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#c05746]/30 text-[#a8483b] text-sm font-semibold hover:bg-[#c05746]/10 transition-colors disabled:opacity-50"
+          >
+            {isTranslatingIntro && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isTranslatingIntro ? t("Tar fram förslag…", "Creating suggestion…") : t("Föreslå engelsk översättning", "Suggest English translation")}
+          </button>
         </div>
 
         <div>
@@ -1955,6 +1984,9 @@ function HeaderSettingsEditor() {
             rows={3}
             className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-base focus:outline-none focus:ring-2 focus:ring-[#c05746]/30"
           />
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t("Det engelska förslaget är alltid redigerbart innan du sparar.", "The English suggestion is always editable before you save.")}
+          </p>
         </div>
 
         <div>

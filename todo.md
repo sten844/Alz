@@ -254,3 +254,6 @@
 - [x] Köra riktad kontroll och skicka endast de reviderade ingresstexterna till GitHub.
 - [x] Återanvända befintliga headerinställningar så att ingresstexten kan ändras i adminläget på svenska och engelska.
 - [x] Sätta den reviderade svenska och engelska ingresstexten som standardvärden i adminläget och testa sparflödet.
+- [x] Lägga till en adminåtgärd som skapar ett tematiskt engelskt översättningsförslag från den svenska ingresstexten utan att spara automatiskt.
+- [x] Låta användaren redigera den engelska robotöversättningen innan befintliga inställningar sparas.
+- [x] Testa, bygga och skicka den begränsade översättningsfunktionen till GitHub.

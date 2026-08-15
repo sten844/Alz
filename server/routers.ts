@@ -709,6 +709,29 @@ export const appRouter = router({
         }
         return { success: true };
       }),
+
+    // Admin: suggest an English homepage-introduction translation without saving it.
+    suggestHomepageIntroTranslation: adminProcedure
+      .input(z.object({ swedishText: z.string().trim().min(1).max(1000) }))
+      .mutation(async ({ input }) => {
+        const result = await invokeLLM({
+          model: "gpt-5-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are a careful English editor. Translate the supplied Swedish personal-website introduction into natural, concise English. Preserve its first-person voice and overall meaning about living with Alzheimer's, following research, seeking treatment, and improving everyday life. Do not add medical advice, clinical claims, or new facts. Return only the English text.",
+            },
+            { role: "user", content: input.swedishText },
+          ],
+        });
+
+        const translation = result.choices?.[0]?.message?.content;
+        if (typeof translation !== "string" || !translation.trim()) {
+          throw new Error("No translation was returned");
+        }
+
+        return { translation: translation.trim() };
+      }),
   }),
 
   // ---- Export / Import ----
