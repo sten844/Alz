@@ -245,3 +245,8 @@
 - [x] Replace mail link with inline comment form under articles (user types comment, clicks send, owner gets email notification)
 - [x] Make comments visible as public discussion thread under articles + email notification to owner for each new comment
 - [x] Add clear back-to-home button at top of article page for easy navigation
+- [x] Uppdatera startsidans ingress till den godkända personliga formuleringen på svenska och engelska utan att ändra artiklar, dagbok eller URL:er.
+- [x] Uppskjutet enligt användarens begränsade omfattning: lägga till den diskreta ingången ”Börja här” i befintligt sidhuvud och på startsidan.
+- [x] Uppskjutet enligt användarens begränsade omfattning: skapa den redigerbara sidan ”Börja här” med personligt syfte, medicinsk avgränsning och länkurval.
+- [x] Uppskjutet enligt användarens begränsade omfattning: lägga till administration för ”Börja här” och dess länkurval.
+- [x] Testa endast ingressändringen med riktad Vitest-kontroll och produktsbygge; ingen ändring av befintligt databasinnehåll har gjorts.

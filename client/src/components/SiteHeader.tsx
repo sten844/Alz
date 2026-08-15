@@ -29,13 +29,13 @@ export default function SiteHeader({ showLanguage = true }: { showLanguage?: boo
 
   const { data: settings } = trpc.settings.getMany.useQuery({ keys: HEADER_KEYS });
 
-  const descSv = settings?.header_description_sv || DEFAULTS.header_description_sv;
-  const descEn = settings?.header_description_en || DEFAULTS.header_description_en;
   const ledord = settings?.header_ledord || DEFAULTS.header_ledord;
   const xLink = settings?.header_x_link || DEFAULTS.header_x_link;
   const email = settings?.header_email || DEFAULTS.header_email;
 
-  const description = language === "sv" ? descSv : descEn;
+  const description = language === "sv"
+    ? "En personlig webbplats om att leva med Alzheimer – och om mitt försök att följa forskning, behandling och vardagsliv."
+    : "A personal website about living with Alzheimer's – and about my attempt to follow research, treatment and everyday life.";
 
   return (
     <header className="relative overflow-hidden">
