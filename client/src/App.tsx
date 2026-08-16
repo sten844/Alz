@@ -20,7 +20,7 @@ import { usePageTracking } from "./hooks/usePageTracking";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={PreviewHome} />
+      <Route path="/" component={Home} />
       <Route path="/old-home" component={AllArticles} />
       <Route path="/article/:id" component={ArticlePage} />
       <Route path="/about" component={AboutPage} />
