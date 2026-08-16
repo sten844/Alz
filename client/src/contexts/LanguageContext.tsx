@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 type Language = "sv" | "en";
 
@@ -9,9 +9,19 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LANGUAGE_STORAGE_KEY = "dellby-language";
+
+function getInitialLanguage(): Language {
+  if (typeof window === "undefined") return "sv";
+  return window.localStorage.getItem(LANGUAGE_STORAGE_KEY) === "en" ? "en" : "sv";
+}
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>("sv");
+  const [language, setLanguage] = useState<Language>(getInitialLanguage);
+
+  useEffect(() => {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  }, [language]);
 
   const t = (sv: string, en: string) => (language === "sv" ? sv : en);
 

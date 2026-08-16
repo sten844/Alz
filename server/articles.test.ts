@@ -100,6 +100,18 @@ describe("articles.getById", () => {
     expect(article!.content).toBeTruthy();
   });
 
+  it("returns the paired translation when a language is requested", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+
+    // The seed article 30001 has the English pair 30002.
+    const article = await caller.articles.getById({ id: 30001, language: "en" });
+    expect(article).toBeDefined();
+    expect(article!.id).toBe(30002);
+    expect(article!.language).toBe("en");
+    expect(article!.title).toBeTruthy();
+    expect(article!.content).toBeTruthy();
+  });
+
   it("returns null for non-existent article", async () => {
     const caller = appRouter.createCaller(createPublicContext());
     const article = await caller.articles.getById({ id: 999999 });

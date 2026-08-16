@@ -126,9 +126,19 @@ export const appRouter = router({
       }),
 
     getById: publicProcedure
-      .input(z.object({ id: z.number() }))
+      .input(z.object({
+        id: z.number(),
+        language: z.enum(["sv", "en"]).optional(),
+      }))
       .query(async ({ input }) => {
-        return getArticleById(input.id);
+        const article = await getArticleById(input.id);
+        if (!article || !input.language || article.language === input.language || !article.pairId) {
+          return article;
+        }
+
+        // Article routes use the original article ID. Resolve that ID to the
+        // paired language version when the visitor changes language.
+        return (await getArticleByPairIdAndLanguage(article.pairId, input.language)) ?? article;
       }),
 
     create: adminProcedure

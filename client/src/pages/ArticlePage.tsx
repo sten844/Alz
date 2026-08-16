@@ -89,7 +89,7 @@ function renderMarkdown(content: string): string {
 }
 
 function CommentForm({ articleId, articleTitle }: { articleId: number; articleTitle: string }) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
@@ -130,7 +130,7 @@ function CommentForm({ articleId, articleTitle }: { articleId: number; articleTi
               <div className="flex items-center gap-2 mb-2">
                 <span className="font-semibold text-emerald-900">{c.name}</span>
                 <span className="text-xs text-emerald-600">
-                  {new Date(c.createdAt).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  {new Date(c.createdAt).toLocaleDateString(language === "sv" ? "sv-SE" : "en-US", { day: "numeric", month: "short", year: "numeric" })}
                 </span>
               </div>
               <p className="text-emerald-800 whitespace-pre-wrap">{c.content}</p>
@@ -202,11 +202,11 @@ function CommentForm({ articleId, articleTitle }: { articleId: number; articleTi
 
 export default function ArticlePage() {
   const params = useParams<{ id: string }>();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const articleId = Number(params.id);
 
   const { data: article, isLoading } = trpc.articles.getById.useQuery(
-    { id: articleId },
+    { id: articleId, language },
     { enabled: !isNaN(articleId) }
   );
 
