@@ -8,6 +8,21 @@ import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
 
+const OWNER_ACCESS_STORAGE_KEY = "dellby-owner-access-key";
+
+function storeOwnerAccessKeyFromBookmark() {
+  if (typeof window === "undefined") return;
+
+  const bookmarkParams = new URLSearchParams(window.location.hash.slice(1));
+  const ownerKey = bookmarkParams.get("owner-key");
+  if (!ownerKey) return;
+
+  window.sessionStorage.setItem(OWNER_ACCESS_STORAGE_KEY, ownerKey);
+  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+}
+
+storeOwnerAccessKeyFromBookmark();
+
 const queryClient = new QueryClient();
 
 const redirectToLoginIfUnauthorized = (error: unknown) => {
@@ -42,6 +57,10 @@ const trpcClient = trpc.createClient({
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
+      headers() {
+        const ownerKey = window.sessionStorage.getItem(OWNER_ACCESS_STORAGE_KEY);
+        return ownerKey ? { "x-dellby-owner-key": ownerKey } : {};
+      },
       fetch(input, init) {
         return globalThis.fetch(input, {
           ...(init ?? {}),

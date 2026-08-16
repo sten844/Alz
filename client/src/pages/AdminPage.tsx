@@ -107,6 +107,7 @@ const CATEGORIES = ["Behandling", "Forskning", "Vardagsliv", "Läkemedel", "Åsi
 export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
+  const hasOwnerBookmarkAccess = typeof window !== "undefined" && Boolean(window.sessionStorage.getItem("dellby-owner-access-key"));
   const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "links" | "subscribers" | "settings" | "backup" | "analytics">("articles");
 
   // ---- Article state ----
@@ -423,7 +424,7 @@ export default function AdminPage() {
   });
 
   // Loading state
-  if (authLoading) {
+  if (authLoading && !hasOwnerBookmarkAccess) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <SiteHeader showLanguage={false} />
@@ -436,7 +437,7 @@ export default function AdminPage() {
   }
 
   // Not logged in
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !hasOwnerBookmarkAccess) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <SiteHeader showLanguage={false} />
@@ -464,7 +465,7 @@ export default function AdminPage() {
   }
 
   // Not admin
-  if (user?.role !== "admin") {
+  if (!hasOwnerBookmarkAccess && user?.role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <SiteHeader showLanguage={false} />
