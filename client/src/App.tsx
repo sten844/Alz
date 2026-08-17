@@ -13,6 +13,8 @@ import AdminPage from "./pages/AdminPage";
 import AIPage from "./pages/AIPage";
 import DiaryArchivePage from "./pages/DiaryArchivePage";
 import LinksPage from "./pages/LinksPage";
+import LifestylePage from "./pages/LifestylePage";
+import LifestyleArticlePage from "./pages/LifestyleArticlePage";
 import AdminWorkspacePage from "./pages/AdminWorkspacePage";
 import { usePageTracking } from "./hooks/usePageTracking";
 
@@ -26,6 +28,8 @@ function Router() {
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/min-webbplats" component={AdminWorkspacePage} />
       <Route path="/ai" component={AIPage} />
+      <Route path="/livsstil-vid-alzheimer/:id" component={LifestyleArticlePage} />
+      <Route path="/livsstil-vid-alzheimer" component={LifestylePage} />
       <Route path="/diary" component={DiaryArchivePage} />
       <Route path="/lankar" component={LinksPage} />
       <Route path="/404" component={NotFound} />

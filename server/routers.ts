@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats, listCommentsByArticle, createComment, deleteComment } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listLifestylePages, getLifestylePage, createLifestylePage, updateLifestylePage, deleteLifestylePage, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats, listCommentsByArticle, createComment, deleteComment } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { Resend } from "resend";
@@ -560,6 +560,76 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await deleteAiItem(input.id);
+        return { success: true };
+      }),
+  }),
+
+  lifestyle: router({
+    // Public: only pages that have been explicitly published.
+    list: publicProcedure
+      .input(z.object({ topic: z.string().optional() }).optional())
+      .query(async ({ input }) => {
+        return listLifestylePages({ publishedOnly: true, topic: input?.topic });
+      }),
+
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const page = await getLifestylePage(input.id);
+        return page?.published ? page : null;
+      }),
+
+    // Admin: includes drafts so content can be prepared before publication.
+    listAll: adminProcedure.query(async () => {
+      return listLifestylePages();
+    }),
+
+    create: adminProcedure
+      .input(z.object({
+        topic: z.string().min(1),
+        titleSv: z.string().min(1),
+        titleEn: z.string().nullable().optional(),
+        excerptSv: z.string().default(""),
+        excerptEn: z.string().nullable().optional(),
+        contentSv: z.string().min(1),
+        contentEn: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional(),
+        sortOrder: z.number().default(0),
+        published: z.boolean().default(false),
+        publishedAt: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return createLifestylePage({
+          ...input,
+          publishedAt: input.publishedAt ?? new Date(),
+        });
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        topic: z.string().min(1).optional(),
+        titleSv: z.string().min(1).optional(),
+        titleEn: z.string().nullable().optional(),
+        excerptSv: z.string().optional(),
+        excerptEn: z.string().nullable().optional(),
+        contentSv: z.string().min(1).optional(),
+        contentEn: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional(),
+        sortOrder: z.number().optional(),
+        published: z.boolean().optional(),
+        publishedAt: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateLifestylePage(id, data);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteLifestylePage(input.id);
         return { success: true };
       }),
   }),

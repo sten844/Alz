@@ -145,6 +145,30 @@ export type AiItem = typeof aiItems.$inferSelect;
 export type InsertAiItem = typeof aiItems.$inferInsert;
 
 /**
+ * Pages in the dedicated "Livsstil vid Alzheimer" section.
+ * Each page belongs to one fixed topic tab and can be written and published independently.
+ */
+export const lifestylePages = mysqlTable("lifestyle_pages", {
+  id: int("id").autoincrement().primaryKey(),
+  topic: varchar("topic", { length: 100 }).notNull(),
+  titleSv: varchar("title_sv", { length: 500 }).notNull(),
+  titleEn: varchar("title_en", { length: 500 }),
+  excerptSv: varchar("excerpt_sv", { length: 1000 }).notNull().default(""),
+  excerptEn: varchar("excerpt_en", { length: 1000 }),
+  contentSv: text("content_sv").notNull(),
+  contentEn: text("content_en"),
+  imageUrl: varchar("image_url", { length: 2000 }),
+  sortOrder: int("sort_order").notNull().default(0),
+  published: boolean("published").default(false).notNull(),
+  publishedAt: timestamp("published_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LifestylePage = typeof lifestylePages.$inferSelect;
+export type InsertLifestylePage = typeof lifestylePages.$inferInsert;
+
+/**
  * Email subscribers for article notifications.
  * Stores email addresses of people who want to be notified when new articles are published.
  */

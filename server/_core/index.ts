@@ -7,7 +7,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { listArticles } from "../db";
+import { listArticles, listLifestylePages } from "../db";
 import { exportAllContent } from "../db";
 
 const SITE_URL = "https://dellby.info";
@@ -81,11 +81,19 @@ async function startServer() {
   app.get("/sitemap.xml", async (_req, res) => {
     try {
       const articles = await listArticles({ published: true });
+      const lifestylePages = await listLifestylePages({ publishedOnly: true });
       const urls: SitemapUrl[] = [
         { loc: "/", changefreq: "daily", priority: "1.0" },
         { loc: "/about", changefreq: "monthly", priority: "0.7" },
         { loc: "/diary", changefreq: "daily", priority: "0.8" },
         { loc: "/lankar", changefreq: "monthly", priority: "0.6" },
+        { loc: "/livsstil-vid-alzheimer", changefreq: "weekly", priority: "0.8" },
+        ...lifestylePages.map((page) => ({
+          loc: `/livsstil-vid-alzheimer/${page.id}`,
+          lastmod: page.updatedAt ?? page.publishedAt,
+          changefreq: "monthly" as const,
+          priority: "0.7",
+        })),
         ...articles.map((article) => ({
           loc: `/article/${article.id}`,
           lastmod: article.updatedAt ?? article.publishedAt,

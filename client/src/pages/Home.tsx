@@ -13,7 +13,7 @@ import ArticleCard from "@/components/ArticleCard";
 import DiaryColumn from "@/components/DiaryColumn";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
-import { Search, ChevronLeft, ChevronRight, ExternalLink, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ExternalLink, Leaf, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 const ARTICLES_PER_PAGE = 4;
@@ -64,23 +64,49 @@ export default function Home() {
     );
   }, [dbArticles, activeCategory, searchQuery]);
 
-  const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
-  const paginatedArticles = filteredArticles.slice(
-    (currentPage - 1) * ARTICLES_PER_PAGE,
-    currentPage * ARTICLES_PER_PAGE
-  );
+  // The first page deliberately reserves one article slot for the Livsstil entry point.
+  // Filtering or searching keeps the standard article pagination so results remain predictable.
+  const showLifestyleEntryPoint = activeCategory === "Alla" && !searchQuery.trim();
+  const articlesOnFirstPage = showLifestyleEntryPoint ? ARTICLES_PER_PAGE - 1 : ARTICLES_PER_PAGE;
+  const totalPages = showLifestyleEntryPoint
+    ? 1 + Math.ceil(Math.max(0, filteredArticles.length - articlesOnFirstPage) / ARTICLES_PER_PAGE)
+    : Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+  const paginatedArticles = showLifestyleEntryPoint
+    ? currentPage === 1
+      ? filteredArticles.slice(0, articlesOnFirstPage)
+      : filteredArticles.slice(
+          articlesOnFirstPage + (currentPage - 2) * ARTICLES_PER_PAGE,
+          articlesOnFirstPage + (currentPage - 1) * ARTICLES_PER_PAGE
+        )
+    : filteredArticles.slice(
+        (currentPage - 1) * ARTICLES_PER_PAGE,
+        currentPage * ARTICLES_PER_PAGE
+      );
+  const showLifestylePromo = showLifestyleEntryPoint && currentPage === 1 && filteredArticles.length > 0;
 
-  const categoryButtons = [
-    { category: "Forskning", label: t("Forskning", "Research") },
-    { category: "Behandling", label: t("Behandling", "Treatment") },
-    { category: "Vardagsliv", label: t("Vardagsliv", "Everyday life") },
-    { category: "Åsikt", label: t("Åsikt", "Opinion") },
-  ];
+  const categoryButtons = language === "sv"
+    ? [
+        { category: "Forskning", label: "Forskning" },
+        { category: "Behandling", label: "Behandling" },
+        { category: "Vardagsliv", label: "Vardagsliv" },
+        { category: "Åsikt", label: "Åsikt" },
+      ]
+    : [
+        { category: "Research", label: "Research" },
+        { category: "Treatment", label: "Treatment" },
+        { category: "Daily Life", label: "Everyday life" },
+        { category: "Opinion", label: "Opinion" },
+      ];
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory((current) => (current === category ? "Alla" : category));
     setCurrentPage(1);
   };
+
+  useEffect(() => {
+    setActiveCategory("Alla");
+    setCurrentPage(1);
+  }, [language]);
 
   const [subscribeEmail, setSubscribeEmail] = useState("");
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success" | "exists" | "error">("idle");
@@ -166,25 +192,56 @@ export default function Home() {
                   <div className="flex justify-center py-16">
                     <Loader2 className="w-8 h-8 animate-spin text-[#c05746]" />
                   </div>
-                ) : paginatedArticles.length > 0 ? (
-                  paginatedArticles.map((article) => (
-                    <ArticleCard key={article.id} article={{
-                      id: article.id,
-                      title: article.title,
-                      excerpt: article.excerpt,
-                      content: article.content,
-                      category: article.category,
-                      language: article.language,
-                      imageUrl: article.imageUrl,
-                      publishedAt: new Date(article.publishedAt).toISOString(),
-                    }} />
-                  ))
                 ) : (
-                  <div className="text-center py-16 text-muted-foreground">
-                    <p className="text-xl">
-                      {t("Inga artiklar hittades.", "No articles found.")}
-                    </p>
-                  </div>
+                  <>
+                    {paginatedArticles.map((article) => (
+                      <ArticleCard key={article.id} article={{
+                        id: article.id,
+                        title: article.title,
+                        excerpt: article.excerpt,
+                        content: article.content,
+                        category: article.category,
+                        language: article.language,
+                        imageUrl: article.imageUrl,
+                        publishedAt: new Date(article.publishedAt).toISOString(),
+                      }} />
+                    ))}
+
+                    {showLifestylePromo && (
+                      <Link href="/livsstil-vid-alzheimer" className="group block">
+                        <section className="overflow-hidden rounded-xl border border-emerald-900/30 bg-gradient-to-br from-emerald-950 via-emerald-900 to-[#315b50] p-6 text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-7">
+                          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="max-w-2xl">
+                              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-sm font-bold tracking-wide text-amber-100">
+                                <Leaf className="h-4 w-4" />
+                                {t("NY KUNSKAPSDEL", "NEW KNOWLEDGE SECTION")}
+                              </div>
+                              <h3 className="mt-4 text-3xl leading-tight text-white sm:text-4xl" style={{ fontFamily: "'DM Serif Display', serif" }}>
+                                {t("Livsstil vid Alzheimer", "Lifestyle and Alzheimer's")}
+                              </h3>
+                              <p className="mt-3 text-lg leading-relaxed text-emerald-50">
+                                {t(
+                                  "Mat och kost, FINGER-livsstil, medicin, kosttillskott och praktiska verktyg – en egen del som nu byggs upp.",
+                                  "Food and nutrition, FINGER lifestyle, medication, supplements and practical tools – a dedicated section now being built."
+                                )}
+                              </p>
+                            </div>
+                            <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-amber-200 px-5 py-3 text-base font-bold text-emerald-950 transition-colors group-hover:bg-amber-100">
+                              {t("Utforska avdelningen", "Explore the section")} →
+                            </span>
+                          </div>
+                        </section>
+                      </Link>
+                    )}
+
+                    {paginatedArticles.length === 0 && (
+                      <div className="text-center py-16 text-muted-foreground">
+                        <p className="text-xl">
+                          {t("Inga artiklar hittades.", "No articles found.")}
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 

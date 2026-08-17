@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView, comments, InsertComment } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, lifestylePages, InsertLifestylePage, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView, comments, InsertComment } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -351,6 +351,44 @@ export async function deleteAiItem(id: number) {
   await db.delete(aiItems).where(eq(aiItems.id, id));
 }
 
+// ---- Livsstil vid Alzheimer page queries ----
+
+export async function listLifestylePages(options?: { publishedOnly?: boolean; topic?: string }) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let pages = await db.select().from(lifestylePages).orderBy(asc(lifestylePages.sortOrder));
+  if (options?.publishedOnly) pages = pages.filter((page) => page.published);
+  if (options?.topic) pages = pages.filter((page) => page.topic === options.topic);
+  return pages;
+}
+
+export async function getLifestylePage(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(lifestylePages).where(eq(lifestylePages.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createLifestylePage(page: InsertLifestylePage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(lifestylePages).values(page);
+  return { id: result[0].insertId };
+}
+
+export async function updateLifestylePage(id: number, data: Partial<InsertLifestylePage>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(lifestylePages).set(data).where(eq(lifestylePages.id, id));
+}
+
+export async function deleteLifestylePage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(lifestylePages).where(eq(lifestylePages.id, id));
+}
+
 // ---- Subscriber queries ----
 
 export async function listSubscribers(opts?: { activeOnly?: boolean }) {
@@ -485,6 +523,7 @@ export async function exportAllContent() {
   const allDiary = await db.select().from(diaryEntries).orderBy(desc(diaryEntries.entryDate));
   const allAiSections = await db.select().from(aiSections).orderBy(asc(aiSections.sortOrder));
   const allAiItems = await db.select().from(aiItems).orderBy(asc(aiItems.sortOrder));
+  const allLifestylePages = await db.select().from(lifestylePages).orderBy(asc(lifestylePages.sortOrder));
   const allSubscribers = await db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
   const allSitePages = await db.select().from(sitePages);
   const allSettings = await db.select().from(siteSettings);
@@ -498,6 +537,7 @@ export async function exportAllContent() {
     diaryEntries: allDiary,
     aiSections: allAiSections,
     aiItems: allAiItems,
+    lifestylePages: allLifestylePages,
     subscribers: allSubscribers,
     sitePages: allSitePages,
     siteSettings: allSettings,
@@ -511,6 +551,7 @@ export async function importAllContent(data: {
   diaryEntries?: any[];
   aiSections?: any[];
   aiItems?: any[];
+  lifestylePages?: any[];
   subscribers?: any[];
   sitePages?: any[];
   siteSettings?: any[];
@@ -518,7 +559,7 @@ export async function importAllContent(data: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const stats = { articles: 0, diaryEntries: 0, aiSections: 0, aiItems: 0, subscribers: 0, sitePages: 0, siteSettings: 0 };
+  const stats = { articles: 0, diaryEntries: 0, aiSections: 0, aiItems: 0, lifestylePages: 0, subscribers: 0, sitePages: 0, siteSettings: 0 };
 
   // Import articles
   if (data.articles?.length) {
@@ -559,6 +600,18 @@ export async function importAllContent(data: {
       const { id, createdAt, updatedAt, ...rest } = item;
       await db.insert(aiItems).values(rest).onDuplicateKeyUpdate({ set: { nameSv: rest.nameSv } });
       stats.aiItems++;
+    }
+  }
+
+  // Import Livsstil vid Alzheimer pages
+  if (data.lifestylePages?.length) {
+    for (const page of data.lifestylePages) {
+      const { createdAt, updatedAt, ...rest } = page;
+      await db.insert(lifestylePages).values({
+        ...rest,
+        publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : new Date(),
+      }).onDuplicateKeyUpdate({ set: { titleSv: rest.titleSv, contentSv: rest.contentSv, published: rest.published } });
+      stats.lifestylePages++;
     }
   }
 
