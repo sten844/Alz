@@ -11,7 +11,6 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
 import DiaryColumn from "@/components/DiaryColumn";
-import { categories, categoriesEn, IMAGES } from "@/data/articles";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Search, ChevronLeft, ChevronRight, ExternalLink, Loader2 } from "lucide-react";
@@ -71,19 +70,15 @@ export default function Home() {
     currentPage * ARTICLES_PER_PAGE
   );
 
-  const displayCategories = language === "sv" ? categories : categoriesEn;
-  const categoryMap: Record<string, string> = {
-    All: "Alla",
-    Treatment: "Behandling",
-    Research: "Forskning",
-    "Daily Life": "Vardagsliv",
-    Medication: "Läkemedel",
-    Opinion: "Åsikt",
-  };
+  const categoryButtons = [
+    { category: "Forskning", label: t("Forskning", "Research") },
+    { category: "Behandling", label: t("Behandling", "Treatment") },
+    { category: "Vardagsliv", label: t("Vardagsliv", "Everyday life") },
+    { category: "Åsikt", label: t("Åsikt", "Opinion") },
+  ];
 
-  const handleCategoryClick = (cat: string) => {
-    const mapped = language === "en" ? (categoryMap[cat] || cat) : cat;
-    setActiveCategory(mapped);
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory((current) => (current === category ? "Alla" : category));
     setCurrentPage(1);
   };
 
@@ -148,28 +143,8 @@ export default function Home() {
 
             {/* Right: Articles (main content) */}
             <div className="flex-1 min-w-0">
-              {/* Category filters + Search */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="flex flex-wrap gap-1.5">
-                  {displayCategories.map((cat) => {
-                    const mappedCat = language === "en" ? (categoryMap[cat] || cat) : cat;
-                    const isActive = mappedCat === activeCategory;
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => handleCategoryClick(cat)}
-                        className={`px-5 py-2.5 rounded-full text-base font-medium transition-all ${
-                          isActive
-                            ? "bg-[#c05746] text-white shadow-md"
-                            : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    );
-                  })}
-                </div>
-
+              {/* Article search */}
+              <div className="flex justify-end mb-4 sm:mb-6">
                 <div className="relative w-full sm:w-72">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
@@ -212,6 +187,36 @@ export default function Home() {
                   </div>
                 )}
               </div>
+
+              {/* Category buttons below the articles */}
+              <section className="mt-8 border-t border-border/40 pt-6" aria-label={t("Filtrera artiklar efter ämne", "Filter articles by topic")}>
+                <p className="mb-3 text-base font-semibold text-foreground">
+                  {t("Visa artiklar efter ämne", "Browse articles by topic")}
+                </p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {categoryButtons.map(({ category, label }) => {
+                    const isActive = activeCategory === category;
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() => handleCategoryClick(category)}
+                        aria-pressed={isActive}
+                        className={`min-h-12 rounded-lg px-4 py-3 text-base font-bold text-white shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#c05746]/40 ${
+                          isActive
+                            ? "bg-[#8f332b] hover:bg-[#7b2a24]"
+                            : "bg-[#c05746] hover:bg-[#a84537]"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {t("Tryck på samma knapp igen för att visa alla artiklar.", "Press the same button again to show all articles.")}
+                </p>
+              </section>
 
               {/* Pagination */}
               {totalPages > 1 && (
