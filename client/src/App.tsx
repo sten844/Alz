@@ -15,6 +15,8 @@ import DiaryArchivePage from "./pages/DiaryArchivePage";
 import LinksPage from "./pages/LinksPage";
 import LifestylePage from "./pages/LifestylePage";
 import LifestyleArticlePage from "./pages/LifestyleArticlePage";
+import SecondaryArticlesPage from "./pages/SecondaryArticlesPage";
+import SecondaryArticlePage from "./pages/SecondaryArticlePage";
 import AdminWorkspacePage from "./pages/AdminWorkspacePage";
 import { usePageTracking } from "./hooks/usePageTracking";
 
@@ -28,6 +30,8 @@ function Router() {
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/min-webbplats" component={AdminWorkspacePage} />
       <Route path="/ai" component={AIPage} />
+      <Route path="/fordjupning/:id" component={SecondaryArticlePage} />
+      <Route path="/fordjupning" component={SecondaryArticlesPage} />
       <Route path="/livsstil-vid-alzheimer/:id" component={LifestyleArticlePage} />
       <Route path="/livsstil-vid-alzheimer" component={LifestylePage} />
       <Route path="/diary" component={DiaryArchivePage} />

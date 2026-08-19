@@ -127,6 +127,13 @@
       "when": 1786976000000,
       "tag": "0017_lifestyle_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1787141797000,
+      "tag": "0018_secondary_articles",
+      "breakpoints": true
     }
   ]
 }

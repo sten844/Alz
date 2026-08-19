@@ -11,6 +11,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
 import DiaryColumn from "@/components/DiaryColumn";
+import SecondaryArticleGrid from "@/components/SecondaryArticleGrid";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Search, ChevronLeft, ChevronRight, ExternalLink, Leaf, Loader2 } from "lucide-react";
@@ -37,9 +38,19 @@ export default function Home() {
     published: true,
   });
 
-  // Fetch site settings for comments visibility
+  // Fetch site settings for comments visibility and the independent article series heading.
   const { data: commentsSettingValue } = trpc.settings.get.useQuery({ key: "comments_enabled" });
   const commentsEnabled = commentsSettingValue === "true";
+  const { data: secondaryArticles } = trpc.secondaryArticles.list.useQuery();
+  const { data: secondarySettings } = trpc.settings.getMany.useQuery({
+    keys: ["secondary_articles_heading_sv", "secondary_articles_heading_en", "secondary_articles_intro_sv", "secondary_articles_intro_en"],
+  });
+  const secondaryHeading = language === "en"
+    ? secondarySettings?.secondary_articles_heading_en || "Life with Alzheimer's – tips and tricks"
+    : secondarySettings?.secondary_articles_heading_sv || "Livet med Alzheimer – tips och tricks";
+  const secondaryIntro = language === "en"
+    ? secondarySettings?.secondary_articles_intro_en || "A separate article stream for experiences, ideas and new reflections."
+    : secondarySettings?.secondary_articles_intro_sv || "En egen artikelrad för erfarenheter, idéer och nya reflektioner.";
 
   const filteredArticles = useMemo(() => {
     if (!dbArticles) return [];
@@ -298,6 +309,23 @@ export default function Home() {
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
+              )}
+
+              {/* Independent article series: separate data, separate archive and editable heading. */}
+              {secondaryArticles && secondaryArticles.length > 0 && (
+                <section className="mt-10 border-t border-border/40 pt-8" aria-label={secondaryHeading}>
+                  <div className="rounded-t-2xl bg-[#c05746] px-5 py-5 text-white shadow-sm md:px-7 md:py-6">
+                    <p className="text-sm font-bold uppercase tracking-wider text-white/80">{t("Egen artikelserie", "Independent article series")}</p>
+                    <h2 className="mt-1 text-3xl leading-tight md:text-4xl" style={{ fontFamily: "'DM Serif Display', serif" }}>{secondaryHeading}</h2>
+                    <p className="mt-2 max-w-3xl text-base leading-relaxed text-white/90 md:text-lg">{secondaryIntro}</p>
+                  </div>
+                  <div className="rounded-b-2xl border border-t-0 border-[#c05746]/25 bg-[#fffaf8] p-4 shadow-sm md:p-6">
+                    <SecondaryArticleGrid articles={secondaryArticles} limit={3} />
+                    <Link href="/fordjupning" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#c05746] px-5 py-3 font-bold text-white transition-colors hover:bg-[#a84537]">
+                      {t("Fler artiklar", "More articles")} <ChevronRight className="h-5 w-5" />
+                    </Link>
+                  </div>
+                </section>
               )}
             </div>
           </div>

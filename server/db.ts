@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, lifestylePages, InsertLifestylePage, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView, comments, InsertComment } from "../drizzle/schema";
+import { InsertUser, users, articles, InsertArticle, diaryEntries, InsertDiaryEntry, articleDrafts, InsertArticleDraft, sitePages, InsertSitePage, aiSections, InsertAiSection, aiItems, InsertAiItem, lifestylePages, InsertLifestylePage, secondaryArticles, InsertSecondaryArticle, subscribers, InsertSubscriber, siteSettings, resourceLinks, InsertResourceLink, pageViews, InsertPageView, comments, InsertComment } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -389,6 +389,43 @@ export async function deleteLifestylePage(id: number) {
   await db.delete(lifestylePages).where(eq(lifestylePages.id, id));
 }
 
+// ---- Secondary article queries ----
+
+export async function listSecondaryArticles(options?: { publishedOnly?: boolean }) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let results = await db.select().from(secondaryArticles).orderBy(asc(secondaryArticles.sortOrder));
+  if (options?.publishedOnly) results = results.filter((article) => article.published);
+  return results;
+}
+
+export async function getSecondaryArticle(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(secondaryArticles).where(eq(secondaryArticles.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createSecondaryArticle(article: InsertSecondaryArticle) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(secondaryArticles).values(article);
+  return { id: result[0].insertId };
+}
+
+export async function updateSecondaryArticle(id: number, data: Partial<InsertSecondaryArticle>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(secondaryArticles).set(data).where(eq(secondaryArticles.id, id));
+}
+
+export async function deleteSecondaryArticle(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(secondaryArticles).where(eq(secondaryArticles.id, id));
+}
+
 // ---- Subscriber queries ----
 
 export async function listSubscribers(opts?: { activeOnly?: boolean }) {
@@ -524,6 +561,7 @@ export async function exportAllContent() {
   const allAiSections = await db.select().from(aiSections).orderBy(asc(aiSections.sortOrder));
   const allAiItems = await db.select().from(aiItems).orderBy(asc(aiItems.sortOrder));
   const allLifestylePages = await db.select().from(lifestylePages).orderBy(asc(lifestylePages.sortOrder));
+  const allSecondaryArticles = await db.select().from(secondaryArticles).orderBy(asc(secondaryArticles.sortOrder));
   const allSubscribers = await db.select().from(subscribers).orderBy(desc(subscribers.createdAt));
   const allSitePages = await db.select().from(sitePages);
   const allSettings = await db.select().from(siteSettings);
@@ -538,6 +576,7 @@ export async function exportAllContent() {
     aiSections: allAiSections,
     aiItems: allAiItems,
     lifestylePages: allLifestylePages,
+    secondaryArticles: allSecondaryArticles,
     subscribers: allSubscribers,
     sitePages: allSitePages,
     siteSettings: allSettings,
@@ -552,6 +591,7 @@ export async function importAllContent(data: {
   aiSections?: any[];
   aiItems?: any[];
   lifestylePages?: any[];
+  secondaryArticles?: any[];
   subscribers?: any[];
   sitePages?: any[];
   siteSettings?: any[];
@@ -559,7 +599,7 @@ export async function importAllContent(data: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const stats = { articles: 0, diaryEntries: 0, aiSections: 0, aiItems: 0, lifestylePages: 0, subscribers: 0, sitePages: 0, siteSettings: 0 };
+  const stats = { articles: 0, diaryEntries: 0, aiSections: 0, aiItems: 0, lifestylePages: 0, secondaryArticles: 0, subscribers: 0, sitePages: 0, siteSettings: 0 };
 
   // Import articles
   if (data.articles?.length) {
@@ -612,6 +652,18 @@ export async function importAllContent(data: {
         publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : new Date(),
       }).onDuplicateKeyUpdate({ set: { titleSv: rest.titleSv, contentSv: rest.contentSv, published: rest.published } });
       stats.lifestylePages++;
+    }
+  }
+
+  // Import independent secondary articles
+  if (data.secondaryArticles?.length) {
+    for (const article of data.secondaryArticles) {
+      const { createdAt, updatedAt, ...rest } = article;
+      await db.insert(secondaryArticles).values({
+        ...rest,
+        publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : new Date(),
+      }).onDuplicateKeyUpdate({ set: { titleSv: rest.titleSv, contentSv: rest.contentSv, published: rest.published } });
+      stats.secondaryArticles++;
     }
   }
 

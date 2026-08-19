@@ -41,6 +41,7 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { markdownToHtml, htmlToMarkdown } from "@/lib/markdownUtils";
 import AIPageEditor from "@/components/AIPageEditor";
 import LifestyleEditor from "@/components/LifestyleEditor";
+import SecondaryArticlesEditor from "@/components/SecondaryArticlesEditor";
 import LinksEditor from "@/components/LinksEditor";
 
 // ---- Article form types ----
@@ -110,7 +111,7 @@ export default function AdminPage() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { t } = useLanguage();
   const hasOwnerBookmarkAccess = typeof window !== "undefined" && Boolean(window.sessionStorage.getItem("dellby-owner-access-key"));
-  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "lifestyle" | "links" | "subscribers" | "settings" | "backup" | "analytics">("articles");
+  const [activeTab, setActiveTab] = useState<"articles" | "diary" | "about" | "ai" | "lifestyle" | "secondary" | "links" | "subscribers" | "settings" | "backup" | "analytics">("articles");
 
   // ---- Article state ----
   const [editingArticleId, setEditingArticleId] = useState<number | null>(null);
@@ -717,6 +718,17 @@ export default function AdminPage() {
             >
               <Leaf className="w-5 h-5" />
               {t("Livsstil", "Lifestyle")}
+            </button>
+            <button
+              onClick={() => setActiveTab("secondary")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
+                activeTab === "secondary"
+                  ? "bg-[#c05746] text-white shadow-md"
+                  : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+              }`}
+            >
+              <FileText className="w-5 h-5" />
+              {t("Tips och tricks", "Tips and tricks")}
             </button>
             <button
               onClick={() => setActiveTab("links")}
@@ -1511,6 +1523,11 @@ export default function AdminPage() {
           {/* ============ LIFESTYLE TAB ============ */}
           {activeTab === "lifestyle" && (
             <LifestyleEditor />
+          )}
+
+          {/* ============ SECONDARY ARTICLES TAB ============ */}
+          {activeTab === "secondary" && (
+            <SecondaryArticlesEditor />
           )}
 
           {/* ============ SUBSCRIBERS TAB ============ */}

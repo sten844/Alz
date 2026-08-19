@@ -2,7 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, adminProcedure } from "./_core/trpc";
-import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listLifestylePages, getLifestylePage, createLifestylePage, updateLifestylePage, deleteLifestylePage, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats, listCommentsByArticle, createComment, deleteComment } from "./db";
+import { listArticles, getArticleById, createArticle, updateArticle, deleteArticle, getArticleByPairIdAndLanguage, listDiaryEntries, getDiaryEntryById, createDiaryEntry, updateDiaryEntry, deleteDiaryEntry, saveDraft, getDraft, deleteDraft, listDrafts, getSitePage, upsertSitePage, listAiSections, upsertAiSection, listAiItems, createAiItem, updateAiItem, deleteAiItem, listLifestylePages, getLifestylePage, createLifestylePage, updateLifestylePage, deleteLifestylePage, listSecondaryArticles, getSecondaryArticle, createSecondaryArticle, updateSecondaryArticle, deleteSecondaryArticle, listSubscribers, createSubscriber, unsubscribe, deleteSubscriber, getActiveSubscriberCount, getSiteSetting, upsertSiteSetting, exportAllContent, importAllContent, listResourceLinks, getResourceLink, createResourceLink, updateResourceLink, deleteResourceLink, recordPageView, getAnalyticsStats, listCommentsByArticle, createComment, deleteComment } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { Resend } from "resend";
@@ -630,6 +630,69 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await deleteLifestylePage(input.id);
+        return { success: true };
+      }),
+  }),
+
+  secondaryArticles: router({
+    // Public: only published content appears in the independent article grid.
+    list: publicProcedure.query(async () => {
+      return listSecondaryArticles({ publishedOnly: true });
+    }),
+
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const article = await getSecondaryArticle(input.id);
+        return article?.published ? article : null;
+      }),
+
+    // Admin: includes drafts so articles can be prepared independently.
+    listAll: adminProcedure.query(async () => {
+      return listSecondaryArticles();
+    }),
+
+    create: adminProcedure
+      .input(z.object({
+        titleSv: z.string().min(1),
+        titleEn: z.string().nullable().optional(),
+        excerptSv: z.string().default(""),
+        excerptEn: z.string().nullable().optional(),
+        contentSv: z.string().min(1),
+        contentEn: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional(),
+        sortOrder: z.number().default(0),
+        published: z.boolean().default(false),
+        publishedAt: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return createSecondaryArticle({ ...input, publishedAt: input.publishedAt ?? new Date() });
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        titleSv: z.string().min(1).optional(),
+        titleEn: z.string().nullable().optional(),
+        excerptSv: z.string().optional(),
+        excerptEn: z.string().nullable().optional(),
+        contentSv: z.string().min(1).optional(),
+        contentEn: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional(),
+        sortOrder: z.number().optional(),
+        published: z.boolean().optional(),
+        publishedAt: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateSecondaryArticle(id, data);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteSecondaryArticle(input.id);
         return { success: true };
       }),
   }),

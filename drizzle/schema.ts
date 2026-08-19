@@ -169,6 +169,29 @@ export type LifestylePage = typeof lifestylePages.$inferSelect;
 export type InsertLifestylePage = typeof lifestylePages.$inferInsert;
 
 /**
+ * Secondary articles belong to the independent article grid beneath the main article area.
+ * They have their own lifecycle and never appear in the primary article list.
+ */
+export const secondaryArticles = mysqlTable("secondary_articles", {
+  id: int("id").autoincrement().primaryKey(),
+  titleSv: varchar("title_sv", { length: 500 }).notNull(),
+  titleEn: varchar("title_en", { length: 500 }),
+  excerptSv: varchar("excerpt_sv", { length: 1000 }).notNull().default(""),
+  excerptEn: varchar("excerpt_en", { length: 1000 }),
+  contentSv: text("content_sv").notNull(),
+  contentEn: text("content_en"),
+  imageUrl: varchar("image_url", { length: 2000 }),
+  sortOrder: int("sort_order").notNull().default(0),
+  published: boolean("published").default(false).notNull(),
+  publishedAt: timestamp("published_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SecondaryArticle = typeof secondaryArticles.$inferSelect;
+export type InsertSecondaryArticle = typeof secondaryArticles.$inferInsert;
+
+/**
  * Email subscribers for article notifications.
  * Stores email addresses of people who want to be notified when new articles are published.
  */
