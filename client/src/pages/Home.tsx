@@ -12,6 +12,8 @@ import SiteFooter from "@/components/SiteFooter";
 import ArticleCard from "@/components/ArticleCard";
 import DiaryColumn from "@/components/DiaryColumn";
 import SecondaryArticleGrid from "@/components/SecondaryArticleGrid";
+import { categories, categoriesEn } from "@/data/articles";
+import { PENDING_FEATURES } from "@/config/featureFlags";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { trpc } from "@/lib/trpc";
 import { Search, ChevronLeft, ChevronRight, ExternalLink, Leaf, Loader2 } from "lucide-react";
@@ -77,7 +79,7 @@ export default function Home() {
 
   // The first page deliberately reserves one article slot for the Livsstil entry point.
   // Filtering or searching keeps the standard article pagination so results remain predictable.
-  const showLifestyleEntryPoint = activeCategory === "Alla" && !searchQuery.trim();
+  const showLifestyleEntryPoint = PENDING_FEATURES.lifestyleSection && activeCategory === "Alla" && !searchQuery.trim();
   const articlesOnFirstPage = showLifestyleEntryPoint ? ARTICLES_PER_PAGE - 1 : ARTICLES_PER_PAGE;
   const totalPages = showLifestyleEntryPoint
     ? 1 + Math.ceil(Math.max(0, filteredArticles.length - articlesOnFirstPage) / ARTICLES_PER_PAGE)
@@ -109,8 +111,19 @@ export default function Home() {
         { category: "Opinion", label: "Opinion" },
       ];
 
+  const displayCategories = language === "sv" ? categories : categoriesEn;
+  const categoryMap: Record<string, string> = {
+    All: "Alla",
+    Treatment: "Behandling",
+    Research: "Forskning",
+    "Daily Life": "Vardagsliv",
+    Medication: "Läkemedel",
+    Opinion: "Åsikt",
+  };
+
   const handleCategoryClick = (category: string) => {
-    setActiveCategory((current) => (current === category ? "Alla" : category));
+    const mappedCategory = language === "en" ? (categoryMap[category] || category) : category;
+    setActiveCategory((current) => PENDING_FEATURES.redCategoryButtons && current === mappedCategory ? "Alla" : mappedCategory);
     setCurrentPage(1);
   };
 
@@ -180,6 +193,30 @@ export default function Home() {
 
             {/* Right: Articles (main content) */}
             <div className="flex-1 min-w-0">
+              {/* The original category filters remain active while the new red filter row is paused. */}
+              {!PENDING_FEATURES.redCategoryButtons && (
+                <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center sm:gap-4 mb-4 sm:mb-6">
+                  <div className="flex flex-wrap gap-1.5">
+                    {displayCategories.map((category) => {
+                      const mappedCategory = language === "en" ? (categoryMap[category] || category) : category;
+                      const isActive = mappedCategory === activeCategory;
+                      return (
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => handleCategoryClick(category)}
+                          className={`px-5 py-2.5 rounded-full text-base font-medium transition-all ${
+                            isActive ? "bg-[#c05746] text-white shadow-md" : "bg-card text-muted-foreground hover:bg-accent border border-border/50"
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Article search */}
               <div className="flex justify-end mb-4 sm:mb-6">
                 <div className="relative w-full sm:w-72">
@@ -218,7 +255,7 @@ export default function Home() {
                       }} />
                     ))}
 
-                    {showLifestylePromo && (
+                    {PENDING_FEATURES.lifestyleSection && showLifestylePromo && (
                       <Link href="/livsstil-vid-alzheimer" className="group block">
                         <section className="overflow-hidden rounded-xl border border-emerald-900/30 bg-gradient-to-br from-emerald-950 via-emerald-900 to-[#315b50] p-6 text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-7">
                           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -256,8 +293,8 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Category buttons below the articles */}
-              <section className="mt-8 border-t border-border/40 pt-6" aria-label={t("Filtrera artiklar efter ämne", "Filter articles by topic")}>
+              {/* The new red category row is retained in code but stays hidden until explicitly approved. */}
+              {PENDING_FEATURES.redCategoryButtons && <section className="mt-8 border-t border-border/40 pt-6" aria-label={t("Filtrera artiklar efter ämne", "Filter articles by topic")}>
                 <p className="mb-3 text-base font-semibold text-foreground">
                   {t("Visa artiklar efter ämne", "Browse articles by topic")}
                 </p>
@@ -284,7 +321,7 @@ export default function Home() {
                 <p className="mt-3 text-sm text-muted-foreground">
                   {t("Tryck på samma knapp igen för att visa alla artiklar.", "Press the same button again to show all articles.")}
                 </p>
-              </section>
+              </section>}
 
               {/* Pagination */}
               {totalPages > 1 && (
@@ -312,7 +349,7 @@ export default function Home() {
               )}
 
               {/* Independent article series: separate data, separate archive and editable heading. */}
-              {secondaryArticles && secondaryArticles.length > 0 && (
+              {PENDING_FEATURES.secondaryArticleSeries && secondaryArticles && secondaryArticles.length > 0 && (
                 <section className="mt-10 border-t border-border/40 pt-8" aria-label={secondaryHeading}>
                   <div className="rounded-t-2xl bg-[#c05746] px-5 py-5 text-white shadow-sm md:px-7 md:py-6">
                     <p className="text-sm font-bold uppercase tracking-wider text-white/80">{t("Egen artikelserie", "Independent article series")}</p>

@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { PENDING_FEATURES } from "@/config/featureFlags";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { toast } from "sonner";
@@ -708,7 +709,7 @@ export default function AdminPage() {
               <FileText className="w-5 h-5" />
               {t("AI-sida", "AI page")}
             </button>
-            <button
+            {PENDING_FEATURES.lifestyleSection && <button
               onClick={() => setActiveTab("lifestyle")}
               className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
                 activeTab === "lifestyle"
@@ -718,8 +719,8 @@ export default function AdminPage() {
             >
               <Leaf className="w-5 h-5" />
               {t("Livsstil", "Lifestyle")}
-            </button>
-            <button
+            </button>}
+            {PENDING_FEATURES.secondaryArticleSeries && <button
               onClick={() => setActiveTab("secondary")}
               className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
                 activeTab === "secondary"
@@ -729,7 +730,7 @@ export default function AdminPage() {
             >
               <FileText className="w-5 h-5" />
               {t("Tips och tricks", "Tips and tricks")}
-            </button>
+            </button>}
             <button
               onClick={() => setActiveTab("links")}
               className={`flex items-center gap-2 px-6 py-3 rounded-full text-lg font-medium transition-all ${
@@ -1521,12 +1522,12 @@ export default function AdminPage() {
           )}
 
           {/* ============ LIFESTYLE TAB ============ */}
-          {activeTab === "lifestyle" && (
+          {PENDING_FEATURES.lifestyleSection && activeTab === "lifestyle" && (
             <LifestyleEditor />
           )}
 
           {/* ============ SECONDARY ARTICLES TAB ============ */}
-          {activeTab === "secondary" && (
+          {PENDING_FEATURES.secondaryArticleSeries && activeTab === "secondary" && (
             <SecondaryArticlesEditor />
           )}
 

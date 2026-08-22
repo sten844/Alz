@@ -17,6 +17,7 @@ import LifestylePage from "./pages/LifestylePage";
 import LifestyleArticlePage from "./pages/LifestyleArticlePage";
 import SecondaryArticlesPage from "./pages/SecondaryArticlesPage";
 import SecondaryArticlePage from "./pages/SecondaryArticlePage";
+import { PENDING_FEATURES } from "./config/featureFlags";
 import AdminWorkspacePage from "./pages/AdminWorkspacePage";
 import { usePageTracking } from "./hooks/usePageTracking";
 
@@ -30,10 +31,10 @@ function Router() {
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/min-webbplats" component={AdminWorkspacePage} />
       <Route path="/ai" component={AIPage} />
-      <Route path="/fordjupning/:id" component={SecondaryArticlePage} />
-      <Route path="/fordjupning" component={SecondaryArticlesPage} />
-      <Route path="/livsstil-vid-alzheimer/:id" component={LifestyleArticlePage} />
-      <Route path="/livsstil-vid-alzheimer" component={LifestylePage} />
+      {PENDING_FEATURES.secondaryArticleSeries && <Route path="/fordjupning/:id" component={SecondaryArticlePage} />}
+      {PENDING_FEATURES.secondaryArticleSeries && <Route path="/fordjupning" component={SecondaryArticlesPage} />}
+      {PENDING_FEATURES.lifestyleSection && <Route path="/livsstil-vid-alzheimer/:id" component={LifestyleArticlePage} />}
+      {PENDING_FEATURES.lifestyleSection && <Route path="/livsstil-vid-alzheimer" component={LifestylePage} />}
       <Route path="/diary" component={DiaryArchivePage} />
       <Route path="/lankar" component={LinksPage} />
       <Route path="/404" component={NotFound} />
